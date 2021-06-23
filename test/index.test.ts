@@ -12,10 +12,10 @@ chai.use(chaiAsPromised)
 const expect = chai.expect
 const assert = chai.assert
 
-const nancyCmd = '../bin/run'
+const ruthCmd = '../bin/run'
 
-async function runNancy(args: string[]) {
-  return execa(nancyCmd, args)
+async function runruth(args: string[]) {
+  return execa(ruthCmd, args)
 }
 
 function assertFileObjEqual(obj: string, expected: string) {
@@ -35,11 +35,11 @@ function diffsetDiffsOnly(diffSet: Difference[]): Difference[] {
   return diffSet.filter((diff) => diff.state !== 'equal')
 }
 
-async function nancyTest(args: string[], expected: string) {
+async function ruthTest(args: string[], expected: string) {
   const outputDir = directory()
   const outputObj = path.join(outputDir, 'output')
   args.push(outputObj)
-  await runNancy(args)
+  await runruth(args)
   assertFileObjEqual(outputObj, expected)
   fs.rmdirSync(outputDir, {recursive: true})
 }
@@ -52,7 +52,7 @@ async function checkLinks(root: string, start: string) {
   assert(results.passed, 'Broken links in output')
 }
 
-describe('nancy', function () {
+describe('ruth', function () {
   // The tests are rather slow, but not likely to hang.
   this.timeout(10000)
 
@@ -61,28 +61,28 @@ describe('nancy', function () {
   })
 
   it('--help should produce output', async () => {
-    const proc = runNancy(['--help'])
+    const proc = runruth(['--help'])
     const {stdout} = await proc
     expect(stdout).to.contain('A simple templating system.')
   })
 
   it('Whole-tree test (XML)', async () => {
-    await nancyTest(['--keep-going', 'webpage-xml-src'], 'webpage-xhtml-expected')
+    await ruthTest(['--keep-going', 'webpage-xml-src'], 'webpage-xhtml-expected')
     await checkLinks('webpage-xhtml-expected', 'index.xhtml')
   })
 
   it('Part-tree test (XML)', async () => {
-    await nancyTest(['--keep-going', 'webpage-xml-src', '--path=people'], 'webpage-xhtml-expected/people')
+    await ruthTest(['--keep-going', 'webpage-xml-src', '--path=people'], 'webpage-xhtml-expected/people')
     await checkLinks('webpage-xhtml-expected/people', 'index.xhtml')
   })
 
   it('Two-tree test (XML)', async () => {
-    await nancyTest(['--keep-going', 'mergetrees-xml-src:webpage-xml-src'], 'mergetrees-xhtml-expected')
+    await ruthTest(['--keep-going', 'mergetrees-xml-src:webpage-xml-src'], 'mergetrees-xhtml-expected')
     await checkLinks('mergetrees-xhtml-expected', 'index.xhtml')
   })
 
   it('Cookbook web site example (XML)', async () => {
-    await nancyTest(['cookbook-example-website-xml-src'], 'cookbook-example-website-xhtml-expected')
+    await ruthTest(['cookbook-example-website-xml-src'], 'cookbook-example-website-xhtml-expected')
     await checkLinks('cookbook-example-website-xhtml-expected', 'index/index.xhtml')
   })
 })

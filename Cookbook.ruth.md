@@ -1,4 +1,4 @@
-# Nancy Cookbook
+# ruth Cookbook
 
 See the [README](README.md) for installation and usage. The rest of this
 document shows examples of its use.
@@ -39,10 +39,10 @@ every page), while each section has its own breadcrumb trail
 (`breadcrumb.html`), and each page has its own content
 (`main.html`).
 
-Now consider how Nancy builds the page whose URL is
+Now consider how ruth builds the page whose URL is
 `places/vladivostok.html`. Assume the source files are in the directory
 `source`. According to the rules given in the
-[Operation](README.md#operation) section of the manual, Nancy will look
+[Operation](README.md#operation) section of the manual, ruth will look
 first for files in `source/places/vladivostok.html`, then in
 `source/places`, and finally in `source`. Hence, the actual list of files
 used to assemble the page is:
@@ -62,18 +62,18 @@ command
 
     \$include{breadcrumb.html}
     
-This makes Nancy start at the next directory up from the fragment. So for
+This makes ruth start at the next directory up from the fragment. So for
 example, when expanding `source/places/breadcrumb.html`, it starts looking
 at `source/breadcrumb.html`. This means that the breadcrumb trail can be
 defined recursively: each `breadcrumb.html` fragment includes all those
 above it in the source tree.
 
 This scheme, though simple, is surprisingly flexible; this simple example
-has covered all the standard techniques for Nancy’s use.
+has covered all the standard techniques for ruth’s use.
 
 ### Building the site
 
-The site is built by running Nancy on each page. After building
+The site is built by running ruth on each page. After building
 the pages, static assets are copied into the built site.
 
 [FIXME]: # (Explain how to serve the web site dynamically.)
@@ -83,16 +83,16 @@ the pages, static assets are copied into the built site.
 Given a simple page template, a timestamp can be added by using the `date`
 command with `\$paste`:
 
-$paste{sh,-c,build-aux/indent-preformatted < test/page-template-with-date-src/Page.nancy.md | sed -e 's|\,--date=2016/10/12||'}
+$paste{sh,-c,build-aux/indent-preformatted < test/page-template-with-date-src/Page.ruth.md | sed -e 's|\,--date=2016/10/12||'}
 
 This gives a result looking something like:
 
-$include{sh,-c,build-aux/indent-preformatted < test/page-template-with-date-src/Page.nancy.md}
+$include{sh,-c,build-aux/indent-preformatted < test/page-template-with-date-src/Page.ruth.md}
 
 ## Adding code examples to Markdown
 [FIXME]: # (Explain the techniques)
 
-Look at the [source](Cookbook.md.in) for the Cookbook to see how Nancy is
+Look at the [source](Cookbook.md.in) for the Cookbook to see how ruth is
 used to include example source code, and the output of other commands, such
 as directory listings.
 

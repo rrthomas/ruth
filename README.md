@@ -1,16 +1,16 @@
-# Nancy
+# ruth
 
-![logo](logo/nancy-small.png) _logo by Silvia Polverini_
+![logo](logo/ruth-small.png) _logo by Silvia Polverini_
 
 © 2002–2021 Reuben Thomas <rrt@sc3d.org>  
-<https://github.com/rrthomas/nancy>
+<https://github.com/rrthomas/ruth>
 
-Nancy is a simple macro processor that fills in a template from other files
+ruth is a simple macro processor that fills in a template from other files
 and the output of programs. It has just one non-trivial construct:
 context-dependent file inclusion. A file can either be included literally,
 or run as a command and its output included.
 
-Nancy was originally designed to build simple static web sites, but can be
+ruth was originally designed to build simple static web sites, but can be
 used for all sorts of other tasks, similar to more complicated systems like
 [AutoGen] and [TXR]. It supports two syntaxes: plain text, which works with
 any text files, and XML, which only works with XML documents, but adds
@@ -19,7 +19,7 @@ XML-based functionality.
 [AutoGen]: http://autogen.sourceforge.net
 [TXR]: http://www.nongnu.org/txr
 
-Nancy is free software, licensed under the GNU GPL version 3 (or, at your
+ruth is free software, licensed under the GNU GPL version 3 (or, at your
 option, any later version), and written in TypeScript.
 
 See the [Cookbook](Cookbook.md) for instructions and examples.
@@ -29,10 +29,10 @@ report them on the project’s web page (see above for addresses).
 
 ## Installation
 
-It's easiest to install Nancy with npm:
+It's easiest to install ruth with npm:
 
 ```
-$ npm install -g @sc3d/nancy
+$ npm install -g @sc3d/ruth
 ```
 
 ## Invocation
@@ -41,7 +41,7 @@ FIXME: add output of --help
 
 ## Operation <a name="operation"></a>
 
-Nancy builds a path given a template as follows:
+ruth builds a path given a template as follows:
 
 1. Set the initial text to `$include{TEMPLATE}`, unless `TEMPLATE` is `-`,
    in which case set the initial text to the contents of standard input.
@@ -69,7 +69,7 @@ This will output:
 
     Now I can talk about $paste.
 
-Nancy recognises these commands:
+ruth recognises these commands:
 
 * *`$include{FILE}`* Look up the given source file; read its contents, then
   expand them (that is, execute any commands found therein) and return the
@@ -84,7 +84,7 @@ The last three commands are mostly useful as arguments to `$include` and
 `$paste`.
 
 To find the source file `FILE` specified by a `$include{FILE}` command,
-Nancy proceeds thus:
+ruth proceeds thus:
 
 1. See whether `ROOT/PATH/FILE` is a file (or a symbolic link to a file). If
    so, return the file path.
@@ -92,10 +92,10 @@ Nancy proceeds thus:
    is empty.
 3. Try looking for `ROOT/FILE`.
 
-If no file is found, Nancy stops with an error message.
+If no file is found, ruth stops with an error message.
 
 For example, if the root directory is `/dir`, `PATH` is `foo/bar/baz`, and
-Nancy is trying to find `file.html`, it will try the following files, in
+ruth is trying to find `file.html`, it will try the following files, in
 order:
 
 1. `/dir/foo/bar/baz/file.html`
@@ -112,22 +112,22 @@ worked example.
 
 ### Running other programs
 
-In addition to the rules given above, Nancy also allows `$include` and
+In addition to the rules given above, ruth also allows `$include` and
 `$paste` to take their input from programs. This can be useful in a variety
 of ways: to insert the current date or time, to make a calculation, or to
 convert a file to a different format.
 
-Nancy can run a program in two ways:
+ruth can run a program in two ways:
 
 1. If a file found by an `$include` or `$paste` command has the “execute”
    permission, it is run.
 
 2. If no file of the given name can be found using the rules in the previous
-   section, Nancy looks for an executable file on the user’s `PATH` (the
+   section, ruth looks for an executable file on the user’s `PATH` (the
    list of directories specified by the `PATH` environment variable), as if
    with the `which` command. If one is found, it is run. (This possibility
    is not mentioned in the Cookbook, but it is not very likely that
-   Nancy will find a file called `file.html` somewhere on the user’s `PATH`,
+   ruth will find a file called `file.html` somewhere on the user’s `PATH`,
    since executables don’t normally end in `.html`.)
 
 In either case, arguments may be passed to the program: use `$include{FILE,
@@ -141,7 +141,7 @@ See the [date example](Cookbook.md#date-example) in the Cookbook for more
 detail.
 
 When commands that run programs are nested inside each other, the order in
-which they are run may matter. Nancy only guarantees that if one command is
+which they are run may matter. ruth only guarantees that if one command is
 nested inside another, the inner command will be processed first. There is
 no guarantee of the order in which commands at the same nesting level are
 run.
@@ -152,7 +152,7 @@ run.
 
 Check out the git repository with:
 
-    git clone --recursive https://github.com/rrthomas/nancy
+    git clone --recursive https://github.com/rrthomas/ruth
 
 To run the tests:
 

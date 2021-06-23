@@ -1,4 +1,4 @@
-# Nancy Cookbook
+# ruth Cookbook
 
 See the [README](README.md) for installation and usage. The rest of this
 document shows examples of its use.
@@ -22,8 +22,8 @@ line corresponds to a page:
     ├── Places
     │   ├── Timbuktu
     │   └── Vladivostok
-    ├── nancy-small.png
-    ├── nancy-tiny.png
+    ├── ruth-small.png
+    ├── ruth-tiny.png
     └── style.css
     └── Home page
 
@@ -66,8 +66,8 @@ template easier to read. The pages will be laid out as follows:
     │   │   └── index.html
     │   └── Vladivostok
     │       └── index.html
-    ├── nancy-small.png
-    ├── nancy-tiny.png
+    ├── ruth-small.png
+    ├── ruth-tiny.png
     └── style.css
 
 The corresponding source files will be laid out as follows. This may look a
@@ -75,47 +75,47 @@ little confusing at first, but note the similarity to the HTML pages, and
 hold on for the explanation!
 
     ├── index
-    │   ├── index.nancy.html
+    │   ├── index.ruth.html
     │   ├── logo.in.html
     │   ├── main.in.html
     │   └── title.in.txt
     ├── People
     │   ├── Hilary Pilary
     │   │   ├── breadcrumb.in.html
-    │   │   ├── index.nancy.html
+    │   │   ├── index.ruth.html
     │   │   ├── main.in.html
     │   │   └── title.in.txt
     │   ├── index
-    │   │   ├── index.nancy.html
+    │   │   ├── index.ruth.html
     │   │   ├── main.in.html
     │   │   └── title.in.txt
     │   ├── Jo Bloggs
     │   │   ├── breadcrumb.in.html
-    │   │   ├── index.nancy.html
+    │   │   ├── index.ruth.html
     │   │   ├── main.in.html
     │   │   └── title.in.txt
     │   └── breadcrumb.in.html
     ├── Places
     │   ├── index
-    │   │   ├── index.nancy.html
+    │   │   ├── index.ruth.html
     │   │   ├── main.in.html
     │   │   └── title.in.txt
     │   ├── Timbuktu
     │   │   ├── breadcrumb.in.html
-    │   │   ├── index.nancy.html
+    │   │   ├── index.ruth.html
     │   │   ├── main.in.html
     │   │   └── title.in.txt
     │   ├── Vladivostok
     │   │   ├── breadcrumb.in.html
-    │   │   ├── index.nancy.html
+    │   │   ├── index.ruth.html
     │   │   ├── main.in.html
     │   │   └── title.in.txt
     │   └── breadcrumb.in.html
     ├── breadcrumb.in.html
     ├── logo.in.html
     ├── menu.in.html
-    ├── nancy-small.png -> ../../logo/nancy-small.png
-    ├── nancy-tiny.png -> ../../logo/nancy-tiny.png
+    ├── ruth-small.png -> ../../logo/ruth-small.png
+    ├── ruth-tiny.png -> ../../logo/ruth-tiny.png
     ├── path-to-root.in.sh
     ├── style.css
     └── template.in.html
@@ -125,10 +125,10 @@ every page), while each section has its own breadcrumb trail
 (`breadcrumb.html`), and each page has its own content
 (`main.html`).
 
-Now consider how Nancy builds the page whose URL is
+Now consider how ruth builds the page whose URL is
 `places/vladivostok.html`. Assume the source files are in the directory
 `source`. According to the rules given in the
-[Operation](README.md#operation) section of the manual, Nancy will look
+[Operation](README.md#operation) section of the manual, ruth will look
 first for files in `source/places/vladivostok.html`, then in
 `source/places`, and finally in `source`. Hence, the actual list of files
 used to assemble the page is:
@@ -148,18 +148,18 @@ command
 
     $include{breadcrumb.html}
     
-This makes Nancy start at the next directory up from the fragment. So for
+This makes ruth start at the next directory up from the fragment. So for
 example, when expanding `source/places/breadcrumb.html`, it starts looking
 at `source/breadcrumb.html`. This means that the breadcrumb trail can be
 defined recursively: each `breadcrumb.html` fragment includes all those
 above it in the source tree.
 
 This scheme, though simple, is surprisingly flexible; this simple example
-has covered all the standard techniques for Nancy’s use.
+has covered all the standard techniques for ruth’s use.
 
 ### Building the site
 
-The site is built by running Nancy on each page. After building
+The site is built by running ruth on each page. After building
 the pages, static assets are copied into the built site.
 
 [FIXME]: # (Explain how to serve the web site dynamically.)
@@ -190,7 +190,7 @@ This gives a result looking something like:
 ## Adding code examples to Markdown
 [FIXME]: # (Explain the techniques)
 
-Look at the [source](Cookbook.md.in) for the Cookbook to see how Nancy is
+Look at the [source](Cookbook.md.in) for the Cookbook to see how ruth is
 used to include example source code, and the output of other commands, such
 as directory listings.
 

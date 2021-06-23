@@ -4,7 +4,7 @@ import {IFS} from 'unionfs/lib/fs'
 import path from 'path'
 import Debug from 'debug'
 
-const debug = Debug('nancy')
+const debug = Debug('ruth')
 
 export function replacePathPrefix(s: string, prefix: string, newPrefix = ''): string {
   if (s.startsWith(prefix + path.sep)) {
@@ -26,7 +26,7 @@ export abstract class Expander {
     protected inputFs: IFS = realFs,
   ) {}
 
-  protected static templateRegex = /\.nancy\.(?=\.[^.]+$)?/
+  protected static templateRegex = /\.ruth\.(?=\.[^.]+$)?/
   protected static noCopyRegex = /\.in(?=\.[^.]+$)?/
 
   protected abstract expandFile(filePath: string): string

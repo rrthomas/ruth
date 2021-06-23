@@ -26,7 +26,7 @@ parser.add_argument('--version', {
   action: 'version',
   version: `%(prog)s ${packageJson.version}
 (c) 2002-2021 Reuben Thomas <rrt@sc3d.org>
-https://github.com/rrthomas/nancy/
+https://github.com/rrthomas/ruth/
 Distributed under the GNU General Public License version 3, or (at
 your option) any later version. There is no warranty.`,
 })

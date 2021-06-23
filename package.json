@@ -1,12 +1,12 @@
 {
-  "name": "nancy",
-  "description": "Simple templating system",
+  "name": "ruth",
+  "description": "Simple XML templating system",
   "version": "7.0.0",
   "author": "Reuben Thomas",
   "bin": {
-    "nancy": "./bin/run"
+    "ruth": "./bin/run"
   },
-  "bugs": "https://github.com/rrthomas/nancy/issues",
+  "bugs": "https://github.com/rrthomas/ruth/issues",
   "dependencies": {
     "argparse": "^2.0.1",
     "debug": "^4.3.1",
@@ -53,16 +53,16 @@
     "/bin",
     "/lib"
   ],
-  "homepage": "https://github.com/rrthomas/nancy",
+  "homepage": "https://github.com/rrthomas/ruth",
   "license": "GPL-3.0-or-later",
   "main": "lib/index.js",
-  "repository": "rrthomas/nancy",
+  "repository": "rrthomas/ruth",
   "scripts": {
     "lint": "eslint . --ext .ts",
     "prepack": "rm -rf lib && tsc -b && npm run cookbook",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "example": "open-cli file://$(pwd)/test/cookbook-example-website-expected/index/index.html",
-    "cookbook": "./bin/run Cookbook.nancy.md Cookbook.md"
+    "cookbook": "./bin/run Cookbook.ruth.md Cookbook.md"
   },
   "types": "lib/*.d.ts"
 }

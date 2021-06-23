@@ -12,10 +12,10 @@ import {
 import {Expander, replacePathPrefix} from './expander'
 import Debug from 'debug'
 
-const debug = Debug('nancy-xml')
+const debug = Debug('ruth-xml')
 
-const nc = 'https://github.com/rrthomas/nancy/raw/master/nancy.dtd'
-const dirtree = 'https://github.com/rrthomas/nancy/raw/master/dirtree.dtd'
+const nc = 'https://github.com/rrthomas/ruth/raw/master/ruth.dtd'
+const dirtree = 'https://github.com/rrthomas/ruth/raw/master/dirtree.dtd'
 const URI_BY_PREFIX: {[key: string]: string} = {nc, dirtree}
 
 const xQueryOptions: Options = {
