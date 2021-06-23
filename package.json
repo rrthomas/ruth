@@ -15,10 +15,8 @@
     "fs-extra": "^10.0.0",
     "istextorbinary": "^5.12.0",
     "linkfs": "^2.1.0",
-    "pcre2": "file:../../repo/pcre2",
     "slimdom": "^2.3.2",
     "slimdom-sax-parser": "^1.4.0",
-    "strip-final-newline": "^2.0.0",
     "tslib": "^1.14.1",
     "unionfs": "^4.4.0"
   },
