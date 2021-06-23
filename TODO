@@ -1,7 +1,11 @@
-Look at Leo @clean
+Rewrite as much of the XML version as possible in XPath—should considerably reduce the impedance-matching between TypeScript and XML types.
 
-Add support for patches with diff. This is an alternative to ruth syntax for files that can't be edited, and must be used as pristine sources.
+Add tests for XML include and paste, in both elements and attributes. Extend tests to cover remaining uncovered lines of code.
 
-Want to use this for "Recalled Home", but that has the files in the wrong structure: the poetry archive is a submodule (hence subdirectory). To fix this, generalize ruth so the path argument is a list of directories which are searched in order, and --root is removed.
+Add command line option to specify file extensions assumed to be XML?
 
-Then have a separate utility that takes the old PATH argument and --root option, and outputs suitable arguments for new ruth.
+Update documentation.
+
+Package as CLI plus module.
+
+New logo for Ruth!
