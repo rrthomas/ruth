@@ -25,9 +25,9 @@ export function replacePathPrefix(s: string, prefix: string, newPrefix = ''): st
   return s
 }
 
-const nc = 'https://github.com/rrthomas/ruth/raw/master/ruth.dtd'
+const ruth = 'https://github.com/rrthomas/ruth/raw/master/ruth.dtd'
 const dirtree = 'https://github.com/rrthomas/ruth/raw/master/dirtree.dtd'
-const URI_BY_PREFIX: {[key: string]: string} = {nc, dirtree}
+const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
 
 const xQueryOptions: Options = {
   namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
@@ -135,7 +135,7 @@ export class Expander {
       } else if (stats.isFile()) {
         if (this.isExecutable(obj)) {
           registerCustomXPathFunction(
-            {localName: basename.replace(Expander.noCopyRegex, ''), namespaceURI: nc},
+            {localName: basename.replace(Expander.noCopyRegex, ''), namespaceURI: ruth},
             // FIXME: 'array(xs:string)' unsupported: https://github.com/FontoXML/fontoxpath/issues/360
             ['array(*)'], 'xs:string',
             (_, args: string[]): string => {
@@ -165,7 +165,7 @@ export class Expander {
           if (/.xq[lmy]?/.test(parsedPath.ext)) {
             registerXQueryModule(this.inputFs.readFileSync(obj, 'utf-8'));
             // FIXME: Parse namespace declaration in module?
-            xQueryOptions.moduleImports = {nc}
+            xQueryOptions.moduleImports = {ruth}
           }
           elem = xtree.createElementNS(dirtree, 'file')
         }
@@ -206,14 +206,14 @@ export class Expander {
 
   expandFile(baseFile: string): string {
     const xQueryVariables = {
-      // FIXME: Put these variables in nc namespace.
+      // FIXME: Put these variables in ruth namespace.
       // See https://github.com/FontoXML/fontoxpath/issues/381
       root: this.input,
       path: replacePathPrefix(path.dirname(baseFile), this.input)
         .replace(Expander.templateRegex, '.'),
     }
 
-    const queryAny = (xQuery: string, node: slimdom.Node): slimdom.Node[] | slimdom.Node |  string[] | string => {
+    const queryAny = (xQuery: string, node: slimdom.Node): slimdom.Node[] | slimdom.Node | string[] | string => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const res = evaluateXPath(xQuery, node, null, xQueryVariables, evaluateXPath.ANY_TYPE, xQueryOptions)
       if (xQueryResultIsNode(res)) {
@@ -278,8 +278,8 @@ export class Expander {
 
       // Copy element to be expanded, and find queries
       const resElem = elem.cloneNode(true)
-      const queries = query('descendant::nc:*', resElem) as slimdom.Element[]
-      const attrQueries = query(`descendant::*[@*[namespace-uri()="${nc}"]]`, resElem) as slimdom.Element[]
+      const queries = query('descendant::ruth:*', resElem) as slimdom.Element[]
+      const attrQueries = query(`descendant::*[@*[namespace-uri()="${ruth}"]]`, resElem) as slimdom.Element[]
 
       // Process element queries
       for (const queryElem of queries) {
@@ -329,9 +329,9 @@ export class Expander {
             throw error
           }
           if (typeof error === 'string') {
-            queryElem.setAttributeNS(nc, 'error', error)
+            queryElem.setAttributeNS(ruth, 'error', error)
           } else if (error instanceof Error) {
-            queryElem.setAttributeNS(nc, 'error', `${error.message}`)
+            queryElem.setAttributeNS(ruth, 'error', `${error.message}`)
           }
         }
         if (expandedNodes !== undefined) {
@@ -341,12 +341,12 @@ export class Expander {
 
       // Process attribute queries
       for (const queryElem of attrQueries) {
-        const attrs = query(`./@*[namespace-uri()="${nc}"]`, queryElem) as slimdom.Attr[]
+        const attrs = query(`./@*[namespace-uri()="${ruth}"]`, queryElem) as slimdom.Attr[]
         for (const attr of attrs) {
-          queryElem.removeAttributeNS(nc, attr.localName)
+          queryElem.removeAttributeNS(ruth, attr.localName)
 
           registerCustomXPathFunction(
-            {localName: 'include', namespaceURI: nc},
+            {localName: 'include', namespaceURI: ruth},
             ['xs:string'], 'xs:string',
             (_, query: string): string => {
               try {
@@ -361,7 +361,7 @@ export class Expander {
             },
           )
           registerCustomXPathFunction(
-            {localName: 'paste', namespaceURI: nc},
+            {localName: 'paste', namespaceURI: ruth},
             ['xs:string'], 'xs:string',
             (_, query: string): string => {
               try {
@@ -382,7 +382,7 @@ export class Expander {
             if (this.abortOnError) {
               throw error
             }
-            queryElem.setAttributeNS(nc, attr.localName, `${error}`)
+            queryElem.setAttributeNS(ruth, attr.localName, `${error}`)
           }
         }
       }
