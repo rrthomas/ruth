@@ -257,7 +257,7 @@ export class Expander {
 
     const expandNode = (elem: slimdom.Element, stack: slimdom.Node[]): slimdom.Node[] => {
       const findMatch = (xQuery: string): slimdom.Node => {
-        const match = queryAny(`ancestor::dirtree:directory/${xQuery}`, anchor)
+        const match = queryAny(`ancestor::dirtree:directory/${xQuery.trim()}`, anchor)
         if (xQueryResultIsNodeArray(match)) {
           for (const matchElem of match) {
             if (!stack.includes(matchElem)) {
@@ -280,6 +280,36 @@ export class Expander {
       const resElem = elem.cloneNode(true)
       const queries = query('descendant::ruth:*', resElem) as slimdom.Element[]
       const attrQueries = query(`descendant::*[@*[namespace-uri()="${ruth}"]]`, resElem) as slimdom.Element[]
+
+      registerCustomXPathFunction(
+        {localName: 'include', namespaceURI: ruth},
+        ['xs:string'], 'xs:string',
+        (_, query: string): string => {
+          try {
+            const match = findMatch(query)
+            return this.nodesToText(expandNode(match as slimdom.Element, stack.concat(match))).trim()
+          } catch (error) {
+            if (this.abortOnError) {
+              throw error
+            }
+            return `${error}`
+          }
+        },
+      )
+      registerCustomXPathFunction(
+        {localName: 'paste', namespaceURI: ruth},
+        ['xs:string'], 'xs:string',
+        (_, query: string): string => {
+          try {
+            return this.nodesToText([findMatch(query)]).trim()
+          } catch (error) {
+            if (this.abortOnError) {
+              throw error
+            }
+            return `${error}`
+          }
+        }
+      )
 
       // Process element queries
       for (const queryElem of queries) {
@@ -344,37 +374,6 @@ export class Expander {
         const attrs = query(`./@*[namespace-uri()="${ruth}"]`, queryElem) as slimdom.Attr[]
         for (const attr of attrs) {
           queryElem.removeAttributeNS(ruth, attr.localName)
-
-          registerCustomXPathFunction(
-            {localName: 'include', namespaceURI: ruth},
-            ['xs:string'], 'xs:string',
-            (_, query: string): string => {
-              try {
-                const match = findMatch(query)
-                return this.nodesToText(expandNode(match as slimdom.Element, stack.concat(match)))
-              } catch (error) {
-                if (this.abortOnError) {
-                  throw error
-                }
-                return `${error}`
-              }
-            },
-          )
-          registerCustomXPathFunction(
-            {localName: 'paste', namespaceURI: ruth},
-            ['xs:string'], 'xs:string',
-            (_, query: string): string => {
-              try {
-                return this.nodesToText([findMatch(query)])
-              } catch (error) {
-                if (this.abortOnError) {
-                  throw error
-                }
-                return `${error}`
-              }
-            }
-          )
-
           try {
             const expandedText = queryString(attr.value, anchor)
             queryElem.setAttribute(attr.localName, expandedText)
