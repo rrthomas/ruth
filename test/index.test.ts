@@ -51,9 +51,6 @@ async function checkLinks(root: string, start: string) {
 }
 
 describe('ruth', function () {
-  // The tests are rather slow, but not likely to hang.
-  this.timeout(10000)
-
   before(function () {
     process.chdir('test')
   })
