@@ -1,0 +1,6 @@
+<animal>
+  {(ancestor::dirtree:directory/*:template/*:animal)[1]/node()}
+</animal>
+<bird>
+  ostrich
+</bird>

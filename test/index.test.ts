@@ -12,10 +12,12 @@ chai.use(chaiAsPromised)
 const expect = chai.expect
 const assert = chai.assert
 
-const ruthCmd = '../bin/run'
+async function runRuth(args: string[]) {
+  return execa('../bin/run', args)
+}
 
-async function runruth(args: string[]) {
-  return execa(ruthCmd, args)
+function diffsetDiffsOnly(diffSet: Difference[]): Difference[] {
+  return diffSet.filter((diff) => diff.state !== 'equal')
 }
 
 function assertFileObjEqual(obj: string, expected: string) {
@@ -31,15 +33,11 @@ function assertFileObjEqual(obj: string, expected: string) {
   }
 }
 
-function diffsetDiffsOnly(diffSet: Difference[]): Difference[] {
-  return diffSet.filter((diff) => diff.state !== 'equal')
-}
-
 async function ruthTest(args: string[], expected: string) {
   const outputDir = directory()
   const outputObj = path.join(outputDir, 'output')
   args.push(outputObj)
-  await runruth(args)
+  await runRuth(args)
   assertFileObjEqual(outputObj, expected)
   fs.rmdirSync(outputDir, {recursive: true})
 }
@@ -61,28 +59,32 @@ describe('ruth', function () {
   })
 
   it('--help should produce output', async () => {
-    const proc = runruth(['--help'])
+    const proc = runRuth(['--help'])
     const {stdout} = await proc
     expect(stdout).to.contain('A simple templating system.')
   })
 
-  it('Whole-tree test (XML)', async () => {
-    await ruthTest(['--keep-going', 'webpage-xml-src'], 'webpage-xhtml-expected')
-    await checkLinks('webpage-xhtml-expected', 'index.xhtml')
+  it('Data templating', async () => {
+    await ruthTest(['data-templating-src'], 'data-templating-expected')
   })
 
-  it('Part-tree test (XML)', async () => {
-    await ruthTest(['--keep-going', 'webpage-xml-src', '--path=people'], 'webpage-xhtml-expected/people')
-    await checkLinks('webpage-xhtml-expected/people', 'index.xhtml')
-  })
+  // it('Whole-tree test', async () => {
+  //   await ruthTest(['--keep-going', 'webpage-xml-src'], 'webpage-xhtml-expected')
+  //   await checkLinks('webpage-xhtml-expected', 'index.xhtml')
+  // })
 
-  it('Two-tree test (XML)', async () => {
-    await ruthTest(['--keep-going', 'mergetrees-xml-src:webpage-xml-src'], 'mergetrees-xhtml-expected')
-    await checkLinks('mergetrees-xhtml-expected', 'index.xhtml')
-  })
+  // it('Part-tree test', async () => {
+  //   await ruthTest(['--keep-going', 'webpage-xml-src', '--path=people'], 'webpage-xhtml-expected/people')
+  //   await checkLinks('webpage-xhtml-expected/people', 'index.xhtml')
+  // })
 
-  it('Cookbook web site example (XML)', async () => {
-    await ruthTest(['cookbook-example-website-xml-src'], 'cookbook-example-website-xhtml-expected')
-    await checkLinks('cookbook-example-website-xhtml-expected', 'index/index.xhtml')
-  })
+  // it('Two-tree test', async () => {
+  //   await ruthTest(['--keep-going', 'mergetrees-xml-src:webpage-xml-src'], 'mergetrees-xhtml-expected')
+  //   await checkLinks('mergetrees-xhtml-expected', 'index.xhtml')
+  // })
+
+  // it('Cookbook web site example', async () => {
+  //   await ruthTest(['cookbook-example-website-xml-src'], 'cookbook-example-website-xhtml-expected')
+  //   await checkLinks('cookbook-example-website-xhtml-expected', 'index/index.xhtml')
+  // })
 })
