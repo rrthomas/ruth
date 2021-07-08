@@ -66,17 +66,17 @@ describe('ruth', function () {
   })
 
   // it('Whole-tree test', async () => {
-  //   await ruthTest(['--keep-going', 'webpage-xml-src'], 'webpage-xhtml-expected')
+  //   await ruthTest(['webpage-xml-src'], 'webpage-xhtml-expected')
   //   await checkLinks('webpage-xhtml-expected', 'index.xhtml')
   // })
 
   // it('Part-tree test', async () => {
-  //   await ruthTest(['--keep-going', 'webpage-xml-src', '--path=people'], 'webpage-xhtml-expected/people')
+  //   await ruthTest(['webpage-xml-src', '--path=people'], 'webpage-xhtml-expected/people')
   //   await checkLinks('webpage-xhtml-expected/people', 'index.xhtml')
   // })
 
   // it('Two-tree test', async () => {
-  //   await ruthTest(['--keep-going', 'mergetrees-xml-src:webpage-xml-src'], 'mergetrees-xhtml-expected')
+  //   await ruthTest(['mergetrees-xml-src:webpage-xml-src'], 'mergetrees-xhtml-expected')
   //   await checkLinks('mergetrees-xhtml-expected', 'index.xhtml')
   // })
 

@@ -44,7 +44,6 @@ export class Expander {
     private input: string,
     private output: string,
     private buildPath = '',
-    private abortOnError = false,
     private inputFs: IFS = realFs,
   ) {
     this.absInput = path.resolve(input)
@@ -130,14 +129,7 @@ export class Expander {
             // FIXME: 'array(xs:string)' unsupported: https://github.com/FontoXML/fontoxpath/issues/360
             ['array(*)'], 'xs:string',
             (_, args: string[]): string => {
-              try {
-                return execa.sync(path.join(this.absInput, replacePathPrefix(obj, this.input)), args).stdout
-              } catch (error) {
-                if (this.abortOnError) {
-                  throw error
-                }
-                return `${error}`
-              }
+              return execa.sync(path.join(this.absInput, replacePathPrefix(obj, this.input)), args).stdout
             },
           )
           elem = xtree.createElementNS(dirtree, 'executable')
