@@ -62,50 +62,6 @@ export class Expander {
     }
   }
 
-  private expandPath(obj: string): void {
-    const fullyExpandNode = (elem: slimdom.Element): string => {
-      let res
-      for (let output = elem.outerHTML; ; output = res.outerHTML) {
-        res = evaluateXPathToFirstNode(output, elem, null, null, xQueryOptions) as slimdom.Element
-        if (res === null) {
-          throw new Error(`Evaluating '${obj}' produced no result`)
-        }
-        if (output === res.outerHTML) {
-          return res.innerHTML
-        }
-      }
-    }
-    const outputPath = replacePathPrefix(obj, path.join(this.input, this.buildPath), this.output)
-      .replace(Expander.templateRegex, '.')
-    const stats = this.inputFs.statSync(obj)
-    if (stats.isDirectory()) {
-      fs.emptyDirSync(outputPath)
-      const dir = this.inputFs.readdirSync(obj, {withFileTypes: true})
-        .filter(dirent => dirent.name[0] !== '.')
-      const dirs = dir.filter(dirent => dirent.isDirectory())
-      const files = dir.filter(dirent => !dirent.isDirectory())
-      dirs.forEach((dirent) => this.expandPath(path.join(obj, dirent.name)))
-      files.forEach((dirent) => this.expandPath(path.join(obj, dirent.name)))
-    } else {
-      if (Expander.templateRegex.exec(obj)) {
-        debug(`Writing expansion of ${obj} to ${outputPath}`)
-        const index = (filePath: string) => {
-          const components = replacePathPrefix(filePath, path.dirname(this.input)).split(path.sep)
-          const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
-          const query = '/' + xPathComponents.join('/')
-          return evaluateXPathToFirstNode(query, this.xtree, null, null, xQueryOptions)
-        }
-        const elem = index(obj) as slimdom.Element
-        if (elem === null) {
-          throw new Error(`path '${obj}' does not exist in the expanded tree`)
-        }
-        fs.writeFileSync(outputPath, fullyExpandNode(elem))
-      } else if (!Expander.noCopyRegex.exec(obj)) {
-        fs.copyFileSync(obj, outputPath)
-      }
-    }
-  }
-
   private dirTreeToXML(root: string) {
     const xtree = new slimdom.Document()
     const objToNode = (obj: string) => {
@@ -160,6 +116,59 @@ export class Expander {
     debug('Input XML')
     debug(formatXML(rootElem.outerHTML))
     return xtree
+  }
+
+  private expandPath(obj: string): void {
+    const xQueryVariables = {
+      // FIXME: Put these variables in ruth namespace.
+      // See https://github.com/FontoXML/fontoxpath/issues/381
+      root: this.input,
+      path: replacePathPrefix(path.dirname(obj), this.input)
+        .replace(Expander.templateRegex, '.'),
+    }
+    const fullyExpandNode = (elem: slimdom.Element): string => {
+      let res
+      for (let output = elem.outerHTML; ; output = res.outerHTML) {
+        debug(`output: ${output}`)
+        res = evaluateXPathToFirstNode(output, elem, null, xQueryVariables, xQueryOptions) as slimdom.Element
+        if (res === null) {
+          throw new Error(`Evaluating '${obj}' produced no result`)
+        }
+        if (output === res.outerHTML) {
+          return res.innerHTML
+        }
+      }
+    }
+    const outputPath = replacePathPrefix(obj, path.join(this.input, this.buildPath), this.output)
+      .replace(Expander.templateRegex, '.')
+    const stats = this.inputFs.statSync(obj)
+    if (stats.isDirectory()) {
+      fs.emptyDirSync(outputPath)
+      const dir = this.inputFs.readdirSync(obj, {withFileTypes: true})
+        .filter(dirent => dirent.name[0] !== '.')
+      const dirs = dir.filter(dirent => dirent.isDirectory())
+      const files = dir.filter(dirent => !dirent.isDirectory())
+      dirs.forEach((dirent) => this.expandPath(path.join(obj, dirent.name)))
+      files.forEach((dirent) => this.expandPath(path.join(obj, dirent.name)))
+    } else {
+      if (Expander.templateRegex.exec(obj)) {
+        debug(`Writing expansion of ${obj} to ${outputPath}`)
+        const index = (filePath: string) => {
+          const components = replacePathPrefix(filePath, path.dirname(this.input)).split(path.sep)
+          const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
+          const query = '/' + xPathComponents.join('/')
+          return evaluateXPathToFirstNode(query, this.xtree, null, xQueryVariables, xQueryOptions)
+        }
+        const elem = index(obj) as slimdom.Element
+        if (elem === null) {
+          throw new Error(`path '${obj}' does not exist in the expanded tree`)
+        }
+        debug(`calling fullyExpandNode ${index(obj)}`)
+        fs.writeFileSync(outputPath, fullyExpandNode(elem))
+      } else if (!Expander.noCopyRegex.exec(obj)) {
+        fs.copyFileSync(obj, outputPath)
+      }
+    }
   }
 
   expand(): void {
