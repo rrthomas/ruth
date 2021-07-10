@@ -7,6 +7,10 @@ import {ArgumentParser, RawDescriptionHelpFormatter} from 'argparse'
 import {programVersion} from './version'
 import {Expander} from './expander'
 
+if (process.env.DEBUG) {
+  Error.stackTraceLimit = Infinity
+}
+
 // Read and process arguments
 const parser = new ArgumentParser({
   description: 'A simple templating system.',
@@ -49,9 +53,8 @@ try {
   new Expander(inputDir, args.output, args.path, ufs).expand()
 } catch (error) {
   if (process.env.DEBUG) {
-    console.error(error)
-  } else {
-    console.error(`${path.basename(process.argv[1])}: ${error}`)
+    throw error
   }
+  console.error(`${path.basename(process.argv[1])}: ${error}`)
   process.exitCode = 1
 }
