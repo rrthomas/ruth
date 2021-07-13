@@ -65,6 +65,7 @@
     "prepack": "npm run clean && npm run build && npm run cookbook",
     "test": "npm run build && mocha --forbid-only \"test/**/*.test.ts\"",
     "coverage": "NODE_ENV=coverage nyc --extension .ts npm run test",
+    "loc": "npx cloc src/*.ts",
     "example": "open-cli file://$(pwd)/test/cookbook-example-website-expected/index/index.html",
     "cookbook": "./bin/run Cookbook.ruth.md Cookbook.md"
   },
