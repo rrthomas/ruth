@@ -1,11 +1,13 @@
-Rewrite as much of the XML version as possible in XPath—should considerably reduce the impedance-matching between TypeScript and XML types.
-
-Add tests for XML include and paste, in both elements and attributes. Extend tests to cover remaining uncovered lines of code.
+Extend tests to cover remaining uncovered lines of code.
 
 Add command line option to specify file extensions assumed to be XML?
 
 Update documentation.
 
+Rewrite build-aux scripts in Node.
+
 Package as CLI plus module.
+
+Write DTDs for ruth (trivial) and dirtree (or just put it all in ruth? or remove ruth?).
 
 New logo for Ruth!
