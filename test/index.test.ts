@@ -53,6 +53,9 @@ async function checkLinks(root: string, start: string) {
 }
 
 describe('ruth', function () {
+  // When run for coverage, the tests are rather slow.
+  this.timeout(10000)
+
   before(function () {
     process.chdir('test')
   })
