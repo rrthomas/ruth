@@ -137,7 +137,6 @@ export class Expander {
     const fullyExpandNode = (elem: slimdom.Element): string => {
       let res
       for (let output = elem.outerHTML; ; output = res.outerHTML) {
-        debug(`output: ${output}`)
         res = evaluateXPathToFirstNode(output, elem, null, xQueryVariables, xQueryOptions) as slimdom.Element
         if (res === null) {
           throw new Error(`Evaluating '${obj}' produced no result`)
@@ -165,7 +164,6 @@ export class Expander {
         if (elem === null) {
           throw new Error(`path '${obj}' does not exist in the expanded tree`)
         }
-        debug(`calling fullyExpandNode ${index(obj)}`)
         fs.writeFileSync(outputPath, fullyExpandNode(elem))
       } else if (!Expander.noCopyRegex.exec(obj)) {
         fs.copyFileSync(obj, outputPath)
