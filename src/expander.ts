@@ -98,7 +98,7 @@ export class Expander {
         } else {
           if (/.xq[lmy]?/.test(parsedPath.ext)) {
             registerXQueryModule(this.inputFs.readFileSync(obj, 'utf-8'));
-            // FIXME: Parse namespace declaration in module?
+            // FIXME: Parse namespace declaration in module.
             xQueryOptions.moduleImports = {ruth}
           }
           elem = xtree.createElementNS(dirtree, 'file')
@@ -107,7 +107,7 @@ export class Expander {
       } else {
         elem = xtree.createElement('unknown')
       }
-      elem.setAttributeNS(dirtree, 'path', obj)
+      elem.setAttributeNS(dirtree, 'path', replacePathPrefix(obj, this.input))
       elem.setAttributeNS(dirtree, 'name', parsedPath.base)
       return elem
     }
@@ -119,13 +119,21 @@ export class Expander {
   }
 
   private expandPath(obj: string): void {
-    const xQueryVariables = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const xQueryVariables: { [id:string]: any } = {
       // FIXME: Put these variables in ruth namespace.
       // See https://github.com/FontoXML/fontoxpath/issues/381
       root: this.input,
       path: replacePathPrefix(path.dirname(obj), this.input)
         .replace(Expander.templateRegex, '.'),
     }
+    const index = (filePath: string): slimdom.Node | null => {
+      const components = replacePathPrefix(filePath, path.dirname(this.input)).split(path.sep)
+      const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
+      const query = '/' + xPathComponents.join('/')
+      return evaluateXPathToFirstNode(query, this.xtree, null, xQueryVariables, xQueryOptions)
+    }
+    xQueryVariables['elem'] = index(obj)
     const fullyExpandNode = (elem: slimdom.Element): string => {
       let res
       for (let output = elem.outerHTML; ; output = res.outerHTML) {
@@ -153,12 +161,6 @@ export class Expander {
     } else {
       if (Expander.templateRegex.exec(obj)) {
         debug(`Writing expansion of ${obj} to ${outputPath}`)
-        const index = (filePath: string) => {
-          const components = replacePathPrefix(filePath, path.dirname(this.input)).split(path.sep)
-          const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
-          const query = '/' + xPathComponents.join('/')
-          return evaluateXPathToFirstNode(query, this.xtree, null, xQueryVariables, xQueryOptions)
-        }
         const elem = index(obj) as slimdom.Element
         if (elem === null) {
           throw new Error(`path '${obj}' does not exist in the expanded tree`)
