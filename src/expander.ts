@@ -64,7 +64,7 @@ export class Expander {
         const dir = this.inputFs.readdirSync(obj, {withFileTypes: true})
           .filter(dirent => dirent.name[0] !== '.')
         const dirs = dir.filter(dirent => dirent.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))
-        const files = dir.filter(dirent => !(dirent.isDirectory())).sort((a, b) => a.name.localeCompare(b.name))
+        const files = dir.filter(dirent => dirent.isFile()).sort((a, b) => a.name.localeCompare(b.name))
         dirs.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
         files.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
       } else if (stats.isFile()) {
@@ -84,7 +84,7 @@ export class Expander {
         }
         elem.setAttributeNS(dirtree, 'type', 'file')
       } else {
-        elem = xtree.createElement('unknown')
+        throw new Error(`'${obj}' is not a directory or file`)
       }
       elem.setAttributeNS(dirtree, 'path', replacePathPrefix(obj, this.input))
       elem.setAttributeNS(dirtree, 'name', parsedPath.base)
@@ -117,9 +117,6 @@ export class Expander {
       let res
       for (let output = elem.outerHTML; ; output = res.outerHTML) {
         res = evaluateXPathToFirstNode(output, elem, null, xQueryVariables, xQueryOptions) as slimdom.Element
-        if (res === null) {
-          throw new Error(`Evaluating '${obj}' produced no result`)
-        }
         if (output === res.outerHTML) {
           return res.innerHTML
         }
@@ -140,9 +137,6 @@ export class Expander {
       if (Expander.templateRegex.exec(obj)) {
         debug(`Writing expansion of ${obj} to ${outputPath}`)
         const elem = index(obj) as slimdom.Element
-        if (elem === null) {
-          throw new Error(`path '${obj}' does not exist in the expanded tree`)
-        }
         fs.writeFileSync(outputPath, fullyExpandNode(elem))
       } else if (!Expander.noCopyRegex.exec(obj)) {
         fs.copyFileSync(obj, outputPath)

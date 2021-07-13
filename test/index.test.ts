@@ -1,8 +1,9 @@
 import util from 'util'
 import fs from 'fs'
+import net from 'net'
 import path from 'path'
 import execa from 'execa'
-import {directory} from 'tempy'
+import tempy from 'tempy'
 import {compareSync, Difference} from 'dir-compare'
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
@@ -36,7 +37,7 @@ function assertFileObjEqual(obj: string, expected: string) {
 }
 
 async function ruthTest(args: string[], expected: string) {
-  const outputDir = directory()
+  const outputDir = tempy.directory()
   const outputObj = path.join(outputDir, 'output')
   args.push(outputObj)
   await runRuth(args)
@@ -61,9 +62,86 @@ describe('ruth', function () {
   })
 
   it('--help should produce output', async () => {
+    process.env.DEBUG = 'yes'
     const proc = runRuth(['--help'])
     const {stdout} = await proc
     expect(stdout).to.contain('A simple templating system.')
+    delete process.env.DEBUG
+  })
+
+  it('Missing command-line argument should cause an error', async () => {
+    const proc = runRuth(['dummy'])
+    try {
+      await proc
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('the following arguments are required')
+    }
+  })
+
+  it('--foo should cause an error', async () => {
+    const proc = runRuth(['--foo', 'a', 'b'])
+    try {
+      await proc
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('unrecognized arguments: --foo')
+    }
+  })
+
+  it('Running on a non-existent path should cause an error', async () => {
+    const proc = runRuth(['a', 'b'])
+    try {
+      await proc
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('no such file or directory')
+    }
+  })
+
+  it('Running on something not a directory or file should cause an error', async () => {
+    const server = net.createServer()
+    const tempFile = tempy.file()
+    server.listen(tempFile)
+    try {
+      await runRuth([`${tempFile}`, 'dummy'])
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('is not a directory or file')
+    }
+    server.close()
+  })
+
+  it('Invalid XQuery should cause an error', async () => {
+    const proc = runRuth(['xquery-error', 'xquery-error-dummy'])
+    try {
+      await proc
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('missing semicolon at end of function')
+    }
+  })
+
+  it('Invalid XQuery should cause an error (DEBUG=yes coverage)', async () => {
+    process.env.DEBUG = 'yes'
+    const proc = runRuth(['xquery-error', 'xquery-error-dummy'])
+    try {
+      await proc
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('missing semicolon at end of function')
+    }
+    delete process.env.DEBUG
+  })
+
+  it('Non-existent --path should cause an error', async () => {
+    const proc = runRuth(['--path', 'nonexistent', 'webpage-src', 'dummy'])
+    try {
+      await proc
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('does not exist')
+    }
   })
 
   it('Whole-tree test', async () => {
