@@ -12,8 +12,10 @@ chai.use(chaiAsPromised)
 const expect = chai.expect
 const assert = chai.assert
 
+const ruthCmd = process.env.NODE_ENV === 'coverage' ? '../bin/test-run' : '../bin/run'
+
 async function runRuth(args: string[]) {
-  return execa('../bin/run', args)
+  return execa(ruthCmd, args)
 }
 
 function diffsetDiffsOnly(diffSet: Difference[]): Difference[] {
@@ -61,27 +63,27 @@ describe('ruth', function () {
     expect(stdout).to.contain('A simple templating system.')
   })
 
+  it('Whole-tree test', async () => {
+    await ruthTest(['webpage-src'], 'webpage-expected')
+    await checkLinks('webpage-expected', 'index.xhtml')
+  })
+
+  it('Part-tree test', async () => {
+    await ruthTest(['webpage-src', '--path=people'], 'webpage-expected/people')
+    await checkLinks('webpage-expected/people', 'index.xhtml')
+  })
+
+  it('Two-tree test', async () => {
+    await ruthTest(['mergetrees-src:webpage-src'], 'mergetrees-expected')
+    await checkLinks('mergetrees-expected', 'index.xhtml')
+  })
+
   it('Data templating', async () => {
     await ruthTest(['data-templating-src'], 'data-templating-expected')
   })
 
-  // it('Whole-tree test', async () => {
-  //   await ruthTest(['webpage-xml-src'], 'webpage-xhtml-expected')
-  //   await checkLinks('webpage-xhtml-expected', 'index.xhtml')
-  // })
-
-  // it('Part-tree test', async () => {
-  //   await ruthTest(['webpage-xml-src', '--path=people'], 'webpage-xhtml-expected/people')
-  //   await checkLinks('webpage-xhtml-expected/people', 'index.xhtml')
-  // })
-
-  // it('Two-tree test', async () => {
-  //   await ruthTest(['mergetrees-xml-src:webpage-xml-src'], 'mergetrees-xhtml-expected')
-  //   await checkLinks('mergetrees-xhtml-expected', 'index.xhtml')
-  // })
-
-  // it('Cookbook web site example', async () => {
-  //   await ruthTest(['cookbook-example-website-xml-src'], 'cookbook-example-website-xhtml-expected')
-  //   await checkLinks('cookbook-example-website-xhtml-expected', 'index/index.xhtml')
-  // })
+  it('Cookbook web site example', async () => {
+    await ruthTest(['cookbook-example-website-src'], 'cookbook-example-website-expected')
+    await checkLinks('cookbook-example-website-expected', 'index/index.xhtml')
+  })
 })
