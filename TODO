@@ -1,7 +1,5 @@
 Update documentation.
 
-Rewrite build-aux scripts in Node.
-
 Package as CLI plus module.
 
 Write DTDs for ruth (trivial) and dirtree (or just put it all in ruth? or remove ruth?).
