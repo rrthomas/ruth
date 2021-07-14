@@ -63,14 +63,14 @@
     "prebuild": "node --print \"'export const programVersion = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "tsc --build",
     "clean": "rm -rf lib tsconfig.tsbuildinfo",
-    "prepack": "npm run clean && npm run build && npm run cookbook",
+    "prepack": "npm run clean && npm run build && npm run docs",
     "test": "npm run build && mocha --forbid-only \"test/**/*.test.ts\"",
     "coverage": "NODE_ENV=coverage nyc --extension .ts npm run test",
     "loc": "npx cloc src/*.ts",
     "prepublishOnly": "git diff --exit-code && git push --all",
     "postpublish": "git push --tags",
     "example": "open-cli file://$(pwd)/test/cookbook-example-website-expected/index/index.html",
-    "cookbook": "./bin/run Cookbook.ruth.md Cookbook.md"
+    "docs": "./bin/run Cookbook.nancy.md Cookbook.md && ./bin/run README.nancy.md README.md"
   },
   "types": "lib/*.d.ts"
 }
