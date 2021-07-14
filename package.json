@@ -1,7 +1,7 @@
 {
-  "name": "ruth",
+  "name": "@sc3d/ruth",
   "description": "Simple XML templating system",
-  "version": "1.0.0",
+  "version": "1.0.0alpha1",
   "author": "Reuben Thomas",
   "bin": {
     "ruth": "./bin/run"
@@ -21,6 +21,7 @@
     "unionfs": "^4.4.0"
   },
   "devDependencies": {
+    "@sc3d/nancy": "^7.0.0-alpha2",
     "@tsconfig/node14": "^1.0.0",
     "@types/argparse": "^2.0.5",
     "@types/chai": "^4.2.16",
@@ -38,9 +39,9 @@
     "eslint": "^7.25.0",
     "linkinator": "^2.13.6",
     "mocha": "^8.3.2",
-    "mocha-reporter": "^0.1.1",
     "nyc": "^15.1.0",
     "open-cli": "^6.0.1",
+    "pre-commit": "^1.2.2",
     "tempy": "^1.0.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
@@ -66,6 +67,8 @@
     "test": "npm run build && mocha --forbid-only \"test/**/*.test.ts\"",
     "coverage": "NODE_ENV=coverage nyc --extension .ts npm run test",
     "loc": "npx cloc src/*.ts",
+    "prepublishOnly": "git diff --exit-code && git push --all",
+    "postpublish": "git push --tags",
     "example": "open-cli file://$(pwd)/test/cookbook-example-website-expected/index/index.html",
     "cookbook": "./bin/run Cookbook.ruth.md Cookbook.md"
   },
