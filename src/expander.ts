@@ -107,7 +107,7 @@ export class Expander {
 
   private expandPath(obj: string): void {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const xQueryVariables: { [id:string]: any } = {
+    const xQueryVariables: {[id: string]: any} = {
       // FIXME: Put these variables in ruth namespace.
       // See https://github.com/FontoXML/fontoxpath/issues/381
       root: this.input,
