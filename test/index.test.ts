@@ -163,6 +163,10 @@ describe('ruth', function () {
     await ruthTest(['data-templating-src'], 'data-templating-expected')
   })
 
+  it('Executable test', async () => {
+    await ruthTest(['executable-src'], 'executable-expected')
+  })
+
   it('Cookbook web site example', async () => {
     await ruthTest(['cookbook-example-website-src'], 'cookbook-example-website-expected')
     await checkLinks('cookbook-example-website-expected', 'index/index.xhtml')
