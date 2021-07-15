@@ -39,10 +39,8 @@ export class Expander {
 
   private xtree: slimdom.Document
 
-  // FIXME: arguments except input should be arguments to expand()
   constructor(
     private input: string,
-    private output: string,
     private inputFs: IFS = realFs,
   ) {
     this.absInput = path.resolve(input)
@@ -149,7 +147,7 @@ export class Expander {
     return node as slimdom.Element
   }
 
-  expand(buildPath = ''): void {
+  expand(output: string, buildPath = ''): void {
     const expandElement = (elem: slimdom.Element): void => {
       const obj = elem.getAttributeNS(dirtree, 'path') as string
       this.xQueryVariables.path = path.dirname(obj)
@@ -167,7 +165,7 @@ export class Expander {
           }
         }
       }
-      const outputPath = path.join(this.output, stripPathPrefix(obj, buildPath))
+      const outputPath = path.join(output, stripPathPrefix(obj, buildPath))
         .replace(Expander.templateRegex, '.')
       const objFullPath = path.join(this.input, obj)
       if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
