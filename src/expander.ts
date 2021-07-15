@@ -77,7 +77,12 @@ export class Expander {
           debug(`reading as XML`)
           const text = this.inputFs.readFileSync(obj, 'utf-8')
           const wrappedText = `<${basename}>${text}</${basename}>`
-          const doc = parseXML(wrappedText, {additionalNamespaces: URI_BY_PREFIX})
+          let doc
+          try {
+            doc = parseXML(wrappedText, {additionalNamespaces: URI_BY_PREFIX})
+          } catch (error) {
+            throw new Error(`error parsing '${obj}': ${error}`)
+          }
           assert(doc.documentElement !== null)
           elem = doc.documentElement
         } else {
@@ -127,7 +132,7 @@ export class Expander {
         try {
           res = evaluateXPathToFirstNode(output, elem, null, xQueryVariables, xQueryOptions) as slimdom.Element
         } catch (error) {
-          throw new Error(`error expanding ${obj}: ${error}`)
+          throw new Error(`error expanding '${obj}': ${error}`)
         }
         if (output === res.outerHTML) {
           return res.innerHTML
