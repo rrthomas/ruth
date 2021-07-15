@@ -124,7 +124,11 @@ export class Expander {
     const fullyExpandNode = (elem: slimdom.Element): string => {
       let res
       for (let output = elem.outerHTML; ; output = res.outerHTML) {
-        res = evaluateXPathToFirstNode(output, elem, null, xQueryVariables, xQueryOptions) as slimdom.Element
+        try {
+          res = evaluateXPathToFirstNode(output, elem, null, xQueryVariables, xQueryOptions) as slimdom.Element
+        } catch (error) {
+          throw new Error(`error expanding ${obj}: ${error}`)
+        }
         if (output === res.outerHTML) {
           return res.innerHTML
         }
