@@ -58,24 +58,32 @@ export class Expander {
       const parsedPath = path.parse(obj)
       const basename = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
       let elem: slimdom.Element
+      debug(`dirTreeToXML: considering ${obj}`)
       if (stats.isDirectory()) {
+        debug(`dirTreeToXML: processing directory`)
         elem = xtree.createElementNS(dirtree, 'directory')
         elem.setAttributeNS(dirtree, 'type', 'directory')
         const dir = this.inputFs.readdirSync(obj, {withFileTypes: true})
           .filter(dirent => dirent.name[0] !== '.')
-        const dirs = dir.filter(dirent => dirent.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))
-        const files = dir.filter(dirent => dirent.isFile()).sort((a, b) => a.name.localeCompare(b.name))
+        const dirs = dir.filter(dirent => dirent.isDirectory())
+          .sort((a, b) => a.name.localeCompare(b.name))
+        const files = dir.filter(dirent => dirent.isFile() || dirent.isSymbolicLink())
+          .sort((a, b) => a.name.localeCompare(b.name))
         dirs.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
         files.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
-      } else if (stats.isFile()) {
+      } else if (stats.isFile() || stats.isSymbolicLink()) {
+        debug(`dirTreeToXML: processing file`)
         if (['.xml', '.xhtml'].includes(parsedPath.ext)) {
+          debug(`reading as XML`)
           const text = this.inputFs.readFileSync(obj, 'utf-8')
           const wrappedText = `<${basename}>${text}</${basename}>`
           const doc = parseXML(wrappedText, {additionalNamespaces: URI_BY_PREFIX})
           assert(doc.documentElement !== null)
           elem = doc.documentElement
         } else {
+          debug(`not reading as XML`)
           if (/.xq[lmy]?/.test(parsedPath.ext)) {
+            debug(`reading as XQuery module`)
             registerXQueryModule(this.inputFs.readFileSync(obj, 'utf-8'));
             // FIXME: Parse namespace declaration in module.
             xQueryOptions.moduleImports = {ruth}
