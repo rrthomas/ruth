@@ -50,7 +50,7 @@ ufs.use(fs)
 
 // Expand input
 try {
-  new Expander(inputDir, args.output, args.path, ufs).expand()
+  new Expander(inputDir, args.output, ufs).expand(args.path)
 } catch (error) {
   if (process.env.DEBUG) {
     throw error

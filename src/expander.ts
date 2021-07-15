@@ -16,11 +16,11 @@ import {
 
 const debug = Debug('ruth')
 
-export function replacePathPrefix(s: string, prefix: string, newPrefix = ''): string {
+export function stripPathPrefix(s: string, prefix: string): string {
   if (s.startsWith(prefix + path.sep)) {
-    return path.join(newPrefix, s.slice(prefix.length + path.sep.length))
+    return path.join(s.slice(prefix.length + path.sep.length))
   } else if (s === prefix) {
-    return newPrefix
+    return ''
   }
   return s
 }
@@ -43,7 +43,6 @@ export class Expander {
   constructor(
     private input: string,
     private output: string,
-    private buildPath = '',
     private inputFs: IFS = realFs,
   ) {
     this.absInput = path.resolve(input)
@@ -91,7 +90,7 @@ export class Expander {
             // FIXME: 'array(xs:string)' unsupported: https://github.com/FontoXML/fontoxpath/issues/360
             ['array(*)'], 'xs:string',
             (_, args: string[]): string => {
-              return execa.sync(path.join(this.absInput, replacePathPrefix(obj, this.input)), args).stdout
+              return execa.sync(path.join(this.absInput, stripPathPrefix(obj, this.input)), args).stdout
             },
           )
           elem = xtree.createElementNS(dirtree, 'executable')
@@ -121,7 +120,7 @@ export class Expander {
       } else {
         throw new Error(`'${obj}' is not a directory or file`)
       }
-      elem.setAttributeNS(dirtree, 'path', replacePathPrefix(obj, this.input))
+      elem.setAttributeNS(dirtree, 'path', stripPathPrefix(obj, this.input))
       elem.setAttributeNS(dirtree, 'name', parsedPath.base)
       return elem
     }
@@ -132,60 +131,61 @@ export class Expander {
     return xtree
   }
 
-  private expandPath(obj: string): void {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const xQueryVariables: {[id: string]: any} = {
-      // FIXME: Put these variables in ruth namespace.
-      // See https://github.com/FontoXML/fontoxpath/issues/381
-      root: this.input,
-      path: replacePathPrefix(path.dirname(obj), this.input)
-        .replace(Expander.templateRegex, '.'),
-    }
-    const index = (filePath: string): slimdom.Node | null => {
-      const components = replacePathPrefix(filePath, path.dirname(this.input)).split(path.sep)
-      const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
-      const query = '/' + xPathComponents.join('/')
-      return evaluateXPathToFirstNode(query, this.xtree, null, xQueryVariables, xQueryOptions)
-    }
-    xQueryVariables['element'] = index(obj)
-    const fullyExpandNode = (elem: slimdom.Element): string => {
-      let res
-      for (let output = elem.outerHTML; ; output = res.outerHTML) {
-        try {
-          res = evaluateXPathToFirstNode(output, elem, null, xQueryVariables, xQueryOptions) as slimdom.Element
-        } catch (error) {
-          throw new Error(`error expanding '${obj}': ${error}`)
-        }
-        if (output === res.outerHTML) {
-          return res.innerHTML
-        }
-      }
-    }
-    const outputPath = replacePathPrefix(obj, path.join(this.input, this.buildPath), this.output)
-      .replace(Expander.templateRegex, '.')
-    // FIXME: don't reread the file system, process the document.
-    const stats = this.inputFs.statSync(obj)
-    if (stats.isDirectory()) {
-      fs.emptyDirSync(outputPath)
-      const dir = this.inputFs.readdirSync(obj, {withFileTypes: true})
-        .filter(dirent => dirent.name[0] !== '.')
-      const dirs = dir.filter(dirent => dirent.isDirectory())
-      const files = dir.filter(dirent => !dirent.isDirectory())
-      dirs.forEach((dirent) => this.expandPath(path.join(obj, dirent.name)))
-      files.forEach((dirent) => this.expandPath(path.join(obj, dirent.name)))
-    } else {
-      if (Expander.templateRegex.exec(obj)) {
-        debug(`Writing expansion of ${obj} to ${outputPath}`)
-        const elem = index(obj) as slimdom.Element
-        fs.writeFileSync(outputPath, fullyExpandNode(elem))
-      } else if (!Expander.noCopyRegex.exec(obj)) {
-        fs.copyFileSync(obj, outputPath)
-      }
-    }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  xQueryVariables: {[id: string]: any} = {
+    // FIXME: Put these variables in ruth namespace.
+    // See https://github.com/FontoXML/fontoxpath/issues/381
+    root: this.input,
   }
 
-  expand(): void {
-    this.expandPath(path.join(this.input, this.buildPath))
+  private index(filePath: string): slimdom.Element {
+    const components = path.join(path.basename(this.input), filePath).split(path.sep)
+    const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
+    const query = '/' + xPathComponents.join('/')
+    const node = evaluateXPathToFirstNode(query, this.xtree, null, this.xQueryVariables, xQueryOptions)
+    if (node === null) {
+      throw new Error(`no such file or directory '${filePath}'`)
+    }
+    return node as slimdom.Element
+  }
+
+  expand(buildPath = ''): void {
+    const expandElement = (elem: slimdom.Element): void => {
+      const obj = elem.getAttributeNS(dirtree, 'path') as string
+      this.xQueryVariables.path = path.dirname(obj)
+      this.xQueryVariables.element = elem
+      const fullyExpandNode = (elem: slimdom.Element): string => {
+        let res
+        for (let output = elem.outerHTML; ; output = res.outerHTML) {
+          try {
+            res = evaluateXPathToFirstNode(output, elem, null, this.xQueryVariables, xQueryOptions) as slimdom.Element
+          } catch (error) {
+            throw new Error(`error expanding '${obj}': ${error}`)
+          }
+          if (output === res.outerHTML) {
+            return res.innerHTML
+          }
+        }
+      }
+      const outputPath = path.join(this.output, stripPathPrefix(obj, buildPath))
+        .replace(Expander.templateRegex, '.')
+      const objFullPath = path.join(this.input, obj)
+      if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
+        fs.emptyDirSync(outputPath)
+        elem.children.filter(child => child.tagName === 'directory').forEach(expandElement)
+        elem.children.filter(child => child.tagName !== 'directory').forEach(expandElement)
+      } else {
+        if (Expander.templateRegex.exec(obj)) {
+          debug(`Writing expansion of ${obj} to ${outputPath}`)
+          const elem = this.index(obj)
+          fs.writeFileSync(outputPath, fullyExpandNode(elem))
+        } else if (!Expander.noCopyRegex.exec(obj)) {
+          fs.copyFileSync(objFullPath, outputPath)
+        }
+      }
+    }
+
+    expandElement(this.index(buildPath))
   }
 }
 
