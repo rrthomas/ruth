@@ -163,6 +163,7 @@ export class Expander {
     }
     const outputPath = replacePathPrefix(obj, path.join(this.input, this.buildPath), this.output)
       .replace(Expander.templateRegex, '.')
+    // FIXME: don't reread the file system, process the document.
     const stats = this.inputFs.statSync(obj)
     if (stats.isDirectory()) {
       fs.emptyDirSync(outputPath)
@@ -176,9 +177,6 @@ export class Expander {
       if (Expander.templateRegex.exec(obj)) {
         debug(`Writing expansion of ${obj} to ${outputPath}`)
         const elem = index(obj) as slimdom.Element
-        if (elem === null) {
-          throw new Error(`path '${obj}' does not exist in the input`)
-        }
         fs.writeFileSync(outputPath, fullyExpandNode(elem))
       } else if (!Expander.noCopyRegex.exec(obj)) {
         fs.copyFileSync(obj, outputPath)
