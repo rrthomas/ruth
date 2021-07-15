@@ -2,6 +2,6 @@ Update documentation.
 
 Package as CLI plus module.
 
-Write DTDs for ruth (trivial) and dirtree (or just put it all in ruth? or remove ruth?).
+Write DTDs for ruth (trivial: only to support namespace) and dirtree (cf. https://metacpan.org/pod/XML::Directory#DTD).
 
 New logo for Ruth!
