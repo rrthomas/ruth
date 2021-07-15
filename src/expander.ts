@@ -2,13 +2,15 @@ import fs from 'fs-extra'
 import path from 'path'
 import Debug from 'debug'
 import assert from 'assert'
+import execa from 'execa'
 import realFs from 'fs'
 import {IFS} from 'unionfs/lib/fs'
 import slimdom from 'slimdom'
 import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
 import {
-  evaluateXPath, evaluateXPathToFirstNode, Options, registerXQueryModule,
+  evaluateXPath, evaluateXPathToFirstNode, Options,
+  registerCustomXPathFunction, registerXQueryModule,
 } from 'fontoxpath'
 
 
@@ -51,6 +53,15 @@ export class Expander {
   private static templateRegex = /\.ruth\.(?=\.[^.]+$)?/
   private static noCopyRegex = /\.in(?=\.[^.]+$)?/
 
+  isExecutable(file: string): boolean {
+    try {
+      this.inputFs.accessSync(file, fs.constants.X_OK)
+      return true
+    } catch {
+      return false
+    }
+  }
+
   private dirTreeToXML(root: string) {
     const xtree = new slimdom.Document()
     const objToNode = (obj: string) => {
@@ -73,7 +84,18 @@ export class Expander {
         files.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
       } else if (stats.isFile() || stats.isSymbolicLink()) {
         debug(`dirTreeToXML: processing file`)
-        if (['.xml', '.xhtml'].includes(parsedPath.ext)) {
+        if (this.isExecutable(obj)) {
+          debug(`creating XQuery function from executable`)
+          registerCustomXPathFunction(
+            {localName: basename.replace(Expander.noCopyRegex, ''), namespaceURI: ruth},
+            // FIXME: 'array(xs:string)' unsupported: https://github.com/FontoXML/fontoxpath/issues/360
+            ['array(*)'], 'xs:string',
+            (_, args: string[]): string => {
+              return execa.sync(path.join(this.absInput, replacePathPrefix(obj, this.input)), args).stdout
+            },
+          )
+          elem = xtree.createElementNS(dirtree, 'executable')
+        } else if (['.xml', '.xhtml'].includes(parsedPath.ext)) {
           debug(`reading as XML`)
           const text = this.inputFs.readFileSync(obj, 'utf-8')
           const wrappedText = `<${basename}>${text}</${basename}>`
