@@ -112,7 +112,7 @@ export class Expander {
       const query = '/' + xPathComponents.join('/')
       return evaluateXPathToFirstNode(query, this.xtree, null, xQueryVariables, xQueryOptions)
     }
-    xQueryVariables['elem'] = index(obj)
+    xQueryVariables['element'] = index(obj)
     const fullyExpandNode = (elem: slimdom.Element): string => {
       let res
       for (let output = elem.outerHTML; ; output = res.outerHTML) {

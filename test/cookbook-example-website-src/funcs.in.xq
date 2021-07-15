@@ -3,7 +3,7 @@ declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/master/dirtree
 declare namespace html = "http://www.w3.org/1999/xhtml";
 
 declare variable $path as xs:string external;
-declare variable $elem external;
+declare variable $element external;
 
 (: Join path segments :)
 (: FIXME: take an array; join any number of segments :)
@@ -25,7 +25,7 @@ declare %public function ruth:relative-path($path_from_root as xs:string) as xs:
 
 (: Like relative-path(), but for an element :)
 declare function ruth:relative-path-to-elem($dest_elem) as xs:string {
-  ruth:path-join(string-join((for $_ in 2 to count($elem/ancestor::dirtree:directory) return '..'), '/'),
+  ruth:path-join(string-join((for $_ in 2 to count($element/ancestor::dirtree:directory) return '..'), '/'),
                  $dest_elem/ancestor::dirtree:directory[1]/@dirtree:path)
 };
 
