@@ -137,6 +137,9 @@ export class Expander {
       if (Expander.templateRegex.exec(obj)) {
         debug(`Writing expansion of ${obj} to ${outputPath}`)
         const elem = index(obj) as slimdom.Element
+        if (elem === null) {
+          throw new Error(`path '${obj}' does not exist in the input`)
+        }
         fs.writeFileSync(outputPath, fullyExpandNode(elem))
       } else if (!Expander.noCopyRegex.exec(obj)) {
         fs.copyFileSync(obj, outputPath)
@@ -145,11 +148,7 @@ export class Expander {
   }
 
   expand(): void {
-    const obj = path.join(this.input, this.buildPath)
-    if (!this.inputFs.existsSync(obj)) {
-      throw new Error(`path '${this.buildPath}' does not exist in '${this.input}'`)
-    }
-    this.expandPath(obj)
+    this.expandPath(path.join(this.input, this.buildPath))
   }
 }
 

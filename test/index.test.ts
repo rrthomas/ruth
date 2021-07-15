@@ -140,7 +140,7 @@ describe('ruth', function () {
       await proc
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('does not exist')
+      expect(error.stderr).to.contain('no such file or directory')
     }
   })
 
