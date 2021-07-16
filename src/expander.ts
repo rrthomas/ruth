@@ -152,7 +152,7 @@ export class Expander {
       const obj = elem.getAttributeNS(dirtree, 'path') as string
       this.xQueryVariables.path = path.dirname(obj)
       this.xQueryVariables.element = elem
-      const fullyExpandNode = (elem: slimdom.Element): string => {
+      const fullyExpandNode = (elem: slimdom.Element): slimdom.Element => {
         let res
         for (let output = elem.outerHTML; ; output = res.outerHTML) {
           try {
@@ -161,7 +161,7 @@ export class Expander {
             throw new Error(`error expanding '${obj}': ${error}`)
           }
           if (output === res.outerHTML) {
-            return res.innerHTML
+            return res
           }
         }
       }
@@ -176,7 +176,7 @@ export class Expander {
         if (Expander.templateRegex.exec(obj)) {
           debug(`Writing expansion of ${obj} to ${outputPath}`)
           const elem = this.index(obj)
-          fs.writeFileSync(outputPath, fullyExpandNode(elem))
+          fs.writeFileSync(outputPath, fullyExpandNode(elem).innerHTML)
         } else if (!Expander.noCopyRegex.exec(obj)) {
           fs.copyFileSync(objFullPath, outputPath)
         }
