@@ -105,8 +105,6 @@ $include{cat,test/page-template-with-date-src/Page.nancy.md}
 ## Adding code examples to Markdown
 [FIXME]: # (Explain the techniques)
 
-Look at the [source](Cookbook.md.in) for the Cookbook to see how ruth is
-used to include example source code, and the output of other commands, such
-as directory listings.
+[FIXME]: # (Give a link showing how ruth is used to include example source code, and the output of other commands, such as directory listings.)
 
 [FIXME]: # (Add an example about uniquely numbered invoices)
