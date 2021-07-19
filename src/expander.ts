@@ -45,6 +45,12 @@ export class Expander {
   ) {
     this.absInput = path.resolve(input)
     this.xtree = this.dirTreeToXML(input)
+    registerCustomXPathFunction(
+      {localName: 'eval', namespaceURI: ruth},
+      ['xs:string'], 'node()',
+      (_, query: string): slimdom.Node | null =>
+        evaluateXPathToFirstNode(query, this.xQueryVariables.element, null, this.xQueryVariables, xQueryOptions) as slimdom.Node,
+    )
   }
 
   private static templateRegex = /\.ruth\.(?=\.[^.]+$)?/

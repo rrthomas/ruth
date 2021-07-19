@@ -4,8 +4,8 @@
 </head>
 <body>
   <ul>
-    <li>Animal: {(ancestor::dirtree:directory/*:data/*:animal)[1]/node()}</li>
-    <li>Bird: {(ancestor::dirtree:directory/*:data/*:bird)[1]/node()}</li>
+    <li>Animal: {ruth:include('data/animal')}</li>
+    <li>Bird: {ruth:include('data/bird')}</li>
   </ul>
 </body>
 </html>

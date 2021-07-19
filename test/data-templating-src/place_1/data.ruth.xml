@@ -2,5 +2,5 @@
   badger
 </animal>
 <bird>
-  {(ancestor::dirtree:directory/*:template/*:bird)[1]/node()}
+  {ruth:include('template/bird')}
 </bird>
