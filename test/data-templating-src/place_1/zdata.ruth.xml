@@ -2,5 +2,5 @@
   badger
 </animal>
 <bird>
-  {ruth:include('template/bird')}
+  {ruth:up-include('*/bird')}
 </bird>

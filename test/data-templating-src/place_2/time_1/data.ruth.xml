@@ -2,5 +2,5 @@
   {ruth:up-include('*/animal')}
 </animal>
 <bird>
-  ostrich
+  ostrich with buried head
 </bird>

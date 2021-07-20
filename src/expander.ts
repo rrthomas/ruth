@@ -53,7 +53,7 @@ export class Expander {
     )
   }
 
-  private static templateRegex = /\.ruth\.(?=\.[^.]+$)?/
+  private static templateRegex = /\.ruth([0-9])*\.(?=\.[^.]+$)?/
   private static noCopyRegex = /\.in(?=\.[^.]+$)?/
 
   isExecutable(file: string): boolean {
@@ -153,13 +153,42 @@ export class Expander {
     return node as slimdom.Element
   }
 
-  expand(output: string, buildPath = ''): void {
+  // Expand breadth-first, updating the tree as we go, so that each
+  // expression is evaluated fully in the context of the file in which it
+  // occurs, and we avoid multiple evaluations of nodes near the root.
+  expand(outputDir: string, buildPath = ''): void {
+    const elemQueues: slimdom.Element[][] = []
     const expandElement = (elem: slimdom.Element): void => {
+      debug(`expandElement ${elem.getAttributeNS(dirtree, 'path')}`)
       const obj = elem.getAttributeNS(dirtree, 'path') as string
-      this.xQueryVariables.path = path.dirname(obj)
-      this.xQueryVariables.element = elem
-      const fullyExpandNode = (elem: slimdom.Element): slimdom.Element => {
-        let res
+      const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
+      if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
+        fs.emptyDirSync(outputPath)
+        elem.children.filter(child => child.tagName !== 'directory').forEach(
+          child => {
+            const file = child.getAttributeNS(dirtree, 'path') as string
+            const match = Expander.templateRegex.exec(file)
+            let queue = 0
+            if (match && match[1] !== undefined) {
+              queue = parseInt(match[1])
+            }
+            debug(`adding ${obj} to queue ${queue}`)
+            if (elemQueues[queue] === undefined) {
+              elemQueues[queue] = []
+            }
+            elemQueues[queue].push(child)
+          }
+        )
+        elem.children.filter(child => child.tagName === 'directory').forEach(expandElement)
+      }
+    }
+    expandElement(this.index(buildPath))
+    const elemQueue = elemQueues.flat()
+    for (const elem of elemQueue) {
+      const obj = elem.getAttributeNS(dirtree, 'path') as string
+      const fullyExpandElement = (elem: slimdom.Element): slimdom.Element => {
+        debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
+        let res = elem
         for (let output = elem.outerHTML; ; output = res.outerHTML) {
           try {
             res = evaluateXPathToFirstNode(output, elem, null, this.xQueryVariables, xQueryOptions) as slimdom.Element
@@ -171,25 +200,21 @@ export class Expander {
           }
         }
       }
-      const outputPath = path.join(output, stripPathPrefix(obj, buildPath))
-        .replace(Expander.templateRegex, '.')
       const objFullPath = path.join(this.input, obj)
-      if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
-        fs.emptyDirSync(outputPath)
-        elem.children.filter(child => child.tagName === 'directory').forEach(expandElement)
-        elem.children.filter(child => child.tagName !== 'directory').forEach(expandElement)
-      } else {
-        if (Expander.templateRegex.exec(obj)) {
-          debug(`Writing expansion of ${obj} to ${outputPath}`)
-          const elem = this.index(obj)
-          fs.writeFileSync(outputPath, fullyExpandNode(elem).innerHTML)
-        } else if (!Expander.noCopyRegex.exec(obj)) {
-          fs.copyFileSync(objFullPath, outputPath)
-        }
+      const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
+        .replace(Expander.templateRegex, '.')
+      this.xQueryVariables.path = path.dirname(obj)
+      this.xQueryVariables.element = elem
+      if (Expander.templateRegex.exec(obj)) {
+        debug(`Writing expansion of ${obj} to ${outputPath}`)
+        const elem = this.index(obj)
+        const expandedElem = fullyExpandElement(elem)
+        elem.replaceWith(expandedElem)
+        fs.writeFileSync(outputPath, expandedElem.innerHTML)
+      } else if (!Expander.noCopyRegex.exec(obj)) {
+        fs.copyFileSync(objFullPath, outputPath)
       }
     }
-
-    expandElement(this.index(buildPath))
   }
 }
 
