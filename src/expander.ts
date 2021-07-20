@@ -200,18 +200,17 @@ export class Expander {
           }
         }
       }
-      const objFullPath = path.join(this.input, obj)
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
         .replace(Expander.templateRegex, '.')
       this.xQueryVariables.path = path.dirname(obj)
       this.xQueryVariables.element = elem
       if (Expander.templateRegex.exec(obj)) {
         debug(`Writing expansion of ${obj} to ${outputPath}`)
-        const elem = this.index(obj)
         const expandedElem = fullyExpandElement(elem)
         elem.replaceWith(expandedElem)
         fs.writeFileSync(outputPath, expandedElem.innerHTML)
       } else if (!Expander.noCopyRegex.exec(obj)) {
+        const objFullPath = path.join(this.input, obj)
         fs.copyFileSync(objFullPath, outputPath)
       }
     }
