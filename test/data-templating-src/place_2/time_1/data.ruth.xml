@@ -1,6 +1,2 @@
-<animal>
-  {ruth:up-include('*/animal')}
-</animal>
-<bird>
-  ostrich with buried head
-</bird>
+<animal>{ruth:up-include('*/animal')}</animal>
+<bird>ostrich with buried head</bird>
