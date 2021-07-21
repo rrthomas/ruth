@@ -24,13 +24,13 @@ declare %public function ruth:relative-path($path_from_root as xs:string) as xs:
 };
 
 (: Like relative-path(), but for an element :)
-declare function ruth:relative-path-to-elem($dest_elem) as xs:string {
+declare function ruth:relative-path-to-elem($dest_elem as element()) as xs:string {
   ruth:path-join(string-join((for $_ in 2 to count($element/ancestor::dirtree:directory) return '..'), '/'),
                  $dest_elem/ancestor::dirtree:directory[1]/@dirtree:path)
 };
 
 (: Compute a breadcrumb trail to the given node :)
-declare %public function ruth:breadcrumb($node) {
+declare %public function ruth:breadcrumb($node as node()) as node() {
   <html:ul>
     {for $title in reverse($node/ancestor::dirtree:directory/*:title)
      return <html:li>
