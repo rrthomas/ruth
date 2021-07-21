@@ -1,2 +1,2 @@
-<animal>{ruth:up-include('*/animal')}</animal>
-<bird>{ruth:up-include('*/bird')}</bird>
+<animal>{ruth:data('animal')}</animal>
+<bird>{ruth:data('bird')}</bird>
