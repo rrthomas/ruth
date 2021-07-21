@@ -182,4 +182,13 @@ describe('ruth', function () {
     await ruthTest(['cookbook-example-website-src'], 'cookbook-example-website-expected')
     await checkLinks('cookbook-example-website-expected', 'index/index.xhtml')
   })
+
+  it('Non-termination test', async() => {
+    try {
+      await runRuth(['non-terminating', 'dummy'])
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      expect(error.stderr).to.contain('did not terminate')
+    }
+  })
 })
