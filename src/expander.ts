@@ -114,9 +114,20 @@ export class Expander {
           debug(`not reading as XML`)
           if (/.xq[lmy]?/.test(parsedPath.ext)) {
             debug(`reading as XQuery module`)
-            registerXQueryModule(this.inputFs.readFileSync(obj, 'utf-8'));
-            // FIXME: Parse namespace declaration in module.
-            xQueryOptions.moduleImports = {ruth}
+            const module = this.inputFs.readFileSync(obj, 'utf-8')
+            registerXQueryModule(module)
+            const matches = /^\s*module\s+namespace\s+([^= ]+)\s*=\s*"([^"]+)"\s*;\s*$/m.exec(module)
+            if (matches !== null) {
+              if (xQueryOptions.moduleImports === undefined) {
+                xQueryOptions.moduleImports = {}
+              }
+              const prefix = matches[1]
+              const url = matches[2]
+              xQueryOptions.moduleImports[prefix] = url
+              debug(`registered prefix ${prefix} for URL ${url}`)
+            } else {
+              debug('no module declaration')
+            }
           }
           elem = xtree.createElementNS(dirtree, 'file')
         }
