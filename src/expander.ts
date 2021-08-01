@@ -53,8 +53,8 @@ export class Expander {
     )
   }
 
-  private static templateRegex = /\.ruth([0-9])*\.(?=\.[^.]+$)?/
-  private static noCopyRegex = /\.in(?=\.[^.]+$)?/
+  private static templateRegex = /\.ruth([0-9])*(?=\.[^.]+$|$)/
+  private static noCopyRegex = /\.in(?=\.[^.]+$|$)/
 
   isExecutable(file: string): boolean {
     try {
@@ -215,7 +215,7 @@ export class Expander {
         throw new Error(`error expanding '${obj}': did not terminate after ${maxIterations} expansions`)
       }
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
-        .replace(Expander.templateRegex, '.')
+        .replace(Expander.templateRegex, '')
       this.xQueryVariables.path = path.dirname(obj)
       this.xQueryVariables.element = elem
       if (Expander.templateRegex.exec(obj)) {
