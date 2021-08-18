@@ -104,8 +104,9 @@ describe('ruth', function () {
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       expect(error.stderr).to.contain('is not a directory or file')
+    } finally {
+      server.close()
     }
-    server.close()
   })
 
   it('Invalid XQuery should cause an error', async () => {
@@ -183,7 +184,7 @@ describe('ruth', function () {
     await checkLinks('cookbook-example-website-expected', 'index/index.xhtml')
   })
 
-  it('Non-termination test', async() => {
+  it('Non-termination test', async () => {
     try {
       await runRuth(['non-terminating', 'dummy'])
     } catch (error) {
