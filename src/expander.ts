@@ -48,8 +48,13 @@ export class Expander {
     registerCustomXPathFunction(
       {localName: 'eval', namespaceURI: ruth},
       ['xs:string'], 'node()',
-      (_, query: string): slimdom.Node | null =>
-        evaluateXPathToFirstNode(query, this.xQueryVariables.element, null, this.xQueryVariables, xQueryOptions) as slimdom.Node,
+      (_, query: string): slimdom.Node => {
+        const res = evaluateXPathToFirstNode(query, this.xQueryVariables.element, null, this.xQueryVariables, xQueryOptions) as slimdom.Node
+        if (res === null) {
+          throw new Error(`eval: '${query}' does not give a result`)
+        }
+        return res
+      },
     )
   }
 
