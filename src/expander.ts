@@ -183,7 +183,7 @@ export class Expander {
             if (match && match[1] !== undefined) {
               queue = parseInt(match[1])
             }
-            debug(`adding ${obj} to queue ${queue}`)
+            debug(`adding '${file}' to queue ${queue}`)
             if (elemQueues[queue] === undefined) {
               elemQueues[queue] = []
             }
