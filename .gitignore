@@ -1,6 +1,5 @@
 /.nyc_output
 /dist
-/lib
 /package-lock.json
 node_modules
 tsconfig.tsbuildinfo

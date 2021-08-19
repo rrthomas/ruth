@@ -56,6 +56,7 @@ export class Expander {
         return res
       },
     )
+    this.loadModule(path.join(__dirname, 'ruth.xq'))
   }
 
   private static templateRegex = /\.ruth([0-9])*(?=\.[^.]+$|$)/
@@ -67,6 +68,23 @@ export class Expander {
       return true
     } catch {
       return false
+    }
+  }
+
+  private loadModule(file: string) {
+    const module = this.inputFs.readFileSync(file, 'utf-8')
+    registerXQueryModule(module)
+    const matches = /^\s*module\s+namespace\s+([^= ]+)\s*=\s*"([^"]+)"\s*;\s*$/m.exec(module)
+    if (matches !== null) {
+      if (xQueryOptions.moduleImports === undefined) {
+        xQueryOptions.moduleImports = {}
+      }
+      const prefix = matches[1]
+      const url = matches[2]
+      xQueryOptions.moduleImports[prefix] = url
+      debug(`registered prefix ${prefix} for URL ${url}`)
+    } else {
+      debug('no module declaration')
     }
   }
 
@@ -119,20 +137,7 @@ export class Expander {
           debug(`not reading as XML`)
           if (/.xq[lmy]?/.test(parsedPath.ext)) {
             debug(`reading as XQuery module`)
-            const module = this.inputFs.readFileSync(obj, 'utf-8')
-            registerXQueryModule(module)
-            const matches = /^\s*module\s+namespace\s+([^= ]+)\s*=\s*"([^"]+)"\s*;\s*$/m.exec(module)
-            if (matches !== null) {
-              if (xQueryOptions.moduleImports === undefined) {
-                xQueryOptions.moduleImports = {}
-              }
-              const prefix = matches[1]
-              const url = matches[2]
-              xQueryOptions.moduleImports[prefix] = url
-              debug(`registered prefix ${prefix} for URL ${url}`)
-            } else {
-              debug('no module declaration')
-            }
+            this.loadModule(obj)
           }
           elem = xtree.createElementNS(dirtree, 'file')
         }
