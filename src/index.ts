@@ -45,6 +45,8 @@ export class Expander {
   ) {
     this.absInput = path.resolve(input)
     this.xtree = this.dirTreeToXML(input)
+    // FIXME: The next line only works once, so can only use Expander once.
+    // See https://github.com/FontoXML/fontoxpath/issues/406
     registerCustomXPathFunction(
       {localName: 'eval', namespaceURI: ruth},
       ['xs:string'], 'node()',
