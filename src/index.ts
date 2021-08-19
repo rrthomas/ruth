@@ -62,7 +62,7 @@ export class Expander {
   private static templateRegex = /\.ruth([0-9])*(?=\.[^.]+$|$)/
   private static noCopyRegex = /\.in(?=\.[^.]+$|$)/
 
-  isExecutable(file: string): boolean {
+  private isExecutable(file: string): boolean {
     try {
       this.inputFs.accessSync(file, fs.constants.X_OK)
       return true
