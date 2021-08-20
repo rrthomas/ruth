@@ -1,38 +1,79 @@
-# ruth Cookbook
+# Ruth Cookbook
 
 See the [README](README.md) for installation and usage. The rest of this
 document shows examples of its use.
 
 ## Generating a web site <a name="website-example"></a>
 
-[FIXME]: # (Use a diagram below)
-Suppose a web site has the following page design, from top to bottom: logo,
-breadcrumb trail, navigation menu, page body.
+Suppose a web site has the following page design:
+
+![from top to bottom: logo, breadcrumb trail, navigation menu, page body](website.svg)
 
 Most of the elements are the same on each page, but the breadcrumb trail has
 to show the canonical path to each page, and the logo is bigger on the home
-page, which is the default `index.html`.
+page, `index/index.xhtml`.
 
 Suppose further that the web site has the following structure, where each
 line corresponds to a page:
 
 ```
  ├── Home page
-$paste{sh,-c,build-aux/dirtree test/cookbook-example-website-expected | sed -e 's/\.html//g' | grep -v index}
+ ├── People
+ │   ├── Hilary Pilary
+ │   ├── Jo Bloggs
+ ├── Places
+ │   ├── Timbuktu
+ │   ├── Vladivostok
 ```
 
-The basic page template looks something like this:
+The basic page template looks like this:
 
 ```
-$paste{cat,test/cookbook-example-website-src/template.in.html}
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <link rel="stylesheet" type="text/css" href="{ruth:relative-path('style.css')}"/>
+    <title>{ruth:include("*:title")}</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="logo">{ruth:include("*:logo")}</div>
+      <div class="breadcrumb"><div class="breadcrumb-content">{cookbook:breadcrumb(.)}</div></div>
+    </div>
+    <div class="wrapper">
+      <div class="menu">{ruth:include("*:menu")}</div>
+      <div class="main">{ruth:include("*:main")}</div>
+    </div>
+  </body>
+</html>
 ```
 
 Making the menu an included file is not strictly necessary, but makes the
 template easier to read. The pages will be laid out as follows:
 
-
 ```
-$paste{build-aux/dirtree,test/cookbook-example-website-expected}
+ ├── People
+ │   ├── Hilary Pilary
+ │   │   └── index
+ │   │       └── index.xhtml
+ │   ├── Jo Bloggs
+ │   │   └── index
+ │   │       └── index.xhtml
+ │   └── index
+ │       └── index.xhtml
+ ├── Places
+ │   ├── Timbuktu
+ │   │   └── index
+ │   │       └── index.xhtml
+ │   ├── Vladivostok
+ │   │   └── index
+ │   │       └── index.xhtml
+ │   └── index
+ │       └── index.xhtml
+ ├── index
+ │   └── index.xhtml
+ ├── ruth-small.png
+ ├── ruth-tiny.png
+ └── style.css
 ```
 
 The corresponding source files will be laid out as follows. This may look a
@@ -40,71 +81,99 @@ little confusing at first, but note the similarity to the HTML pages, and
 hold on for the explanation!
 
 ```
-$paste{build-aux/dirtree,test/cookbook-example-website-src}
+ ├── People
+ │   ├── Hilary Pilary
+ │   │   ├── index
+ │   │   │   └── index.ruth.xhtml
+ │   │   ├── main.in.xhtml
+ │   │   └── title.in.xhtml
+ │   ├── Jo Bloggs
+ │   │   ├── index
+ │   │   │   └── index.ruth.xhtml
+ │   │   ├── main.in.xhtml
+ │   │   └── title.in.xhtml
+ │   ├── index
+ │   │   ├── index.ruth.xhtml
+ │   │   └── main.in.xhtml
+ │   └── title.in.xhtml
+ ├── Places
+ │   ├── Timbuktu
+ │   │   ├── index
+ │   │   │   └── index.ruth.xhtml
+ │   │   ├── main.in.xhtml
+ │   │   └── title.in.xhtml
+ │   ├── Vladivostok
+ │   │   ├── index
+ │   │   │   └── index.ruth.xhtml
+ │   │   ├── main.in.xhtml
+ │   │   └── title.in.xhtml
+ │   ├── index
+ │   │   ├── index.ruth.xhtml
+ │   │   └── main.in.xhtml
+ │   └── title.in.xhtml
+ ├── funcs.in.xq
+ ├── index
+ │   ├── index.ruth.xhtml
+ │   ├── logo.in.xhtml
+ │   └── main.in.xhtml
+ ├── logo.in.xhtml
+ ├── menu.in.xhtml
+ ├── ruth-small.png
+ ├── ruth-tiny.png
+ ├── style.css
+ ├── template.in.xhtml
+ └── title.in.xhtml
 ```
 
 Note that there is only one menu fragment (the main menu is the same for
-every page), while each section has its own breadcrumb trail
-(`breadcrumb.html`), and each page has its own content
-(`main.html`).
+every page), but each page has its own content (`main.in.xhtml`).
 
-Now consider how ruth builds the page whose URL is
-`places/vladivostok.html`. Assume the source files are in the directory
-`source`. According to the rules given in the
-[Operation](README.md#operation) section of the manual, ruth will look
-first for files in `source/places/vladivostok.html`, then in
-`source/places`, and finally in `source`. Hence, the actual list of files
-used to assemble the page is:
+Now consider how Ruth builds the page whose URL is
+`Places/Vladivostok/index/index.xhtml`. Assume the source files are in the
+directory `source`. This page is built from
+`source/Places/Vladivostok/index/index.ruth.xhtml`, whose contents is
+`{ruth:include("*:template")}`.
 
-[FIXME]: # (Generate this list)
-* `source/template.html`
-* `source/logo.html`
-* `source/places/breadcrumb.html`
-* `source/menu.html`
-* `source/places/vladivostok.html/main.html`
+The custom function `ruth:include("foo")` copies the contents of the
+“nearest” file with basename “foo” to the file from which the function is
+called.
 
-For the site’s index page, the file `index.html/logo.html` will be used
-for the logo fragment, which can refer to the larger graphic desired.
+For the site’s index page, the file `index/logo.in.xhtml` will be used for the
+logo fragment, which can refer to the larger graphic desired.
 
-The `breadcrumb.html` fragments, except for the top-level one, contain the
-command
-
-    \$include{breadcrumb.html}
-    
-This makes ruth start at the next directory up from the fragment. So for
-example, when expanding `source/places/breadcrumb.html`, it starts looking
-at `source/breadcrumb.html`. This means that the breadcrumb trail can be
-defined recursively: each `breadcrumb.html` fragment includes all those
-above it in the source tree.
-
-This scheme, though simple, is surprisingly flexible; this simple example
-has covered all the standard techniques for ruth’s use.
+The breadcrumb trail is produced by the custom function
+`cookbook:breadcrumb()`, defined in
+`test/cookbook-example-website-src/funcs.in.xq`, with some help from CSS.
 
 ### Building the site
 
-The site is built by running ruth on each page. After building
-the pages, static assets are copied into the built site.
+The site is built by running Ruth on the source directory:
+
+```
+ruth test/cookbook-example-website-src site
+```
 
 [FIXME]: # (Explain how to serve the web site dynamically.)
 
-## Adding a date to a template using a program <a name="date-example"></a>
+## Adding a datestamp using a program <a name="date-example"></a>
 
-Given a simple page template, a timestamp can be added by using the `date`
-command with `\$paste`:
-
-```
-$paste{sh,-c,sed -e 's|\,--date=2016/10/12||' < test/page-template-with-date-src/Page.nancy.md}
-```
-
-This gives a result looking something like:
+Put the the following script that wraps the `date` command in a file called
+`date-yyyymmdd.in`:
 
 ```
-$include{cat,test/page-template-with-date-src/Page.nancy.md}
+#!/bin/sh
+date +%Y-%m-%d "--date=$1"
 ```
 
-## Adding code examples to Markdown
-[FIXME]: # (Explain the techniques)
+Then a datestamp can be added to a templated file by calling the
+corresponding custom function:
 
-[FIXME]: # (Give a link showing how ruth is used to include example source code, and the output of other commands, such as directory listings.)
+```
+{ruth:date-yyyymmdd('2016/10/12')}
+```
 
-[FIXME]: # (Add an example about uniquely numbered invoices)
+This gives the result:
+
+```
+2016-10-12
+```

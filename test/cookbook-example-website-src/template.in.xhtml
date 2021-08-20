@@ -1,16 +1,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <link rel="stylesheet" type="text/css" href="{ruth:relative-path('style.css')}"/>
-    <title>{(ancestor::dirtree:directory/*:title)[1]/node()}</title>
+    <title>{ruth:include("*:title")}</title>
   </head>
   <body>
     <div class="wrapper">
-      <div class="logo">{(ancestor::dirtree:directory/*:logo)[1]/node()}</div>
-      <div class="breadcrumb"><div class="breadcrumb-content">{ruth:breadcrumb(.)}</div></div>
+      <div class="logo">{ruth:include("*:logo")}</div>
+      <div class="breadcrumb"><div class="breadcrumb-content">{cookbook:breadcrumb(.)}</div></div>
     </div>
     <div class="wrapper">
-      <div class="menu">{(ancestor::dirtree:directory/*:menu)[1]/node()}</div>
-      <div class="main">{(ancestor::dirtree:directory/*:main)[1]/node()}</div>
+      <div class="menu">{ruth:include("*:menu")}</div>
+      <div class="main">{ruth:include("*:main")}</div>
     </div>
   </body>
 </html>

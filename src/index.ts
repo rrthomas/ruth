@@ -44,6 +44,7 @@ export class Expander {
     private inputFs: IFS = realFs,
   ) {
     this.absInput = path.resolve(input)
+    this.loadModule(path.join(__dirname, 'ruth.xq'))
     this.xtree = this.dirTreeToXML(input)
     // FIXME: The next line only works once, so can only use Expander once.
     // See https://github.com/FontoXML/fontoxpath/issues/406
@@ -58,7 +59,6 @@ export class Expander {
         return res
       },
     )
-    this.loadModule(path.join(__dirname, 'ruth.xq'))
   }
 
   private static templateRegex = /\.ruth([0-9])*(?=\.[^.]+$|$)/

@@ -5,29 +5,31 @@
 © 2002–2021 Reuben Thomas <rrt@sc3d.org>  
 <https://github.com/rrthomas/ruth>
 
-Ruth is a simple macro processor that copies a file or directory, filling in
-templates as it goes. It has just one non-trivial construct:
-context-dependent file inclusion. A file can either be included literally,
-or run as a command and its output included.
+Ruth is a simple [XQuery]-based XML templating system, based on the plain
+text-oriented [Nancy]. Ruth reads a file or directory into an XML document;
+XML files become subdocuments. It then produces a copy of the original file
+or directory, executing embedded XQuery queries against the constructed XML
+document. Custom XQuery functions and external programs can be used.
 
-Ruth was originally designed to build simple static web sites, but can be
-used for all sorts of other tasks, similar to more complicated systems like
-[AutoGen] and [TXR].
-
-[AutoGen]: http://autogen.sourceforge.net
-[TXR]: http://www.nongnu.org/txr
+[XQuery]: https://www.w3.org/TR/xquery/
+[Nancy]: https://github.com/rrthomas/nancy
 
 Ruth is free software, licensed under the GNU GPL version 3 (or, at your
 option, any later version), and written in TypeScript.
 
-See the [Cookbook](Cookbook.md) for instructions and examples.
+Ruth uses [fontoxpath] as its XQuery implementation. fontoxpath implements a
+subset of XQuery 3.1.
+
+[fontoxpath]: https://www.npmjs.com/package/fontoxpath
+
+See the [Cookbook](Cookbook.md) for examples.
 
 Please send questions, comments, and bug reports to the maintainer, or
 report them on the project’s web page (see above for addresses).
 
 ## Installation
 
-It's easiest to install Ruth with npm:
+Install Ruth with npm (part of [Node](https://nodejs.org/en/)):
 
 ```
 $ npm install -g @sc3d/ruth
@@ -36,124 +38,80 @@ $ npm install -g @sc3d/ruth
 ## Invocation
 
 ```
-$paste{./bin/run,--help}
+$paste{/bin/sh,-c,./bin/run --help | sed -e 's/usage: run/ruth/'}
 ```
 
 ## Operation <a name="operation"></a>
 
-Ruth builds a path given a template as follows:
+Ruth starts by combining the list of directories given as its _input path_.
+If the same file or directory exists in more than one of the directories on
+the input path, the left-most takes precedence.
 
-1. Set the initial text to `\$include{TEMPLATE}`, unless `TEMPLATE` is `-`,
-   in which case set the initial text to the contents of standard input.
-2. Scan the text for commands. Expand any arguments to the command, run each
-   command, and replace the command by the result.
-3. Output the resultant text, eliding any final newline. (This last part may
-   look tricky, but it almost always does what you want, and makes
-   `\$include` behave better in various contexts.)
+Ruth then creates the output directory, deleting its contents if it already
+existed.
 
-A command takes the form `\$COMMAND` or `\$COMMAND{ARGUMENT, ...}`. To
-prevent a comma from being interpreted as an argument separator, put a
-backslash in front of it:
+Next, Ruth traverses the resulting directory tree, or the subdirectory given
+by the `--path` argument, if any, in bread-first order.
 
-    \$include{cat,I\,Robot.txt,3 Rules of Robotics.txt}
+For each file, Ruth looks at its name, and:
 
-This will run the command as if it had been typed:
-
-    cat "I, Robot.txt" "3 Rules of Robotics.txt"
-
-Similarly, a command can be treated as literal text by putting a backslash in front of it:
-
-    Now I can talk about \\$paste.
-
-This will output:
-
-    Now I can talk about \$paste.
-
-Ruth recognises these commands:
-
-* *`\$include{FILE}`* Look up the given source file; read its contents, then
-  expand them (that is, execute any commands found therein) and return the
++ If the name contains the suffix `.ruth`, the file’s contents is expanded
+  (see below), and the result is then written to a file of the same name,
+  but with the `.ruth` suffix removed, in the corresponding place in the
+  output directory. The working XML document is also updated with the
   result.
-* *`\$paste{FILE}`* Like `\$include`, but does not expand its result before
-  returning it.
-* *`\$path`* Return the `PATH` argument.
-* *`\$root`* Return the root directory.
++ Else, if the name contains the suffix `.in`, the file is skipped. (It may
+  be used by macros in other files.)
++ Otherwise, the file is copied verbatim to the corresponding place in the
+  output directory.
 
-The last two commands are mostly useful as arguments to `\$include` and
-`\$paste`.
+The special suffixes need not end the file name; they can be used as infixes
+before the file type suffix.
 
-To find the source file `FILE` specified by a `\$include{FILE}` command,
-Ruth proceeds thus:
+### Template expansion
 
-1. See whether `ROOT/PATH/FILE` is a file (or a symbolic link to a file). If
-   so, return the file path.
-2. If not, remove the last directory from `PATH` and try again, until `PATH`
-   is empty.
-3. Try looking for `ROOT/FILE`.
+Ruth expands a template file as follows by executing it as an XQuery
+expression. The result is re-executed, to allow for expansions that
+themselves return XQuery expressions, up to 8 times. If there are still
+unevaluated XQuery expressions in the file contents after this, an error is
+raised.
 
-If no file is found, Ruth stops with an error message.
+The use of XQuery is beyond the scope of this manual; see the
+[XQuery specification][XQuery] and [fontoxpath documentation][fontoxpath]
+for more details.
 
-For example, if the root directory is `/dir`, `PATH` is `foo/bar/baz`, and
-Ruth is trying to find `file.html`, it will try the following files, in
-order:
+Ruth provides a single built-in custom function, `ruth:eval()`, which
+evaluates the given XQuery expression, and returns the first matching node,
+or, if there is none, raises an error.
 
-1. `/dir/foo/bar/baz/file.html`
-2. `/dir/foo/bar/file.html`
-3. `/dir/foo/file.html`
-4. `/dir/file.html`
-
-There is one exception to this rule: if the file being searched for has the
-same name as the file currently being expanded, then the search starts at
-the next directory up. This avoids an endless loop, and can also be useful.
+Ruth also loads a file of other XQuery functions from `lib/ruth.xq`. See
+that file for documentation.
 
 See the [website example](Cookbook.md#website-example) in the Cookbook for a
-worked example.
+worked example of using Ruth to template a website.
 
 ### Running other programs
 
-In addition to the rules given above, Ruth also allows `\$include` and
-`\$paste` to take their input from programs. This can be useful in a variety
-of ways: to insert the current date or time, to make a calculation, or to
-convert a file to a different format.
-
-Ruth can run a program in two ways:
-
-1. If a file found by an `\$include` or `\$paste` command has the “execute”
-   permission, it is run.
-
-2. If no file of the given name can be found using the rules in the previous
-   section, Ruth looks for an executable file on the user’s `PATH` (the
-   list of directories specified by the `PATH` environment variable), as if
-   with the `which` command. If one is found, it is run. (This possibility
-   is not mentioned in the Cookbook, but it is not very likely that
-   Ruth will find a file called `file.html` somewhere on the user’s `PATH`,
-   since executables don’t normally end in `.html`.)
-
-In either case, arguments may be passed to the program: use `\$include{FILE,
-ARGUMENT_1, ARGUMENT_2, …}`, or the equivalent for `\$paste`.
-
-For example, to insert the current date:
-
-    \$paste{date,+%Y-%m-%d}
-
-See the [date example](Cookbook.md#date-example) in the Cookbook for more
-detail.
-
-When commands that run programs are nested inside each other, the order in
-which they are run may matter. Ruth only guarantees that if one command is
-nested inside another, the inner command will be processed first. There is
-no guarantee of the order in which commands at the same nesting level are
-run.
-
-[FIXME]: # (Add example where this is significant)
+An executable file in the input is turned into a custom XQuery function in
+the `ruth` namespace. Any `.in` suffix is stripped out. So for example,
+`foo.in` becomes a function `ruth:foo()`. The custom functions take a sequence
+of strings, which are  provided to the program as its command-line arguments,
+and returns the program's standard output as a string.
 
 ## Development
 
-Check out the git repository and download the dependencies with:
+Check out the git repository and download dependencies with:
 
-    git clone https://github.com/rrthomas/ruth
-    npm install
+```
+git clone https://github.com/rrthomas/ruth
+npm install
+```
+
+In addition, [agrep](https://www.tgries.de/agrep/) is required to build the
+documentation.
 
 To run the tests:
 
-    npm test
+```
+npm test
+```
