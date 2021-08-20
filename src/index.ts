@@ -114,9 +114,8 @@ export class Expander {
           debug(`creating XQuery function from executable`)
           registerCustomXPathFunction(
             {localName: basename.replace(Expander.noCopyRegex, ''), namespaceURI: ruth},
-            // FIXME: 'array(xs:string)' unsupported: https://github.com/FontoXML/fontoxpath/issues/360
-            ['array(*)'], 'xs:string',
-            (_, args: string[]): string => {
+            ['xs:string*'], 'xs:string',
+            (_, ...args: string[]): string => {
               return execa.sync(path.join(this.absInput, stripPathPrefix(obj, this.input)), args).stdout
             },
           )
