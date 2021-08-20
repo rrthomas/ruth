@@ -43,6 +43,7 @@ export class Expander {
     private input: string,
     private inputFs: IFS = realFs,
     private xmlExtensions: string[] = [],
+    private maxIterations = 8,
   ) {
     this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
     this.absInput = path.resolve(input)
@@ -210,8 +211,7 @@ export class Expander {
       const fullyExpandElement = (elem: slimdom.Element): slimdom.Element => {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
         let res = elem
-        const maxIterations = 8
-        for (let output = elem.outerHTML, i = 0; i < maxIterations; i += 1) {
+        for (let output = elem.outerHTML, i = 0; i < this.maxIterations; i += 1) {
           try {
             res = evaluateXPathToFirstNode(output, elem, null, this.xQueryVariables, xQueryOptions) as slimdom.Element
           } catch (error) {
@@ -222,7 +222,7 @@ export class Expander {
           }
           output = res.outerHTML
         }
-        throw new Error(`error expanding '${obj}': did not terminate after ${maxIterations} expansions`)
+        throw new Error(`error expanding '${obj}': did not terminate after ${this.maxIterations} expansions`)
       }
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
         .replace(Expander.templateRegex, '')
