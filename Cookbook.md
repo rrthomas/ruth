@@ -177,3 +177,5 @@ This gives the result:
 ```
 2016-10-12
 ```
+
+[FIXME]: # (Add a section on data templating, using the corresponding example.)

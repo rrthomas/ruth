@@ -93,3 +93,5 @@ This gives the result:
 ```
 $include{cat,test/executable-expected/Page.xml}
 ```
+
+[FIXME]: # (Add a section on data templating, using the corresponding example.)
