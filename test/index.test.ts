@@ -45,6 +45,17 @@ async function ruthTest(args: string[], expected: string) {
   fs.rmdirSync(outputDir, {recursive: true})
 }
 
+async function failingRuthTest(args: string[], expected: string) {
+  try {
+    await runRuth(args)
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(error.stderr).to.contain(expected)
+    return
+  }
+  throw new Error('test passed unexpectedly')
+}
+
 async function checkLinks(root: string, start: string) {
   const results = await check({path: start, serverRoot: root})
   if (!results.passed) {
@@ -69,91 +80,86 @@ describe('ruth', function () {
   })
 
   it('Missing command-line argument should cause an error', async () => {
-    try {
-      await runRuth(['dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('the following arguments are required')
-    }
+    await failingRuthTest(
+      ['dummy'],
+      'the following arguments are required',
+    )
   })
 
   it('--foo should cause an error', async () => {
-    try {
-      await runRuth(['--foo', 'a', 'b'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('unrecognized arguments: --foo')
-    }
+    await failingRuthTest(
+      ['--foo', 'a', 'b'],
+      'unrecognized arguments: --foo',
+    )
   })
 
   it('Running on a non-existent path should cause an error', async () => {
-    try {
-      await runRuth(['a', 'b'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('no such file or directory')
-    }
+    await failingRuthTest(
+      ['a', 'b'],
+      'no such file or directory',
+    )
   })
 
   it('Running on something not a directory or file should cause an error', async () => {
     const server = net.createServer()
     const tempFile = tempy.file()
     server.listen(tempFile)
-    try {
-      await runRuth([`${tempFile}`, 'dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('is not a directory or file')
-    } finally {
-      server.close()
-    }
+    await failingRuthTest(
+      [`${tempFile}`, 'dummy'],
+      'is not a directory or file',
+    )
+    server.close()
   })
 
   it('Invalid XQuery should cause an error', async () => {
-    try {
-      await runRuth(['xquery-error', 'dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('missing semicolon at end of function')
-    }
+    await failingRuthTest(
+      ['xquery-error', 'dummy'],
+      'missing semicolon at end of function',
+    )
   })
 
   it('Invalid XQuery should cause an error (DEBUG=yes coverage)', async () => {
     process.env.DEBUG = 'yes'
-    try {
-      await runRuth(['xquery-error', 'dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('missing semicolon at end of function')
-    }
+    await failingRuthTest(
+      ['xquery-error', 'dummy'],
+      'missing semicolon at end of function',
+    )
     delete process.env.DEBUG
   })
 
   it('Incorrect XQuery should cause an error', async () => {
-    try {
-      await runRuth(['incorrect-xquery', 'dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('XPST0017')
-    }
+    await failingRuthTest(
+      ['incorrect-xquery', 'dummy'],
+      'XPST0017',
+    )
+  })
+
+  it('XQuery that gives no results should cause an error', async () => {
+    await failingRuthTest(
+      ['xquery-no-results', 'dummy'],
+      "'foo' does not give a result",
+    )
+  })
+
+  it('An XQuery module with no module declaration should give an error', async () => {
+    await failingRuthTest(
+      ['xquery-module-no-declaration', 'dummy'],
+      'XQuery module must be declared in a library module',
+    )
   })
 
   it('Invalid XML should cause an error', async () => {
-    try {
-      await runRuth(['invalid-xml', 'dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('error parsing')
-    }
+    await failingRuthTest(
+      ['invalid-xml', 'dummy'],
+      'error parsing',
+    )
   })
 
   it('Non-existent --path should cause an error', async () => {
-    try {
-      await runRuth(['--path', 'nonexistent', 'webpage-src', 'dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('no such file or directory')
-    }
+    await failingRuthTest(
+      ['--path', 'nonexistent', 'webpage-src', 'dummy'],
+      'no such file or directory',
+    )
   })
 
   it('Whole-tree test', async () => {
@@ -185,11 +191,9 @@ describe('ruth', function () {
   })
 
   it('Non-termination test', async () => {
-    try {
-      await runRuth(['non-terminating', 'dummy'])
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(error.stderr).to.contain('did not terminate')
-    }
+    await failingRuthTest(
+      ['non-terminating', 'dummy'],
+      'did not terminate',
+    )
   })
 })

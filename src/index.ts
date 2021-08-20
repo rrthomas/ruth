@@ -80,17 +80,16 @@ export class Expander {
     const module = this.inputFs.readFileSync(file, 'utf-8')
     registerXQueryModule(module)
     const matches = /^\s*module\s+namespace\s+([^= ]+)\s*=\s*"([^"]+)"\s*;\s*$/m.exec(module)
-    if (matches !== null) {
-      if (xQueryOptions.moduleImports === undefined) {
-        xQueryOptions.moduleImports = {}
-      }
-      const prefix = matches[1]
-      const url = matches[2]
-      xQueryOptions.moduleImports[prefix] = url
-      debug(`registered prefix ${prefix} for URL ${url}`)
-    } else {
-      debug('no module declaration')
+    // If there was no module declaration, registerXQueryModule would have errored,
+    // so if 'matches' is null, the parser (regex above) needs improving.
+    assert(matches !== null)
+    if (xQueryOptions.moduleImports === undefined) {
+      xQueryOptions.moduleImports = {}
     }
+    const prefix = matches[1]
+    const url = matches[2]
+    xQueryOptions.moduleImports[prefix] = url
+    debug(`registered prefix ${prefix} for URL ${url}`)
   }
 
   private dirTreeToXML(root: string) {
