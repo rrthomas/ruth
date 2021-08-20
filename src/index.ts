@@ -157,8 +157,7 @@ export class Expander {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   xQueryVariables: {[id: string]: any} = {
-    // FIXME: Put these variables in ruth namespace.
-    // See https://github.com/FontoXML/fontoxpath/issues/381
+    // These variables are injected into the ruth namespace in lib/ruth.xq.
     root: this.input,
   }
 

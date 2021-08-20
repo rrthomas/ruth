@@ -1,8 +1,20 @@
 module namespace ruth = "https://github.com/rrthomas/ruth/raw/master/ruth.dtd";
 declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/master/dirtree.dtd";
 
+(:~
+ : Inject global variables into the ruth namespace.
+ : FIXME: This works around lack of direct support in fontoxpath; see
+ : https://github.com/FontoXML/fontoxpath/issues/381
+ :)
+declare variable $root as xs:string external;
+declare variable $ruth:root := $root;
+
 declare variable $path as xs:string external;
+declare variable $ruth:path := $path;
+
 declare variable $element external;
+declare variable $ruth:element := $element;
+
 declare function ruth:eval($query as xs:string) as node() external;
 
 (:~
@@ -39,7 +51,9 @@ declare function ruth:data($datum as xs:string) as node()
 };
 
 (:~
- : Join the given path segments
+ : Join the given path components into a path string
+ :
+ : @param   $components the path components
  :)
 declare function ruth:path-join($components as xs:string*) as xs:string {
   string-join(
@@ -50,14 +64,21 @@ declare function ruth:path-join($components as xs:string*) as xs:string {
   )
 };
 
-(: Returns the path from $path to $path_from_root :)
-declare function ruth:relative-path($path_from_root as xs:string) as xs:string {
-  ruth:path-join((for $_ in 1 to count(tokenize($path, '/')) return '..',
-                 $path_from_root))
+(:~
+ : Return the the relative path from $ruth:path to $path
+ :
+ : @param   $path a path relative to $root
+ :)
+declare function ruth:relative-path($path as xs:string) as xs:string {
+  ruth:path-join((for $_ in 1 to count(tokenize($ruth:path, '/')) return '..', $path))
 };
 
-(: Like relative-path(), but for an element :)
-declare function ruth:relative-path-to-elem($dest_elem as element()) as xs:string {
-  ruth:path-join((for $_ in 2 to count($element/ancestor::dirtree:directory) return '..',
-                 $dest_elem/ancestor::dirtree:directory[1]/@dirtree:path))
+(:~
+ : Return the relative path from $ruth:element to $element
+ :
+ : @param   $element the path to an element
+ :)
+declare function ruth:relative-path-to-element($elem as element()) as xs:string {
+  ruth:path-join((for $_ in 2 to count($ruth:element/ancestor::dirtree:directory) return '..',
+                 $elem/ancestor::dirtree:directory[1]/@dirtree:path))
 };

@@ -8,7 +8,7 @@ declare function cookbook:breadcrumb($node as node()) as node() {
   <html:ul>
     {for $title in reverse($node/ancestor::dirtree:directory/*:title)
      return <html:li>
-              <html:a href="{ruth:relative-path-to-elem($title)}/index/index.xhtml">{$title/node()}</html:a>
+              <html:a href="{ruth:relative-path-to-element($title)}/index/index.xhtml">{$title/node()}</html:a>
             </html:li>}
   </html:ul>
 };

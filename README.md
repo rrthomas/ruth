@@ -95,12 +95,19 @@ The use of XQuery is beyond the scope of this manual; see the
 [XQuery specification][XQuery] and [fontoxpath documentation][fontoxpath]
 for more details.
 
+Ruth provides some built-in global variables:
+
++ `$ruth:root`: the `INPUT-PATH` argument.
++ `$ruth:path`: the relative path from `$ruth:root` to the file currently being expanded.
++ `$ruth:element`: the element in Ruth's working XML document corresponding to
+  the file currently being expanded.
+
 Ruth provides a single built-in custom function, `ruth:eval()`, which
 evaluates the given XQuery expression, and returns the first matching node,
 or, if there is none, raises an error.
 
-Ruth also loads a file of other XQuery functions from `lib/ruth.xq`. See
-that file for documentation.
+Ruth also loads other XQuery functions from `lib/ruth.xq`. See that file for
+documentation.
 
 See the [website example](Cookbook.md#website-example) in the Cookbook for a
 worked example of using Ruth to template a website.
