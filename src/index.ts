@@ -104,10 +104,8 @@ export class Expander {
         elem.setAttributeNS(dirtree, 'type', 'directory')
         const dir = this.inputFs.readdirSync(obj, {withFileTypes: true})
           .filter(dirent => dirent.name[0] !== '.')
-        const dirs = dir.filter(dirent => dirent.isDirectory())
-          .sort((a, b) => a.name.localeCompare(b.name))
-        const files = dir.filter(dirent => dirent.isFile() || dirent.isSymbolicLink())
-          .sort((a, b) => a.name.localeCompare(b.name))
+        const dirs = dir.filter(dirent => dirent.isDirectory()).sort()
+        const files = dir.filter(dirent => dirent.isFile() || dirent.isSymbolicLink()).sort()
         dirs.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
         files.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
       } else if (stats.isFile() || stats.isSymbolicLink()) {
