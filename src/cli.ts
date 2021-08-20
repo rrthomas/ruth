@@ -22,6 +22,7 @@ const parser = new ArgumentParser({
 parser.add_argument('input', {metavar: 'INPUT-PATH', help: 'desired directory list to build'})
 parser.add_argument('output', {metavar: 'OUTPUT-DIRECTORY', help: 'output directory'})
 parser.add_argument('--path', {help: 'relative path to build [default: input directory]'})
+parser.add_argument('--ext', {metavar: '.EXT', help: 'treat files with extension .EXT as XML'})
 parser.add_argument('--version', {
   action: 'version',
   version: `%(prog)s ${programVersion}
@@ -34,8 +35,7 @@ interface Args {
   input: string;
   output: string;
   path?: string;
-  verbose: boolean;
-  expander: string;
+  ext?: string[];
 }
 const args: Args = parser.parse_args() as Args
 
@@ -50,7 +50,7 @@ ufs.use(fs)
 
 // Expand input
 try {
-  new Expander(inputDir, ufs).expand(args.output, args.path)
+  new Expander(inputDir, ufs, args.ext).expand(args.output, args.path)
 } catch (error) {
   if (process.env.DEBUG) {
     throw error

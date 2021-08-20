@@ -38,7 +38,8 @@ $ npm install -g @sc3d/ruth
 ## Invocation
 
 ```
-ruth [-h] [--path PATH] [--version] INPUT-PATH OUTPUT-DIRECTORY
+ruth [-h] [--path PATH] [--ext .EXT] [--version]
+           INPUT-PATH OUTPUT-DIRECTORY
 
 A simple templating system.
 
@@ -49,6 +50,7 @@ positional arguments:
 optional arguments:
   -h, --help        show this help message and exit
   --path PATH       relative path to build [default: input directory]
+  --ext .EXT        treat files with extension .EXT as XML
   --version         show program's version number and exit
 
 The INPUT-PATH is a ':'-separated list of directories; the directories

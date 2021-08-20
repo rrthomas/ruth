@@ -1,8 +1,6 @@
 Make `maxIterations` configurable, and use its value in README.nancy.md
 (instead of `8`).
 
-Make file extensions read as XML configurable.
-
 Write DTDs for ruth (trivial: only to support namespace) and dirtree (cf. https://metacpan.org/pod/XML::Directory#DTD).
 
 New logo for Ruth!

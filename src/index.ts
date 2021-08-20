@@ -42,7 +42,9 @@ export class Expander {
   constructor(
     private input: string,
     private inputFs: IFS = realFs,
+    private xmlExtensions: string[] = [],
   ) {
+    this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
     this.absInput = path.resolve(input)
     this.loadModule(path.join(__dirname, 'ruth.xq'))
     this.xtree = this.dirTreeToXML(input)
@@ -120,7 +122,7 @@ export class Expander {
             },
           )
           elem = xtree.createElementNS(dirtree, 'executable')
-        } else if (['.xml', '.xhtml'].includes(parsedPath.ext)) {
+        } else if (this.xmlExtensions.includes(parsedPath.ext)) {
           debug(`reading as XML`)
           const text = this.inputFs.readFileSync(obj, 'utf-8')
           const wrappedText = `<${basename}>${text}</${basename}>`
