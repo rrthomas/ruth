@@ -4,6 +4,8 @@ import Debug from 'debug'
 import assert from 'assert'
 import execa from 'execa'
 import realFs from 'fs'
+import {link} from 'linkfs'
+import {IUnionFs, Union} from 'unionfs'
 import {IFS} from 'unionfs/lib/fs'
 import slimdom from 'slimdom'
 import {sync as parseXML} from 'slimdom-sax-parser'
@@ -23,6 +25,15 @@ export function stripPathPrefix(s: string, prefix: string): string {
     return ''
   }
   return s
+}
+
+// Merge input directories, left as highest-priority
+export function unionFs(dirs: string[]): IUnionFs {
+  const ufs = new Union;
+  for (const dir of dirs.slice(1).reverse()) {
+    ufs.use(link(fs, [dirs[0], dir]))
+  }
+  return ufs.use(realFs)
 }
 
 const ruth = 'https://github.com/rrthomas/ruth/raw/master/ruth.dtd'

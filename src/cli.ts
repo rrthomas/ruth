@@ -1,11 +1,7 @@
-import assert from 'assert'
 import path from 'path'
-import fs from 'fs'
-import {ufs} from 'unionfs'
-import {link} from 'linkfs'
 import {ArgumentParser, RawDescriptionHelpFormatter} from 'argparse'
 import {programVersion} from './version'
-import {Expander} from './index'
+import Expander, {unionFs} from './index'
 
 if (process.env.DEBUG) {
   Error.stackTraceLimit = Infinity
@@ -41,18 +37,13 @@ interface Args {
 }
 const args: Args = parser.parse_args() as Args
 
-// Merge input directories, left as highest-priority
-const inputDirs = args.input.split(path.delimiter)
-const inputDir = inputDirs.shift()
-assert(inputDir !== undefined)
-for (const dir of inputDirs.reverse()) {
-  ufs.use(link(fs, [inputDir, dir]))
-}
-ufs.use(fs)
-
 // Expand input
 try {
-  new Expander(inputDir, ufs, args.ext, args.max_iterations).expand(args.output, args.path)
+  if (args.input === '') {
+    throw new Error('input path must not be empty')
+  }
+  const inputDirs = args.input.split(path.delimiter)
+  new Expander(inputDirs[0], unionFs(inputDirs), args.ext, args.max_iterations).expand(args.output, args.path)
 } catch (error) {
   if (process.env.DEBUG) {
     throw error
