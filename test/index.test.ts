@@ -9,6 +9,8 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import {check} from 'linkinator'
 
+import Expander from '../src/index'
+
 chai.use(chaiAsPromised)
 const expect = chai.expect
 const assert = chai.assert
@@ -206,5 +208,10 @@ describe('ruth', function () {
       ['', 'dummy'],
       'input path must not be empty',
     )
+  })
+
+  // FIXME: Remove this when we have module tests
+  it('Complete code coverage of Expander constructor', () => {
+    new Expander('webpage-src')
   })
 })
