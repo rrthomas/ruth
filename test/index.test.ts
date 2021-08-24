@@ -88,6 +88,11 @@ describe('ruth', function () {
     await checkLinks('webpage-expected/people', 'index.xhtml')
   })
 
+  it('Single file test', async () => {
+    await cliTest(['webpage-src', '--path=people/index.ruth.xhtml'], 'webpage-expected/people/index.xhtml')
+    await checkLinks('webpage-expected/people', 'index.xhtml')
+  })
+
   it('Two-tree test', async () => {
     await cliTest(['mergetrees-src:webpage-src'], 'mergetrees-expected')
     await checkLinks('mergetrees-expected', 'index.xhtml')

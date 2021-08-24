@@ -195,23 +195,21 @@ export class Expander {
       const obj = elem.getAttributeNS(dirtree, 'path') as string
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
       if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
+        debug(`Expanding directory`)
         fs.emptyDirSync(outputPath)
-        elem.children.filter(child => child.tagName !== 'directory').forEach(
-          child => {
-            const file = child.getAttributeNS(dirtree, 'path') as string
-            const match = Expander.templateRegex.exec(file)
-            let queue = 0
-            if (match && match[1] !== undefined) {
-              queue = parseInt(match[1])
-            }
-            debug(`adding '${file}' to queue ${queue}`)
-            if (elemQueues[queue] === undefined) {
-              elemQueues[queue] = []
-            }
-            elemQueues[queue].push(child)
-          }
-        )
+        elem.children.filter(child => child.tagName !== 'directory').forEach(expandElement)
         elem.children.filter(child => child.tagName === 'directory').forEach(expandElement)
+      } else {
+        const match = Expander.templateRegex.exec(obj)
+        let queue = 0
+        if (match && match[1] !== undefined) {
+          queue = parseInt(match[1])
+        }
+        debug(`Adding file '${obj}' to queue ${queue}`)
+        if (elemQueues[queue] === undefined) {
+          elemQueues[queue] = []
+        }
+        elemQueues[queue].push(elem)
       }
     }
     expandElement(this.index(buildPath))
