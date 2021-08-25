@@ -164,7 +164,7 @@ export class Expander {
     const rootElem = objToNode(root)
     xtree.appendChild(rootElem)
     debug('Input XML')
-    debug(formatXML(rootElem.outerHTML))
+    debug(formatXML(rootElem.outerHTML, {lineSeparator: '\n'}))
     return xtree
   }
 

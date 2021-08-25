@@ -37,6 +37,7 @@
     "chai-as-promised": "^7.1.1",
     "dir-compare": "^3.3.0",
     "eslint": "^7.30.0",
+    "get-stdin-with-tty": "^6.0.0",
     "linkinator": "rrthomas/linkinator",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0",

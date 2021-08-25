@@ -48,7 +48,8 @@ The basic page template looks like this:
 ```
 
 Making the menu an included file is not strictly necessary, but makes the
-template easier to read. The pages will be laid out as follows:
+template easier to read. The generated site will contain the following
+files:
 
 ```
  ├── People
@@ -76,7 +77,7 @@ template easier to read. The pages will be laid out as follows:
  └── style.css
 ```
 
-The corresponding source files will be laid out as follows. This may look a
+The corresponding source files are laid out as follows. This may look a
 little confusing at first, but note the similarity to the HTML pages, and
 hold on for the explanation!
 
@@ -153,8 +154,6 @@ The site is built by running Ruth on the source directory:
 ruth test/cookbook-example-website-src site
 ```
 
-[FIXME]: # (Explain how to serve the web site dynamically.)
-
 ## Adding a datestamp using a program <a name="date-example"></a>
 
 Put the the following script that wraps the `date` command in a file called
@@ -178,4 +177,150 @@ This gives the result:
 2016-10-12
 ```
 
-[FIXME]: # (Add a section on data templating, using the corresponding example.)
+## Templating data
+
+Ruth can also be used to template data values. Consider the following “database”:
+
+```
+ ├── Home page
+ ├── place_1
+ │   ├── time_1
+ │   ├── time_2
+ └── place_2
+     ├── time_1
+     └── time_2
+```
+
+The following files will be generated:
+
+```
+ ├── index.xhtml
+ ├── place_1
+ │   ├── index.xhtml
+ │   ├── time_1
+ │   │   ├── data.xml
+ │   │   └── index.xhtml
+ │   ├── time_2
+ │   │   ├── index.xhtml
+ │   │   └── zdata.xml
+ │   └── zdata.xml
+ └── place_2
+     ├── data.xml
+     ├── index.xhtml
+     ├── time_1
+     │   ├── data.xml
+     │   └── index.xhtml
+     └── time_2
+         ├── data.xml
+         └── index.xhtml
+```
+
+For each time at each place, there is a data file `data.xml` (or
+`zdata.xml`; the `z` prefix just tests that the relative order of names
+doesn’t matter) and a web page `index.xhtml`.
+
+The source files are laid out as follows:
+
+```
+ ├── default.in.xml
+ ├── index.ruth2.xhtml
+ ├── place_1
+ │   ├── index.ruth2.xhtml
+ │   ├── time_1
+ │   │   ├── data.ruth.xml
+ │   │   └── index.ruth2.xhtml
+ │   ├── time_2
+ │   │   ├── index.ruth2.xhtml
+ │   │   └── zdata.ruth.xml
+ │   └── zdata.ruth.xml
+ └── place_2
+     ├── data.ruth.xml
+     ├── index.ruth2.xhtml
+     ├── time_1
+     │   ├── data.ruth.xml
+     │   └── index.ruth2.xhtml
+     └── time_2
+         ├── data.ruth.xml
+         └── index.ruth2.xhtml
+```
+
+The top-level file `default.in.xml` gives the default animal and bird for a
+given time and place:
+
+```
+<animal>snake</animal>
+<bird>owl</bird>
+```
+
+### Copying data using `ruth:data`
+
+The various `data.ruth.xml` files each contain an `animal` element and a
+`bird` element. Each either contains a literal value, or fetches the data
+from the level above, with an XQuery expression embedded in braces, such as:
+
+```
+{ruth:data('bird')}
+```
+
+This uses the built-in `ruth:data` function to interpolate the contents of
+the nearest `bird` element that occurs in the child of an ancestor of the
+current file’s parent. This means that it cannot match the file itself, so
+it doesn’t get into a loop.
+
+### Querying with `ruth:query` and multi-phase templating
+
+We also want to produce a web page corresponding to each place and time. We
+need to query the data for this. We can't conveniently use `ruth:data`, as
+that will not fetch data elements at the same level in the hierarchy, and
+each web page `index.ruth2.xhtml` is at the same level as the corresponding
+`data.xml`. Instead, we use the similar function `ruth:query`, which is just
+like `ruth:data`, but starts at the same level as the file being expanded,
+rather than at its parent. But that should cause a loop!
+
+To avoid looping, we expand the web page templates after the data templates.
+Remember, Ruth updates its internal XML document as it goes, so after all
+the data templates have been expanded, they will contain only literal
+values. The `2` in the file name `index.ruth2.xhtml` indicates that the file
+will be processed in phase 2 (files without a number are processed in phase
+0).
+
+The contents of a typical `index.ruth2.xhtml` file is:
+
+```
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Creatures</title>
+</head>
+<body>
+  <ul>
+    <li>Animal: {ruth:query('animal')}</li>
+    <li>Bird: {ruth:query('bird')}</li>
+  </ul>
+</body>
+</html>
+```
+
+The calls to `ruth:query` paste the values of the `animal` and `bird`
+elements “nearest” to the file; in our case, those in the same directory.
+
+For `place_1/time_1`, the result is:
+
+```
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>
+            Creatures
+        </title>
+    </head>
+    <body>
+        <ul>
+            <li>
+                Animal: badger
+            </li>
+            <li>
+                Bird: owl
+            </li>
+        </ul>
+    </body>
+</html>
+```

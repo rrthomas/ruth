@@ -28,13 +28,14 @@ $paste{cat,test/cookbook-example-website-src/template.in.xhtml}
 ```
 
 Making the menu an included file is not strictly necessary, but makes the
-template easier to read. The pages will be laid out as follows:
+template easier to read. The generated site will contain the following
+files:
 
 ```
 $paste{build-aux/dirtree,test/cookbook-example-website-expected}
 ```
 
-The corresponding source files will be laid out as follows. This may look a
+The corresponding source files are laid out as follows. This may look a
 little confusing at first, but note the similarity to the HTML pages, and
 hold on for the explanation!
 
@@ -70,8 +71,6 @@ The site is built by running Ruth on the source directory:
 ruth test/cookbook-example-website-src site
 ```
 
-[FIXME]: # (Explain how to serve the web site dynamically.)
-
 ## Adding a datestamp using a program <a name="date-example"></a>
 
 Put the the following script that wraps the `date` command in a file called
@@ -94,4 +93,81 @@ This gives the result:
 $include{cat,test/executable-expected/Page.xml}
 ```
 
-[FIXME]: # (Add a section on data templating, using the corresponding example.)
+## Templating data
+
+Ruth can also be used to template data values. Consider the following “database”:
+
+```
+ ├── Home page
+$paste{sh,-c,build-aux/dirtree test/data-templating-expected | sed -e 's/\.xhtml//g' | grep -v index | grep -v \\.}
+```
+
+The following files will be generated:
+
+```
+$paste{build-aux/dirtree,test/data-templating-expected}
+```
+
+For each time at each place, there is a data file `data.xml` (or
+`zdata.xml`; the `z` prefix just tests that the relative order of names
+doesn’t matter) and a web page `index.xhtml`.
+
+The source files are laid out as follows:
+
+```
+$paste{build-aux/dirtree,test/data-templating-src}
+```
+
+The top-level file `default.in.xml` gives the default animal and bird for a
+given time and place:
+
+```
+$paste{cat,test/data-templating-src/default.in.xml}
+```
+
+### Copying data using `ruth:data`
+
+The various `data.ruth.xml` files each contain an `animal` element and a
+`bird` element. Each either contains a literal value, or fetches the data
+from the level above, with an XQuery expression embedded in braces, such as:
+
+```
+{ruth:data('bird')}
+```
+
+This uses the built-in `ruth:data` function to interpolate the contents of
+the nearest `bird` element that occurs in the child of an ancestor of the
+current file’s parent. This means that it cannot match the file itself, so
+it doesn’t get into a loop.
+
+### Querying with `ruth:query` and multi-phase templating
+
+We also want to produce a web page corresponding to each place and time. We
+need to query the data for this. We can't conveniently use `ruth:data`, as
+that will not fetch data elements at the same level in the hierarchy, and
+each web page `index.ruth2.xhtml` is at the same level as the corresponding
+`data.xml`. Instead, we use the similar function `ruth:query`, which is just
+like `ruth:data`, but starts at the same level as the file being expanded,
+rather than at its parent. But that should cause a loop!
+
+To avoid looping, we expand the web page templates after the data templates.
+Remember, Ruth updates its internal XML document as it goes, so after all
+the data templates have been expanded, they will contain only literal
+values. The `2` in the file name `index.ruth2.xhtml` indicates that the file
+will be processed in phase 2 (files without a number are processed in phase
+0).
+
+The contents of a typical `index.ruth2.xhtml` file is:
+
+```
+$paste{cat,test/data-templating-src/place_1/time_1/index.ruth2.xhtml}
+```
+
+The calls to `ruth:query` paste the values of the `animal` and `bird`
+elements “nearest” to the file; in our case, those in the same directory.
+
+For `place_1/time_1`, the result is:
+
+```
+$paste{sh,-c,build-aux/format-xml.ts < test/data-templating-expected/place_1/time_1/index.xhtml}
+```

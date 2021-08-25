@@ -51,17 +51,26 @@ Ruth then creates the output directory, deleting its contents if it already
 existed.
 
 Next, Ruth traverses the resulting directory tree, or the subdirectory given
-by the `--path` argument, if any, in bread-first order.
+by the `--path` argument, if any, in breadth-first order.
 
 For each file, Ruth looks at its name, and:
+
++ If the name contains the suffix `.in`, the file is skipped. (It may
+  be used by macros in other files.)
++ If the name contains the suffix `.ruth`, optionally followed by decimal
+  digits, the file is added to the list of files to process. The decimal
+  digits are the phase number, which defaults to zero. The files are
+  processed in phase order: any phase 0 files first, then phase 1, and so
+  on.
++ Otherwise, the file is added to the list of files to process in phase 0.
+
+The list of files to process is then processed, in order. For each file:
 
 + If the name contains the suffix `.ruth`, the file’s contents is expanded
   (see below), and the result is then written to a file of the same name,
   but with the `.ruth` suffix removed, in the corresponding place in the
   output directory. The working XML document is also updated with the
   result.
-+ Else, if the name contains the suffix `.in`, the file is skipped. (It may
-  be used by macros in other files.)
 + Otherwise, the file is copied verbatim to the corresponding place in the
   output directory.
 
@@ -72,7 +81,7 @@ before the file type suffix.
 
 Ruth expands a template file as follows by executing it as an XQuery
 expression. The result is re-executed, to allow for expansions that
-themselves return XQuery expressions, up to 8 times. If there are still
+themselves return XQuery expressions, up to $include{sh,-c,grep -o "maxIterations = [0-9]\+" src/index.ts | cut -d " " -f 3} times. If there are still
 unevaluated XQuery expressions in the file contents after this, an error is
 raised.
 
@@ -83,9 +92,10 @@ for more details.
 Ruth provides some built-in global variables:
 
 + `\$ruth:root`: the `INPUT-PATH` argument.
-+ `\$ruth:path`: the relative path from `\$ruth:root` to the file currently being expanded.
-+ `\$ruth:element`: the element in Ruth's working XML document corresponding to
-  the file currently being expanded.
++ `\$ruth:path`: the relative path from `\$ruth:root` to the file currently
+  being expanded.
++ `\$ruth:element`: the element in Ruth's working XML document corresponding
+  to the file currently being expanded.
 
 Ruth provides a single built-in custom function, `ruth:eval()`, which
 evaluates the given XQuery expression, and returns the first matching node,
