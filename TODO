@@ -1,5 +1,3 @@
-Complete test coverage: test module (cf. Nancy).
-
 Write DTDs for ruth (trivial: only to support namespace) and dirtree (cf. https://metacpan.org/pod/XML::Directory#DTD).
 
 New logo for Ruth!
