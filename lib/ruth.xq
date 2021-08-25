@@ -1,5 +1,5 @@
-module namespace ruth = "https://github.com/rrthomas/ruth/raw/master/ruth.dtd";
-declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/master/dirtree.dtd";
+module namespace ruth = "https://github.com/rrthomas/ruth/raw/main/ruth.dtd";
+declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/main/dirtree.dtd";
 
 (:~
  : Inject global variables into the ruth namespace.

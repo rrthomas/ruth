@@ -36,8 +36,8 @@ export function unionFs(dirs: string[]): IUnionFs {
   return ufs.use(realFs)
 }
 
-const ruth = 'https://github.com/rrthomas/ruth/raw/master/ruth.dtd'
-const dirtree = 'https://github.com/rrthomas/ruth/raw/master/dirtree.dtd'
+const ruth = 'https://github.com/rrthomas/ruth/raw/main/ruth.dtd'
+const dirtree = 'https://github.com/rrthomas/ruth/raw/main/dirtree.dtd'
 const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
 
 const xQueryOptions: Options = {

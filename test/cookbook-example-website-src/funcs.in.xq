@@ -1,6 +1,6 @@
-module namespace cookbook = "https://github.com/rrthomas/ruth/raw/master/test/cookbook-example-src/cookbook.dtd";
-import module namespace ruth = "https://github.com/rrthomas/ruth/raw/master/ruth.dtd";
-declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/master/dirtree.dtd";
+module namespace cookbook = "https://github.com/rrthomas/ruth/raw/main/test/cookbook-example-src/cookbook.dtd";
+import module namespace ruth = "https://github.com/rrthomas/ruth/raw/main/ruth.dtd";
+declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/main/dirtree.dtd";
 declare namespace html = "http://www.w3.org/1999/xhtml";
 
 (: Compute a breadcrumb trail to the given node :)
