@@ -9,11 +9,11 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import {check} from 'linkinator'
 
+// eslint-disable-next-line import/no-named-as-default
 import Expander from '../src/index'
 
 chai.use(chaiAsPromised)
-const expect = chai.expect
-const assert = chai.assert
+const {expect, assert} = chai
 
 const command = process.env.NODE_ENV === 'coverage' ? '../bin/test-run' : '../bin/run'
 
@@ -21,21 +21,24 @@ async function run(args: string[]) {
   return execa(command, args)
 }
 
+function diffsetDiffsOnly(diffSet: Difference[]): Difference[] {
+  return diffSet.filter((diff) => diff.state !== 'equal')
+}
+
 function assertFileObjEqual(obj: string, expected: string) {
   const stats = fs.statSync(obj)
   if (stats.isDirectory()) {
     const compareResult = compareSync(obj, expected, {compareContent: true})
-    assert(compareResult.same, util.inspect(diffsetDiffsOnly(compareResult.diffSet as Difference[])))
+    assert(
+      compareResult.same,
+      util.inspect(diffsetDiffsOnly(compareResult.diffSet as Difference[])),
+    )
   } else {
     assert(
       fs.readFileSync(obj).equals(fs.readFileSync(expected)),
-      `'${obj}' does not match expected '${expected}'`
+      `'${obj}' does not match expected '${expected}'`,
     )
   }
-}
-
-function diffsetDiffsOnly(diffSet: Difference[]): Difference[] {
-  return diffSet.filter((diff) => diff.state !== 'equal')
 }
 
 async function cliTest(args: string[], expected: string) {
@@ -66,11 +69,11 @@ async function checkLinks(root: string, start: string) {
   assert(results.passed, 'Broken links in output')
 }
 
-describe('ruth', function () {
+describe('ruth', function test() {
   // In coverage mode, allow for recompilation.
   this.timeout(10000)
 
-  before(function () {
+  before(() => {
     process.chdir('test')
   })
 
@@ -217,6 +220,7 @@ describe('ruth', function () {
 
   // FIXME: Remove this when we have module tests
   it('Complete code coverage of Expander constructor', () => {
+    // eslint-disable-next-line no-new
     new Expander('webpage-src')
   })
 })

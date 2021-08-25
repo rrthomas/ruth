@@ -13,11 +13,13 @@
     "execa": "^5.1.1",
     "fontoxpath": "github:rrthomas/fontoxpath#replace",
     "fs-extra": "^10.0.0",
+    "get-stdin-with-tty": "^6.0.0",
     "linkfs": "^2.1.0",
     "slimdom": "^2.3.2",
     "slimdom-sax-parser": "^1.4.1",
     "tslib": "^1.14.1",
-    "unionfs": "^4.4.0"
+    "unionfs": "^4.4.0",
+    "xml-formatter": "^2.4.0"
   },
   "devDependencies": {
     "@sc3d/nancy": "^7.0.0-beta1",
@@ -35,7 +37,9 @@
     "chai-as-promised": "^7.1.1",
     "dir-compare": "^3.3.0",
     "eslint": "^7.32.0",
-    "get-stdin-with-tty": "^6.0.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-airbnb-typescript": "^14.0.0",
+    "eslint-plugin-import": "^2.24.2",
     "linkinator": "github:rrthomas/linkinator",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0",
@@ -43,8 +47,7 @@
     "pre-commit": "^1.2.2",
     "tempy": "^1.0.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.3.5",
-    "xml-formatter": "^2.4.0"
+    "typescript": "^4.3.5"
   },
   "engines": {
     "node": "^14.0.0"
@@ -59,7 +62,7 @@
   "repository": "rrthomas/ruth",
   "scripts": {
     "lint": "eslint . --ext .ts && depcheck",
-    "prebuild": "node --print \"'export const programVersion = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "prebuild": "node --print \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.ts",
     "build": "tsc --build",
     "clean": "rm -rf lib tsconfig.tsbuildinfo",
     "prepack": "npm run clean && npm run build && npm run docs",
