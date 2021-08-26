@@ -22,7 +22,7 @@
     "xml-formatter": "^2.4.0"
   },
   "devDependencies": {
-    "@sc3d/nancy": "^7.0.0-beta1",
+    "@sc3d/nancy": "^7.0.0-beta2",
     "@tsconfig/node14": "^1.0.1",
     "@types/argparse": "^2.0.10",
     "@types/chai": "^4.2.21",
