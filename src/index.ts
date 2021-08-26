@@ -227,8 +227,8 @@ export class Expander {
     }
     expandElement(this.index(buildPath))
     const elemQueue = elemQueues.flat()
-    for (const e of elemQueue) {
-      const obj = e.getAttributeNS(dirtree, 'path') as string
+    for (const elem of elemQueue) {
+      const obj = elem.getAttributeNS(dirtree, 'path') as string
       const fullyExpandElement = (elem: slimdom.Element): slimdom.Element => {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
         let res = elem
@@ -254,11 +254,11 @@ export class Expander {
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
         .replace(Expander.templateRegex, '')
       this.xQueryVariables.path = path.dirname(obj)
-      this.xQueryVariables.element = e
+      this.xQueryVariables.element = elem
       if (Expander.templateRegex.exec(obj)) {
         debug(`Writing expansion of ${obj} to ${outputPath}`)
-        const expandedElem = fullyExpandElement(e)
-        e.replaceWith(expandedElem)
+        const expandedElem = fullyExpandElement(elem)
+        elem.replaceWith(expandedElem)
         fs.writeFileSync(outputPath, expandedElem.innerHTML)
       } else if (!Expander.noCopyRegex.exec(obj)) {
         const objFullPath = path.join(this.input, obj)

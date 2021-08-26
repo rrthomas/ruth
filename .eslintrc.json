@@ -12,6 +12,7 @@
     "no-console": "off",
     "no-warning-comments": "off",
     "no-restricted-syntax": "off",
+    "@typescript-eslint/no-shadow": "off",
     "@typescript-eslint/object-curly-spacing": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/semi": "off"
