@@ -35,7 +35,7 @@ declare function ruth:include($file as xs:string) as node()
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:query($datum as xs:string) as node()
-  {ruth:eval('(ancestor::*[@dirtree:directory]/*/' || $datum || ')[1]/node()')
+  {ruth:eval('(ancestor::*/*/' || $datum || ')[1]/node()')
 };
 
 (:~
@@ -46,7 +46,7 @@ declare function ruth:query($datum as xs:string) as node()
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:data($datum as xs:string) as node()
-  {ruth:eval('(parent::*/ancestor::*[@dirtree:directory]/*/' || $datum ||
+  {ruth:eval('(parent::*/ancestor::*/*/' || $datum ||
   ')[1]/node()')
 };
 
