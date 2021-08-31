@@ -1,1 +1,1 @@
-{ruth:eval('foo')}
+{ruth:data('foo')}

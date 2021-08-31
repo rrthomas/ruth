@@ -15,14 +15,14 @@ declare variable $ruth:path := $path;
 declare variable $element external;
 declare variable $ruth:element := $element;
 
-declare function ruth:eval($query as xs:string) as node() external;
+declare function ruth:eval($query as xs:string) as node()* external;
 
 (:~
  : Include a file from the Ruth XML document at the call-site
  :
  : @param   $file the basename of the file to include
  :)
-declare function ruth:include($file as xs:string) as node() {
+declare function ruth:include($file as xs:string) as node()+ {
   ruth:eval('(ancestor::*[@dirtree:directory]/' || $file || ')[1]/node()')
 };
 
@@ -34,7 +34,7 @@ declare function ruth:include($file as xs:string) as node() {
  :
  : @param   $datum the name of the node whose contents should be included
  :)
-declare function ruth:query($datum as xs:string) as node() {
+declare function ruth:query($datum as xs:string) as node()+ {
   ruth:eval('(ancestor::*/*/' || $datum || ')[1]/node()')
 };
 
@@ -45,9 +45,8 @@ declare function ruth:query($datum as xs:string) as node() {
  :
  : @param   $datum the name of the node whose contents should be included
  :)
-declare function ruth:data($datum as xs:string) as node() {
-  ruth:eval('(parent::*/ancestor::*/*/' || $datum ||
-  ')[1]/node()')
+declare function ruth:data($datum as xs:string) as node()+ {
+  ruth:eval('(parent::*/ancestor::*/*/' || $datum || ')[1]/node()')
 };
 
 (:~

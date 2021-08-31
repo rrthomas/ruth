@@ -140,7 +140,7 @@ describe('ruth', function test() {
   it('XQuery that gives no results should cause an error', async () => {
     await failingCliTest(
       ['xquery-no-results', 'dummy'],
-      "'foo' does not give a result",
+      'Expected "+", but got "empty-sequence()"',
     )
   })
 

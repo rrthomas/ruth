@@ -11,7 +11,7 @@ import slimdom from 'slimdom'
 import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
 import {
-  evaluateXPath, evaluateXPathToFirstNode, Options,
+  evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode, Options,
   registerCustomXPathFunction, registerXQueryModule,
 } from 'fontoxpath'
 
@@ -65,19 +65,16 @@ export class Expander {
     // See https://github.com/FontoXML/fontoxpath/issues/406
     registerCustomXPathFunction(
       {localName: 'eval', namespaceURI: ruth},
-      ['xs:string'], 'node()',
-      (_, query: string): slimdom.Node => {
-        const res = evaluateXPathToFirstNode(
+      ['xs:string'], 'node()*',
+      (_, query: string): slimdom.Node[] => {
+        debug(`ruth:eval(${query}, ${this.xQueryVariables.element.getAttributeNS(dirtree, 'path')})`)
+        return evaluateXPathToNodes(
           query,
           this.xQueryVariables.element,
           null,
           this.xQueryVariables,
           xQueryOptions,
-        ) as slimdom.Node
-        if (res === null) {
-          throw new Error(`eval: '${query}' does not give a result`)
-        }
-        return res
+        ) as slimdom.Node[]
       },
     )
   }
@@ -245,6 +242,7 @@ export class Expander {
         let res = elem
         for (let output = elem.outerHTML, i = 0; i < this.maxIterations; i += 1) {
           try {
+            debug(`fullyExpandElement ${elem.getAttributeNS(dirtree, 'path')}`)
             res = evaluateXPathToFirstNode(
               output,
               elem,
