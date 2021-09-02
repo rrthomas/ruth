@@ -5,12 +5,12 @@
 <body>
   <h1>Animals</h1>
   <ul>
-{for $animal in parent::*/*[@*:directory]/*/*:animal return
+{for $animal in parent::*/*:directory/*/*:animal return
    <li>{$animal/node()}</li>
 }
   </ul>
   <h1>Birds</h1>
-{for $bird in parent::*/*[@*:directory]/*/*:bird return
+{for $bird in parent::*/*:directory/*/*:bird return
    <li>{$bird/node()}</li>
 }
 </body>

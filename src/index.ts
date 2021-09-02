@@ -110,14 +110,6 @@ export class Expander {
 
   private dirTreeToXML(root: string) {
     const xtree = new slimdom.Document()
-    const createElement = (name: string) => {
-      const escapedName = name.replace(' ', '_')
-      try {
-        return xtree.createElement(escapedName)
-      } catch (error) {
-        throw new Error(`bad element name ${name}`)
-      }
-    }
     const objToNode = (obj: string) => {
       const stats = this.inputFs.statSync(obj)
       const parsedPath = path.parse(obj)
@@ -126,8 +118,7 @@ export class Expander {
       debug(`dirTreeToXML: considering ${obj}`)
       if (stats.isDirectory()) {
         debug('processing directory')
-        elem = createElement(basename)
-        elem.setAttributeNS(dirtree, 'directory', '')
+        elem = xtree.createElementNS(dirtree, 'directory')
         const dir = this.inputFs.readdirSync(obj, {withFileTypes: true})
           .filter((dirent) => dirent.name[0] !== '.')
         const dirs = dir.filter((dirent) => dirent.isDirectory()).sort()
@@ -145,7 +136,7 @@ export class Expander {
               path.join(this.absInput, stripPathPrefix(obj, this.input)), args,
             ).stdout,
           )
-          elem = createElement(basename)
+          elem = xtree.createElementNS(dirtree, 'file')
         } else if (this.xmlExtensions.includes(parsedPath.ext)) {
           debug('reading as XML')
           const text = this.inputFs.readFileSync(obj, 'utf-8')
@@ -164,9 +155,8 @@ export class Expander {
             debug('reading as XQuery module')
             this.loadModule(obj)
           }
-          elem = createElement(basename)
+          elem = xtree.createElementNS(dirtree, 'file')
         }
-        elem.setAttributeNS(dirtree, 'file', '')
       } else {
         throw new Error(`'${obj}' is not a directory or file`)
       }
@@ -213,13 +203,11 @@ export class Expander {
       debug(`expandElement ${elem.getAttributeNS(dirtree, 'path')}`)
       const obj = elem.getAttributeNS(dirtree, 'path') as string
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
-      if (elem.hasAttributeNS(dirtree, 'directory')) {
+      if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
         debug('Expanding directory')
         fs.emptyDirSync(outputPath)
-        elem.children.filter((child) => !child.hasAttributeNS(dirtree, 'directory'))
-          .forEach(expandElement)
-        elem.children.filter((child) => child.hasAttributeNS(dirtree, 'directory'))
-          .forEach(expandElement)
+        elem.children.filter((child) => child.tagName !== 'directory').forEach(expandElement)
+        elem.children.filter((child) => child.tagName === 'directory').forEach(expandElement)
       } else {
         const match = Expander.templateRegex.exec(obj)
         let queue = 0

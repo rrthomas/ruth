@@ -1,1 +1,8 @@
-<!-- Trivial DTD that exists only to support the namespace. -->
+<!ELEMENT directory (directory|file)*>
+<!ELEMENT file (#CDATA)>
+<!ATTLIST directory
+          name CDATA #REQUIRED
+          path CDATA #REQUIRED>
+<!ATTLIST file
+          name CDATA #REQUIRED
+          path CDATA #REQUIRED>

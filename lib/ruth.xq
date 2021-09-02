@@ -23,7 +23,7 @@ declare function ruth:eval($query as xs:string) as node()* external;
  : @param   $file the basename of the file to include
  :)
 declare function ruth:include($file as xs:string) as node()+ {
-  ruth:eval('(ancestor::*[@dirtree:directory]/' || $file || ')[1]/node()')
+  ruth:eval('(ancestor::dirtree:directory/' || $file || ')[1]/node()')
 };
 
 (:~
@@ -78,6 +78,6 @@ declare function ruth:relative-path($path as xs:string) as xs:string {
  : @param   $element the path to an element
  :)
 declare function ruth:relative-path-to-element($elem as element()) as xs:string {
-  ruth:path-join((for $_ in 2 to count($ruth:element/ancestor::*[@dirtree:directory]) return '..',
-                 $elem/ancestor::*[@dirtree:directory][1]/@dirtree:path))
+  ruth:path-join((for $_ in 2 to count($ruth:element/ancestor::dirtree:directory) return '..',
+                 $elem/ancestor::dirtree:directory[1]/@dirtree:path))
 };
