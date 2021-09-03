@@ -6,7 +6,7 @@ declare namespace html = "http://www.w3.org/1999/xhtml";
 (: Compute a breadcrumb trail to the given node :)
 declare function cookbook:breadcrumb($node as node()) as node() {
   <html:ul>
-    {for $title in reverse($node/ancestor::dirtree:directory/*:title)
+    {for $title in reverse($node/ancestor::dirtree:directory/dirtree:file[@dirtree:name='title.in.xhtml'])
      return <html:li>
               <html:a href="{ruth:relative-path-to-element($title)}/index/index.xhtml">{$title/node()}</html:a>
             </html:li>}

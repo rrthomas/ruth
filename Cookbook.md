@@ -32,16 +32,16 @@ The basic page template looks like this:
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <link rel="stylesheet" type="text/css" href="{ruth:relative-path('style.css')}"/>
-    <title>{ruth:include("*:title")}</title>
+    <title>{ruth:include("title.in.xhtml")}</title>
   </head>
   <body>
     <div class="wrapper">
-      <div class="logo">{ruth:include("*:logo")}</div>
+      <div class="logo">{ruth:include("logo.in.xhtml")}</div>
       <div class="breadcrumb"><div class="breadcrumb-content">{cookbook:breadcrumb(.)}</div></div>
     </div>
     <div class="wrapper">
-      <div class="menu">{ruth:include("*:menu")}</div>
-      <div class="main">{ruth:include("*:main")}</div>
+      <div class="menu">{ruth:include("menu.in.xhtml")}</div>
+      <div class="main">{ruth:include("main.in.xhtml")}</div>
     </div>
   </body>
 </html>
@@ -133,7 +133,7 @@ Now consider how Ruth builds the page whose URL is
 `Places/Vladivostok/index/index.xhtml`. Assume the source files are in the
 directory `source`. This page is built from
 `source/Places/Vladivostok/index/index.ruth.xhtml`, whose contents is
-`{ruth:include("*:template")}`.
+`{ruth:include("template.in.xhtml")}`.
 
 The custom function `ruth:include("foo")` copies the contents of the
 “nearest” file with basename “foo” to the file from which the function is

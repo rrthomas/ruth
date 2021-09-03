@@ -113,7 +113,6 @@ export class Expander {
     const objToNode = (obj: string) => {
       const stats = this.inputFs.statSync(obj)
       const parsedPath = path.parse(obj)
-      const basename = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
       let elem: slimdom.Element
       debug(`dirTreeToXML: considering ${obj}`)
       if (stats.isDirectory()) {
@@ -129,6 +128,7 @@ export class Expander {
         debug('processing file')
         if (this.isExecutable(obj)) {
           debug('creating XQuery function from executable')
+          const basename = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
           registerCustomXPathFunction(
             {localName: basename.replace(Expander.noCopyRegex, ''), namespaceURI: ruth},
             ['xs:string*'], 'xs:string',
@@ -140,7 +140,7 @@ export class Expander {
         } else if (this.xmlExtensions.includes(parsedPath.ext)) {
           debug('reading as XML')
           const text = this.inputFs.readFileSync(obj, 'utf-8')
-          const wrappedText = `<${basename}>${text}</${basename}>`
+          const wrappedText = `<dirtree:file>${text}</dirtree:file>`
           let doc
           try {
             doc = parseXML(wrappedText, {additionalNamespaces: URI_BY_PREFIX})
