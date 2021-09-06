@@ -73,6 +73,15 @@ declare function ruth:relative-path($path as xs:string) as xs:string {
 };
 
 (:~
+ : Return the the absolute path to $path
+ :
+ : @param   $path a path relative to $root
+ :)
+declare function ruth:absolute-path($path as xs:string) as xs:string {
+  string-join(($ruth:root, $ruth:path, $path), '/')
+};
+
+(:~
  : Return the relative path from $ruth:element to $element
  :
  : @param   $element the path to an element
