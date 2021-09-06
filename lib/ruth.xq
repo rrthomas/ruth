@@ -35,7 +35,10 @@ declare function ruth:include($file as xs:string) as node()+ {
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:query($datum as xs:string) as node()+ {
-  ruth:eval('(ancestor::*/*/' || $datum || ')[1]/node()')
+  let $res := ruth:eval('(ancestor::*/*/' || $datum || ')[1]/node()')
+  return if (empty($res))
+         then error(xs:QName('ruth:QueryNoResults'), "ruth:query: '" || $datum || "' gives no results")
+         else $res
 };
 
 (:~
@@ -46,7 +49,11 @@ declare function ruth:query($datum as xs:string) as node()+ {
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:data($datum as xs:string) as node()+ {
-  ruth:eval('(parent::*/ancestor::*/*/' || $datum || ')[1]/node()')
+  let $res := ruth:eval('(parent::*/ancestor::*/*/' || $datum || ')[1]/node()')
+  return if (empty($res))
+         then error(xs:QName('ruth:DataNoResults'), "ruth:data: '" || $datum || "' gives no results")
+         else $res
+
 };
 
 (:~

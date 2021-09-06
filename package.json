@@ -11,7 +11,7 @@
     "argparse": "^2.0.1",
     "debug": "^4.3.2",
     "execa": "^5.1.1",
-    "fontoxpath": "github:rrthomas/fontoxpath#replace",
+    "fontoxpath": "github:rrthomas/fontoxpath#rrthomas-extras",
     "fs-extra": "^10.0.0",
     "get-stdin-with-tty": "^6.0.0",
     "linkfs": "^2.1.0",
