@@ -128,13 +128,15 @@ export class Expander {
         debug('processing file')
         if (this.isExecutable(obj)) {
           debug('creating XQuery function from executable')
-          const basename = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
+          const localName = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
+          const exec = (_: any, args: string[], input?: string): string => execa.sync(
+            path.join(this.absInput, stripPathPrefix(obj, this.input)), args, {input},
+          ).stdout
           registerCustomXPathFunction(
-            {localName: basename.replace(Expander.noCopyRegex, ''), namespaceURI: ruth},
-            ['xs:string*'], 'xs:string',
-            (_, ...args: string[]): string => execa.sync(
-              path.join(this.absInput, stripPathPrefix(obj, this.input)), args,
-            ).stdout,
+            {localName, namespaceURI: ruth}, ['xs:string*'], 'xs:string', exec,
+          )
+          registerCustomXPathFunction(
+            {localName, namespaceURI: ruth}, ['xs:string*', 'xs:string'], 'xs:string', exec,
           )
           elem = xtree.createElementNS(dirtree, 'file')
         } else if (this.xmlExtensions.includes(parsedPath.ext)) {

@@ -109,11 +109,18 @@ worked example of using Ruth to template a website.
 
 ### Running other programs
 
-An executable file in the input is turned into a custom XQuery function in
+An executable file in the input is turned into a pair of XQuery functions in
 the `ruth` namespace. Any `.in` suffix is stripped out. So for example,
-`foo.in` becomes a function `ruth:foo()`. The custom functions take a sequence
-of strings, which are  provided to the program as its command-line arguments,
-and returns the program's standard output as a string.
+`foo.in` becomes a function `ruth:foo()`. The functions have the following
+signature:
+
+```
+ruth:foo(\$args as xs:string*) as xs:string
+ruth:foo(\$args as xs:string*, \$input as xs:string) as xs:string
+```
+
+The sequence `\$args` is passed to the program as its command-line arguments.
+The string `\$input` is fed to the program's standard input.
 
 ## Development
 
