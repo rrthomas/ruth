@@ -9,6 +9,7 @@
     "airbnb-typescript/base"
   ],
   "rules": {
+    "no-cond-assign": ["error", "except-parens"],
     "no-console": "off",
     "no-warning-comments": "off",
     "no-restricted-syntax": "off",
