@@ -180,7 +180,10 @@ export class Expander {
   }
 
   private index(filePath: string): slimdom.Element {
-    const components = path.join(path.basename(this.input), filePath).split(path.sep)
+    const components = [path.basename(this.input)]
+    if (filePath !== '') {
+      components.push(...filePath.split(path.sep))
+    }
     const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
     const query = `/${xPathComponents.join('/')}`
     const node = evaluateXPathToFirstNode(
