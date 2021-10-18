@@ -2,7 +2,7 @@ import path from 'path'
 import {ArgumentParser, RawDescriptionHelpFormatter} from 'argparse'
 import programVersion from './version'
 // eslint-disable-next-line import/no-named-as-default
-import Expander, {unionFs} from './index'
+import Expander from './index'
 
 if (process.env.DEBUG) {
   Error.stackTraceLimit = Infinity
@@ -43,10 +43,9 @@ try {
   if (args.input === '') {
     throw new Error('input path must not be empty')
   }
-  const inputDirs = args.input.split(path.delimiter)
+  const inputs = args.input.split(path.delimiter)
   new Expander(
-    inputDirs[0],
-    unionFs(inputDirs),
+    inputs,
     args.ext,
     args.max_iterations,
   ).expand(args.output, args.path)

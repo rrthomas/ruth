@@ -63,13 +63,13 @@ directories to its right.
 
 Ruth starts by combining the list of directories given as its _input path_.
 If the same file or directory exists in more than one of the directories on
-the input path, the left-most takes precedence.
+the input path, the left-most takes precedence. The result is called the
+“input tree”, and all paths are relative to it.
 
-Ruth then creates the output directory, deleting its contents if it already
-existed.
+Ruth then creates the output directory if it does not already exist.
 
-Next, Ruth traverses the resulting directory tree, or the subdirectory given
-by the `--path` argument, if any, in breadth-first order.
+Next, Ruth traverses the input tree, or the subtree given by the `--path`
+argument, if any, in breadth-first order.
 
 For each file, Ruth looks at its name, and:
 

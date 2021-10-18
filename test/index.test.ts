@@ -188,7 +188,7 @@ describe('ruth', function test() {
     process.env.DEBUG = 'yes'
     await failingCliTest(
       ['a', 'b'],
-      'no such file or directory',
+      'is not a file or directory',
     )
     delete process.env.DEBUG
   })
@@ -199,7 +199,7 @@ describe('ruth', function test() {
     server.listen(tempFile)
     await failingCliTest(
       [`${tempFile}`, 'dummy'],
-      'is not a directory or file',
+      'is not a file or directory',
     )
     server.close()
   })
@@ -221,6 +221,6 @@ describe('ruth', function test() {
   // FIXME: Remove this when we have module tests
   it('Complete code coverage of Expander constructor', () => {
     // eslint-disable-next-line no-new
-    new Expander('webpage-src')
+    new Expander(['webpage-src'])
   })
 })

@@ -6,9 +6,6 @@ declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/main/dirtree.d
  : FIXME: This works around lack of direct support in fontoxpath; see
  : https://github.com/FontoXML/fontoxpath/issues/381
  :)
-declare variable $root as xs:string external;
-declare variable $ruth:root := $root;
-
 declare variable $path as xs:string external;
 declare variable $ruth:path := $path;
 
@@ -16,6 +13,13 @@ declare variable $element external;
 declare variable $ruth:element := $element;
 
 declare function ruth:eval($query as xs:string) as node()* external;
+
+(:~
+ : Return the the absolute path to $path
+ :
+ : @param   $path a path relative to the input tree
+ :)
+declare function ruth:absolute-path($path as xs:string) as xs:string external;
 
 (:~
  : Include a file from the Ruth XML document at the call-site
@@ -73,19 +77,10 @@ declare function ruth:path-join($components as xs:string*) as xs:string {
 (:~
  : Return the the relative path from $ruth:path to $path
  :
- : @param   $path a path relative to $root
+ : @param   $path a path relative to the input tree
  :)
 declare function ruth:relative-path($path as xs:string) as xs:string {
   ruth:path-join((for $_ in 1 to count(tokenize($ruth:path, '/')) return '..', $path))
-};
-
-(:~
- : Return the the absolute path to $path
- :
- : @param   $path a path relative to $root
- :)
-declare function ruth:absolute-path($path as xs:string) as xs:string {
-  string-join(($ruth:root, $ruth:path, $path), '/')
 };
 
 (:~

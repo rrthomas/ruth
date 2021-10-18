@@ -14,11 +14,9 @@
     "fontoxpath": "github:rrthomas/fontoxpath#rrthomas-extras",
     "fs-extra": "^10.0.0",
     "get-stdin-with-tty": "^6.0.0",
-    "linkfs": "^2.1.0",
     "slimdom": "^2.3.2",
     "slimdom-sax-parser": "^1.4.1",
     "tslib": "^2.3.1",
-    "unionfs": "^4.4.0",
     "xml-formatter": "^2.4.0"
   },
   "devDependencies": {
