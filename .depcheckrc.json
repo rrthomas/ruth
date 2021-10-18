@@ -4,6 +4,6 @@
     "eslint-config-airbnb-base",
     "eslint-config-airbnb-typescript",
     "eslint-plugin-import",
-    "pre-commit"
+    "pre-push"
   ]
 }
