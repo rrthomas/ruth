@@ -103,13 +103,13 @@ export class Expander {
     registerCustomXPathFunction(
       {localName: 'absolute-path', namespaceURI: ruth},
       ['xs:string'], 'xs:string',
-      (_, path: string): string => {
-        debug(`ruth:absolute-path(${path})`)
-        const dirent = this.findObject(path)
+      (_, relPath: string): string => {
+        debug(`ruth:absolute-path(${relPath})`)
+        const dirent = this.findObject(path.join(this.xQueryVariables.path, relPath))
         if (isFile(dirent)) {
           return dirent
         }
-        throw new Error(`${path} is not a file`)
+        throw new Error(`${relPath} is not a file`)
       },
     )
   }

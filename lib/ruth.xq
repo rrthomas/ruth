@@ -75,12 +75,21 @@ declare function ruth:path-join($components as xs:string*) as xs:string {
 };
 
 (:~
- : Return the the relative path from $ruth:path to $path
+ : Return the relative path from $ruth:path to $path
  :
  : @param   $path a path relative to the input tree
  :)
 declare function ruth:relative-path($path as xs:string) as xs:string {
   ruth:path-join((for $_ in 1 to count(tokenize($ruth:path, '/')) return '..', $path))
+};
+
+(:~
+ : Return the path from the root of the input tree to $path
+ :
+ : @param   $path a path relative to $ruth:path
+ :)
+declare function ruth:root-relative-path($path as xs:string) as xs:string {
+  string-join(($ruth:path, $path), '/')
 };
 
 (:~
