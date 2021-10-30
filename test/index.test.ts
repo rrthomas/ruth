@@ -158,13 +158,6 @@ describe('ruth', function test() {
     )
   })
 
-  it('Non-termination test', async () => {
-    await failingCliTest(
-      ['non-terminating', 'dummy'],
-      'did not terminate',
-    )
-  })
-
   it('--help should produce output', async () => {
     const {stdout} = await run(['--help'])
     expect(stdout).to.contain('A simple templating system.')

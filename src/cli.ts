@@ -20,7 +20,6 @@ parser.add_argument('input', {metavar: 'INPUT-PATH', help: 'desired directory li
 parser.add_argument('output', {metavar: 'OUTPUT-DIRECTORY', help: 'output directory'})
 parser.add_argument('--path', {help: 'relative path to build [default: input directory]'})
 parser.add_argument('--ext', {metavar: '.EXT', help: 'treat files with extension .EXT as XML'})
-parser.add_argument('--max-iterations', {metavar: 'N', help: 'maximum number of XQuery iterations before erroring'})
 parser.add_argument('--version', {
   action: 'version',
   version: `%(prog)s ${programVersion}
@@ -34,7 +33,6 @@ interface Args {
   output: string;
   path?: string;
   ext?: string[];
-  max_iterations?: number;
 }
 const args: Args = parser.parse_args() as Args
 
@@ -47,7 +45,6 @@ try {
   new Expander(
     inputs,
     args.ext,
-    args.max_iterations,
   ).expand(args.output, args.path)
 } catch (error) {
   if (process.env.DEBUG) {

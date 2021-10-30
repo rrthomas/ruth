@@ -80,10 +80,7 @@ before the file type suffix.
 ### Template expansion
 
 Ruth expands a template file as follows by executing it as an XQuery
-expression. The result is re-executed, to allow for expansions that
-themselves return XQuery expressions, up to $include{sh,-c,grep -o "maxIterations = [0-9]\+" src/index.ts | cut -d " " -f 3} times. If there are still
-unevaluated XQuery expressions in the file contents after this, an error is
-raised.
+expression.
 
 The use of XQuery is beyond the scope of this manual; see the
 [XQuery specification][XQuery] and [fontoxpath documentation][fontoxpath]
@@ -92,9 +89,9 @@ for more details.
 Ruth provides some built-in global variables:
 
 + `\$ruth:root`: the `INPUT-PATH` argument.
-+ `\$ruth:path`: the relative path from `\$ruth:root` to the file currently
++ `\$ruth_path`: the relative path from `\$ruth:root` to the file currently
   being expanded.
-+ `\$ruth:element`: the element in Ruth's working XML document corresponding
++ `\$ruth_element`: the element in Ruth's working XML document corresponding
   to the file currently being expanded.
 
 Ruth provides a single built-in custom function, `ruth:eval()`, which

@@ -38,21 +38,20 @@ $ npm install -g @sc3d/ruth
 ## Invocation
 
 ```
-ruth [-h] [--path PATH] [--ext .EXT] [--max-iterations N] [--version]
+ruth [-h] [--path PATH] [--ext .EXT] [--version]
            INPUT-PATH OUTPUT-DIRECTORY
 
 A simple templating system.
 
 positional arguments:
-  INPUT-PATH          desired directory list to build
-  OUTPUT-DIRECTORY    output directory
+  INPUT-PATH        desired directory list to build
+  OUTPUT-DIRECTORY  output directory
 
 optional arguments:
-  -h, --help          show this help message and exit
-  --path PATH         relative path to build [default: input directory]
-  --ext .EXT          treat files with extension .EXT as XML
-  --max-iterations N  maximum number of XQuery iterations before erroring
-  --version           show program's version number and exit
+  -h, --help        show this help message and exit
+  --path PATH       relative path to build [default: input directory]
+  --ext .EXT        treat files with extension .EXT as XML
+  --version         show program's version number and exit
 
 The INPUT-PATH is a ':'-separated list of directories; the directories
 are merged, with the contents of each directory taking precedence over any
@@ -98,10 +97,7 @@ before the file type suffix.
 ### Template expansion
 
 Ruth expands a template file as follows by executing it as an XQuery
-expression. The result is re-executed, to allow for expansions that
-themselves return XQuery expressions, up to 8 times. If there are still
-unevaluated XQuery expressions in the file contents after this, an error is
-raised.
+expression.
 
 The use of XQuery is beyond the scope of this manual; see the
 [XQuery specification][XQuery] and [fontoxpath documentation][fontoxpath]
@@ -110,9 +106,9 @@ for more details.
 Ruth provides some built-in global variables:
 
 + `$ruth:root`: the `INPUT-PATH` argument.
-+ `$ruth:path`: the relative path from `$ruth:root` to the file currently
++ `$ruth_path`: the relative path from `$ruth:root` to the file currently
   being expanded.
-+ `$ruth:element`: the element in Ruth's working XML document corresponding
++ `$ruth_element`: the element in Ruth's working XML document corresponding
   to the file currently being expanded.
 
 Ruth provides a single built-in custom function, `ruth:eval()`, which

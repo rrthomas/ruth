@@ -85,36 +85,36 @@ hold on for the explanation!
  ├── People
  │   ├── Hilary Pilary
  │   │   ├── index
- │   │   │   └── index.ruth.xhtml
+ │   │   │   └── index.ruth2.xhtml
  │   │   ├── main.in.xhtml
  │   │   └── title.in.xhtml
  │   ├── Jo Bloggs
  │   │   ├── index
- │   │   │   └── index.ruth.xhtml
+ │   │   │   └── index.ruth2.xhtml
  │   │   ├── main.in.xhtml
  │   │   └── title.in.xhtml
  │   ├── index
- │   │   ├── index.ruth.xhtml
+ │   │   ├── index.ruth2.xhtml
  │   │   └── main.in.xhtml
  │   └── title.in.xhtml
  ├── Places
  │   ├── Timbuktu
  │   │   ├── index
- │   │   │   └── index.ruth.xhtml
+ │   │   │   └── index.ruth2.xhtml
  │   │   ├── main.in.xhtml
  │   │   └── title.in.xhtml
  │   ├── Vladivostok
  │   │   ├── index
- │   │   │   └── index.ruth.xhtml
+ │   │   │   └── index.ruth2.xhtml
  │   │   ├── main.in.xhtml
  │   │   └── title.in.xhtml
  │   ├── index
- │   │   ├── index.ruth.xhtml
+ │   │   ├── index.ruth2.xhtml
  │   │   └── main.in.xhtml
  │   └── title.in.xhtml
  ├── funcs.in.xq
  ├── index
- │   ├── index.ruth.xhtml
+ │   ├── index.ruth2.xhtml
  │   ├── logo.in.xhtml
  │   └── main.in.xhtml
  ├── logo.in.xhtml
@@ -132,7 +132,7 @@ every page), but each page has its own content (`main.in.xhtml`).
 Now consider how Ruth builds the page whose URL is
 `Places/Vladivostok/index/index.xhtml`. Assume the source files are in the
 directory `source`. This page is built from
-`source/Places/Vladivostok/index/index.ruth.xhtml`, whose contents is
+`source/Places/Vladivostok/index/index.ruth2.xhtml`, whose contents is
 `{ruth:include("template.in.xhtml")}`.
 
 The custom function `ruth:include("foo")` copies the contents of the

@@ -2,17 +2,18 @@ module namespace ruth = "https://github.com/rrthomas/ruth/raw/main/ruth.dtd";
 declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/main/dirtree.dtd";
 
 (:~
- : Inject global variables into the ruth namespace.
- : FIXME: This works around lack of direct support in fontoxpath; see
- : https://github.com/FontoXML/fontoxpath/issues/381
+ : FIXME: Namespace the variables; see https://github.com/FontoXML/fontoxpath/issues/381
  :)
-declare variable $path as xs:string external;
-declare variable $ruth:path := $path;
-
-declare variable $element external;
-declare variable $ruth:element := $element;
+declare variable $ruth_path as xs:string external;
+declare variable $ruth_element external;
 
 declare function ruth:eval($query as xs:string) as node()* external;
+
+declare function ruth:eval-items($item as item()*) as item()* {
+         typeswitch($item)
+         case text() return $item
+         default return $item[1]/ruth:eval(serialize(.))/node()
+};
 
 (:~
  : Return the the absolute path to $path
@@ -27,7 +28,8 @@ declare function ruth:absolute-path($path as xs:string) as xs:string external;
  : @param   $file the basename of the file to include
  :)
 declare function ruth:include($file as xs:string) as node()+ {
-  ruth:eval('(ancestor::dirtree:directory/dirtree:file[@dirtree:name="' || $file || '"])[1]/node()')
+  let $res := ruth:eval('ancestor::dirtree:directory/dirtree:file[@dirtree:name="' || $file || '"]')
+  return ruth:eval-items($res)
 };
 
 (:~
@@ -39,10 +41,10 @@ declare function ruth:include($file as xs:string) as node()+ {
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:query($datum as xs:string) as node()+ {
-  let $res := ruth:eval('(ancestor::*/*/' || $datum || ')[1]/node()')
+  let $res := ruth:eval('ancestor::*/*/' || $datum)
   return if (empty($res))
          then error(xs:QName('ruth:QueryNoResults'), "ruth:query: '" || $datum || "' gives no results")
-         else $res
+         else ruth:eval-items($res)
 };
 
 (:~
@@ -53,11 +55,10 @@ declare function ruth:query($datum as xs:string) as node()+ {
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:data($datum as xs:string) as node()+ {
-  let $res := ruth:eval('(parent::*/ancestor::*/*/' || $datum || ')[1]/node()')
+  let $res := ruth:eval('parent::*/ancestor::*/*/' || $datum)
   return if (empty($res))
          then error(xs:QName('ruth:DataNoResults'), "ruth:data: '" || $datum || "' gives no results")
-         else $res
-
+         else ruth:eval-items($res)
 };
 
 (:~
@@ -75,29 +76,29 @@ declare function ruth:path-join($components as xs:string*) as xs:string {
 };
 
 (:~
- : Return the relative path from $ruth:path to $path
+ : Return the relative path from $ruth_path to $path
  :
  : @param   $path a path relative to the input tree
  :)
 declare function ruth:relative-path($path as xs:string) as xs:string {
-  ruth:path-join((for $_ in 1 to count(tokenize($ruth:path, '/')) return '..', $path))
+  ruth:path-join((for $_ in 1 to count(tokenize($ruth_path, '/')) return '..', $path))
 };
 
 (:~
  : Return the path from the root of the input tree to $path
  :
- : @param   $path a path relative to $ruth:path
+ : @param   $path a path relative to $ruth_path
  :)
 declare function ruth:root-relative-path($path as xs:string) as xs:string {
-  string-join(($ruth:path, $path), '/')
+  string-join(($ruth_path, $path), '/')
 };
 
 (:~
- : Return the relative path from $ruth:element to $element
+ : Return the relative path from $ruth_element to $element
  :
  : @param   $element the path to an element
  :)
 declare function ruth:relative-path-to-element($elem as element()) as xs:string {
-  ruth:path-join((for $_ in 2 to count($ruth:element/ancestor::dirtree:directory) return '..',
+  ruth:path-join((for $_ in 2 to count($ruth_element/ancestor::dirtree:directory) return '..',
                  $elem/ancestor::dirtree:directory[1]/@dirtree:path))
 };

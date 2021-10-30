@@ -49,8 +49,8 @@ every page), but each page has its own content (`main.in.xhtml`).
 Now consider how Ruth builds the page whose URL is
 `Places/Vladivostok/index/index.xhtml`. Assume the source files are in the
 directory `source`. This page is built from
-`source/Places/Vladivostok/index/index.ruth.xhtml`, whose contents is
-`$paste{cat,test/cookbook-example-website-src/Places/Vladivostok/index/index.ruth.xhtml}`.
+`source/Places/Vladivostok/index/index.ruth2.xhtml`, whose contents is
+`$paste{cat,test/cookbook-example-website-src/Places/Vladivostok/index/index.ruth2.xhtml}`.
 
 The custom function `ruth:include("foo")` copies the contents of the
 “nearest” file with basename “foo” to the file from which the function is

@@ -9,7 +9,7 @@ import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
 import {
   evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode, Options,
-  registerCustomXPathFunction, registerXQueryModule,
+  registerCustomXPathFunction, registerXQueryModule, XMLSerializer,
 } from 'fontoxpath'
 
 const debug = Debug('ruth')
@@ -55,6 +55,7 @@ const xQueryOptions: Options = {
   namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
   language: evaluateXPath.XQUERY_3_1_LANGUAGE,
   debug: process.env.DEBUG !== undefined,
+  xmlSerializer: new slimdom.XMLSerializer() as XMLSerializer,
 }
 
 function loadModule(file: string) {
@@ -79,7 +80,6 @@ export class Expander {
   constructor(
     private inputs: string[],
     private xmlExtensions: string[] = [],
-    private maxIterations = 8,
   ) {
     this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
     loadModule(path.join(__dirname, 'ruth.xq'))
@@ -90,10 +90,10 @@ export class Expander {
       {localName: 'eval', namespaceURI: ruth},
       ['xs:string'], 'node()*',
       (_, query: string): slimdom.Node[] => {
-        debug(`ruth:eval(${query}, ${this.xQueryVariables.element.getAttributeNS(dirtree, 'path')})`)
+        debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
         return evaluateXPathToNodes(
-          query,
-          this.xQueryVariables.element,
+          query.toString(), // FIXME: query should be of type string!
+          this.xQueryVariables.ruth_element,
           null,
           this.xQueryVariables,
           xQueryOptions,
@@ -105,7 +105,7 @@ export class Expander {
       ['xs:string'], 'xs:string',
       (_, relPath: string): string => {
         debug(`ruth:absolute-path(${relPath})`)
-        const dirent = this.findObject(path.join(this.xQueryVariables.path, relPath))
+        const dirent = this.findObject(path.join(this.xQueryVariables.ruth_path, relPath))
         if (isFile(dirent)) {
           return dirent
         }
@@ -278,31 +278,23 @@ export class Expander {
       const obj = elem.getAttributeNS(dirtree, 'path') as string
       const fullyExpandElement = (elem: slimdom.Element): slimdom.Element => {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
-        let res = elem
-        for (let output = elem.outerHTML, i = 0; i < this.maxIterations; i += 1) {
-          try {
-            debug(`fullyExpandElement ${elem.getAttributeNS(dirtree, 'path')}`)
-            res = evaluateXPathToFirstNode(
-              output,
-              elem,
-              null,
-              this.xQueryVariables,
-              xQueryOptions,
-            ) as slimdom.Element
-          } catch (error) {
-            throw new Error(`error expanding '${obj}': ${error}`)
-          }
-          if (output === res.outerHTML) {
-            return res
-          }
-          output = res.outerHTML
+        try {
+          debug(`fullyExpandElement ${elem.getAttributeNS(dirtree, 'path')}`)
+          return evaluateXPathToFirstNode(
+            elem.outerHTML,
+            elem,
+            null,
+            this.xQueryVariables,
+            xQueryOptions,
+          ) as slimdom.Element
+        } catch (error) {
+          throw new Error(`error expanding '${obj}': ${error}`)
         }
-        throw new Error(`error expanding '${obj}': did not terminate after ${this.maxIterations} expansions`)
       }
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
         .replace(Expander.templateRegex, '')
-      this.xQueryVariables.path = path.dirname(obj)
-      this.xQueryVariables.element = elem
+      this.xQueryVariables.ruth_path = path.dirname(obj)
+      this.xQueryVariables.ruth_element = elem
       if (Expander.templateRegex.exec(obj)) {
         debug(`Writing expansion of ${obj} to ${outputPath}`)
         const expandedElem = fullyExpandElement(elem)
