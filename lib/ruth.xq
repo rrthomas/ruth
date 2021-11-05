@@ -10,9 +10,9 @@ declare variable $ruth_element external;
 declare function ruth:eval($query as xs:string) as node()* external;
 
 declare function ruth:eval-items($item as item()*) as item()* {
-         typeswitch($item)
-         case text() return $item
-         default return $item[1]/ruth:eval(serialize(.))/node()
+  typeswitch($item)
+  case text() return $item
+  default return ruth:eval(serialize($item[1]))/node()
 };
 
 (:~
