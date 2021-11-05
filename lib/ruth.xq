@@ -27,7 +27,7 @@ declare function ruth:absolute-path($path as xs:string) as xs:string external;
  :
  : @param   $file the basename of the file to include
  :)
-declare function ruth:include($file as xs:string) as node()+ {
+declare function ruth:include($file as xs:string) as node()* {
   let $res := ruth:eval('ancestor::dirtree:directory/dirtree:file[@dirtree:name="' || $file || '"]')
   return ruth:eval-items($res)
 };
@@ -40,7 +40,7 @@ declare function ruth:include($file as xs:string) as node()+ {
  :
  : @param   $datum the name of the node whose contents should be included
  :)
-declare function ruth:query($datum as xs:string) as node()+ {
+declare function ruth:query($datum as xs:string) as node()* {
   let $res := ruth:eval('ancestor::*/*/' || $datum)
   return if (empty($res))
          then error(xs:QName('ruth:QueryNoResults'), "ruth:query: '" || $datum || "' gives no results")
@@ -54,7 +54,7 @@ declare function ruth:query($datum as xs:string) as node()+ {
  :
  : @param   $datum the name of the node whose contents should be included
  :)
-declare function ruth:data($datum as xs:string) as node()+ {
+declare function ruth:data($datum as xs:string) as node()* {
   let $res := ruth:eval('parent::*/ancestor::*/*/' || $datum)
   return if (empty($res))
          then error(xs:QName('ruth:DataNoResults'), "ruth:data: '" || $datum || "' gives no results")
