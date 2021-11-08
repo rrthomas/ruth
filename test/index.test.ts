@@ -105,6 +105,10 @@ describe('ruth', function test() {
     await cliTest(['data-templating-src'], 'data-templating-expected')
   })
 
+  it('Updating XQuery test', async () => {
+    await cliTest(['updating-xquery-src'], 'updating-xquery-expected')
+  })
+
   it('Executable test', async () => {
     await cliTest(['executable-src'], 'executable-expected')
   })

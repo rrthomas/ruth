@@ -8,8 +8,9 @@
 Ruth is a simple [XQuery]-based XML templating system, based on the plain
 text-oriented [Nancy]. Ruth reads a file or directory into an XML document;
 XML files become subdocuments. It then produces a copy of the original file
-or directory, executing embedded XQuery queries against the constructed XML
-document. Custom XQuery functions and external programs can be used.
+or directory, executing embedded XQuery queries and updates against the
+constructed XML document. Custom XQuery functions and external programs can
+be used.
 
 [XQuery]: https://www.w3.org/TR/xquery/
 [Nancy]: https://github.com/rrthomas/nancy
@@ -18,7 +19,8 @@ Ruth is free software, licensed under the GNU GPL version 3 (or, at your
 option, any later version), and written in TypeScript.
 
 Ruth uses [fontoxpath] as its XQuery implementation. fontoxpath implements a
-subset of XQuery 3.1.
+subset of [XQuery 3.1](https://www.w3.org/TR/xquery-31/) and
+[XQuery Update Facility 3.0](https://www.w3.org/TR/xquery-update-30/).
 
 [fontoxpath]: https://www.npmjs.com/package/fontoxpath
 
@@ -55,22 +57,22 @@ argument, if any, in breadth-first order.
 
 For each file, Ruth looks at its name, and:
 
-+ If the name contains the suffix `.in`, the file is skipped. (It may
-  be used by macros in other files.)
 + If the name contains the suffix `.ruth`, optionally followed by decimal
   digits, the file is added to the list of files to process. The decimal
   digits are the phase number, which defaults to zero. The files are
   processed in phase order: any phase 0 files first, then phase 1, and so
   on.
++ If the name contains the suffix `.in`, the file is skipped. (It may
+  be used by macros in other files.)
 + Otherwise, the file is added to the list of files to process in phase 0.
 
 The list of files to process is then processed, in order. For each file:
 
 + If the name contains the suffix `.ruth`, the file’s contents is expanded
-  (see below), and the result is then written to a file of the same name,
-  but with the `.ruth` suffix removed, in the corresponding place in the
-  output directory. The working XML document is also updated with the
-  result.
+  (see below), and if the name does not contain the suffix `.in` the result
+  is then written to a file of the same name, but with the `.ruth` suffix
+  removed, in the corresponding place in the output directory. The working
+  XML document is also updated with the result.
 + Otherwise, the file is copied verbatim to the corresponding place in the
   output directory.
 
@@ -85,6 +87,12 @@ expression.
 The use of XQuery is beyond the scope of this manual; see the
 [XQuery specification][XQuery] and [fontoxpath documentation][fontoxpath]
 for more details.
+
+XQuery updates are applied to the document, not to the result of expansion!
+Hence, if the results should be copied to the output (this is the usual
+case), then the file containing the update expression should be processed in
+an earlier phase than files it updates. The [Cookbook][Cookbook.md] gives an
+example.
 
 Ruth provides some built-in global variables:
 

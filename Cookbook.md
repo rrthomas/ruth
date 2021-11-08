@@ -324,3 +324,20 @@ For `place_1/time_1`, the result is:
     </body>
 </html>
 ```
+
+## Using XQuery updates
+
+As mentioned in [README.md](README.md), XQuery updates are applied to the
+XML document. Therefore, to have any direct effect on the output, the update
+expression must be in a different file from the node that it updates, and
+must take effect before the file it updates is copies.
+
+The trivial test in `test/updating-xquery-src` shows how this is arranged:
+the updating expression in `update.in.ruth.xml` will be processed in phase
+0, and the file will not be copied to the output (because of the `.in`
+suffix). The update applies to the `<div>` element in `main.ruth2.xml`. The
+file is not expanded until phase 2, by which time the update has already
+been applied, and the desired change is therefore copied to the output. Note
+that `main.ruth2.xml` does not contain any XQuery expressions itself: the
+`.ruth2` suffix is used solely to delay its processing until after the
+update has taken place.

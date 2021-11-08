@@ -8,7 +8,7 @@ import slimdom from 'slimdom'
 import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
 import {
-  evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode, Options,
+  evaluateXPath, evaluateUpdatingExpressionSync, executePendingUpdateList, Options,
   registerCustomXPathFunction, registerXQueryModule, XMLSerializer,
 } from 'fontoxpath'
 
@@ -58,6 +58,30 @@ const xQueryOptions: Options = {
   xmlSerializer: new slimdom.XMLSerializer() as XMLSerializer,
 }
 
+type Variables = {[id: string]: any}
+
+function evaluateXQuery(
+  query: string,
+  contextNode: slimdom.Node,
+  variables: Variables,
+  options: Options,
+): slimdom.Node[] {
+  const res = evaluateUpdatingExpressionSync(query, contextNode, null, variables, options)
+  debug(`xdmValue: ${(res.xdmValue as slimdom.Element).outerHTML}`)
+  debug(`pendingUpdateList: ${res.pendingUpdateList.length}`)
+  executePendingUpdateList(res.pendingUpdateList)
+  debug(`updated context: ${(contextNode as slimdom.Element).outerHTML}`)
+  if (Array.isArray(res.xdmValue)) {
+    debug('returning array')
+    return res.xdmValue
+  }
+  if (typeof res.xdmValue === 'object') {
+    debug('making and returning array')
+    return [res.xdmValue]
+  }
+  throw new Error(`'${query}' did not evaluate to nodes`)
+}
+
 function loadModule(file: string) {
   const module = fs.readFileSync(file, 'utf-8')
   registerXQueryModule(module)
@@ -91,13 +115,12 @@ export class Expander {
       ['xs:string'], 'node()*',
       (_, query: string): slimdom.Node[] => {
         debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
-        return evaluateXPathToNodes(
+        return evaluateXQuery(
           query.toString(), // FIXME: query should be of type string!
           this.xQueryVariables.ruth_element,
-          null,
           this.xQueryVariables,
           xQueryOptions,
-        ) as slimdom.Node[]
+        )
       },
     )
     registerCustomXPathFunction(
@@ -152,9 +175,9 @@ export class Expander {
     return dirs.length > 0 ? dirents : undefined
   }
 
-  private static templateRegex = /\.ruth([0-9])*(?=\.[^.]+$|$)/
+  private static templateRegex = /\.ruth([0-9]+)?(?=\.[^.]|$)/
 
-  private static noCopyRegex = /\.in(?=\.[^.]+$|$)/
+  private static noCopyRegex = /\.in(?=\.[^.]|$)/
 
   private dirTreeToXML(root: string) {
     const xtree = new slimdom.Document()
@@ -220,10 +243,7 @@ export class Expander {
     return xtree
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  xQueryVariables: {[id: string]: any} = {
-    // These variables are injected into the ruth namespace in lib/ruth.xq.
-  }
+  xQueryVariables: Variables = {}
 
   private index(filePath: string): slimdom.Element {
     const components = ['']
@@ -232,17 +252,16 @@ export class Expander {
     }
     const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
     const query = `/${xPathComponents.join('/')}`
-    const node = evaluateXPathToFirstNode(
+    const nodes = evaluateXQuery(
       query,
       this.xtree,
-      null,
       this.xQueryVariables,
       xQueryOptions,
     )
-    if (node === null) {
+    if (nodes.length === 0) {
       throw new Error(`no such file or directory '${filePath}'`)
     }
-    return node as slimdom.Element
+    return nodes[0] as slimdom.Element
   }
 
   // Expand breadth-first, updating the tree as we go, so that each
@@ -280,13 +299,12 @@ export class Expander {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
         try {
           debug(`fullyExpandElement ${elem.getAttributeNS(dirtree, 'path')}`)
-          return evaluateXPathToFirstNode(
+          return evaluateXQuery(
             elem.outerHTML,
             elem,
-            null,
             this.xQueryVariables,
             xQueryOptions,
-          ) as slimdom.Element
+          )[0] as slimdom.Element
         } catch (error) {
           throw new Error(`error expanding '${obj}': ${error}`)
         }
@@ -295,18 +313,26 @@ export class Expander {
         .replace(Expander.templateRegex, '')
       this.xQueryVariables.ruth_path = path.dirname(obj)
       this.xQueryVariables.ruth_element = elem
+      const doCopy = !Expander.noCopyRegex.exec(obj)
       if (Expander.templateRegex.exec(obj)) {
-        debug(`Writing expansion of ${obj} to ${outputPath}`)
+        debug(`Expanding ${obj}`)
         const expandedElem = fullyExpandElement(elem)
         elem.replaceWith(expandedElem)
-        fs.writeFileSync(outputPath, expandedElem.innerHTML)
-      } else if (!Expander.noCopyRegex.exec(obj)) {
+        if (doCopy) {
+          debug(`Writing expansion of ${obj} to ${outputPath}`)
+          fs.writeFileSync(outputPath, expandedElem.innerHTML)
+        }
+      } else if (doCopy) {
         const objFullPath = this.findObject(obj)
         if (!isFile(objFullPath)) {
           throw new Error(`${obj} is not a file`)
         }
         fs.copyFileSync(objFullPath, outputPath)
       }
+    }
+    debug('Final XML')
+    if (this.xtree.documentElement !== null) {
+      debug(formatXML(this.xtree.documentElement.outerHTML, {lineSeparator: '\n'}))
     }
   }
 }
