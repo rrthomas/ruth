@@ -8,7 +8,7 @@ import slimdom from 'slimdom'
 import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
 import {
-  evaluateXPath, evaluateUpdatingExpressionSync, executePendingUpdateList, Options,
+  evaluateUpdatingExpressionSync, executePendingUpdateList, Options,
   registerCustomXPathFunction, registerXQueryModule, XMLSerializer,
 } from 'fontoxpath'
 
@@ -53,7 +53,6 @@ const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
 
 const xQueryOptions: Options = {
   namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
-  language: evaluateXPath.XQUERY_3_1_LANGUAGE,
   debug: process.env.DEBUG !== undefined,
   xmlSerializer: new slimdom.XMLSerializer() as XMLSerializer,
 }
