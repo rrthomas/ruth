@@ -1,1 +1,0 @@
-{ruth:eval('insert node attribute foo {"wibble"} into //div')}

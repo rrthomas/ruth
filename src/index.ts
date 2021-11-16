@@ -8,7 +8,7 @@ import slimdom from 'slimdom'
 import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
 import {
-  evaluateUpdatingExpressionSync, executePendingUpdateList, Options,
+  evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode, Options,
   registerCustomXPathFunction, registerXQueryModule, XMLSerializer,
 } from 'fontoxpath'
 
@@ -53,33 +53,12 @@ const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
 
 const xQueryOptions: Options = {
   namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
+  language: evaluateXPath.XQUERY_3_1_LANGUAGE,
   debug: process.env.DEBUG !== undefined,
   xmlSerializer: new slimdom.XMLSerializer() as XMLSerializer,
 }
 
 type Variables = {[id: string]: any}
-
-function evaluateXQuery(
-  query: string,
-  contextNode: slimdom.Node,
-  variables: Variables,
-  options: Options,
-): slimdom.Node[] {
-  const res = evaluateUpdatingExpressionSync(query, contextNode, null, variables, options)
-  debug(`xdmValue: ${(res.xdmValue as slimdom.Element).outerHTML}`)
-  debug(`pendingUpdateList: ${res.pendingUpdateList.length}`)
-  executePendingUpdateList(res.pendingUpdateList)
-  debug(`updated context: ${(contextNode as slimdom.Element).outerHTML}`)
-  if (Array.isArray(res.xdmValue)) {
-    debug('returning array')
-    return res.xdmValue
-  }
-  if (typeof res.xdmValue === 'object') {
-    debug('making and returning array')
-    return [res.xdmValue]
-  }
-  throw new Error(`'${query}' did not evaluate to nodes`)
-}
 
 function loadModule(file: string) {
   const module = fs.readFileSync(file, 'utf-8')
@@ -114,9 +93,10 @@ export class Expander {
       ['xs:string'], 'node()*',
       (_, query: string): slimdom.Node[] => {
         debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
-        return evaluateXQuery(
+        return evaluateXPathToNodes(
           query.toString(), // FIXME: query should be of type string!
           this.xQueryVariables.ruth_element,
+          null,
           this.xQueryVariables,
           xQueryOptions,
         )
@@ -251,16 +231,17 @@ export class Expander {
     }
     const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
     const query = `/${xPathComponents.join('/')}`
-    const nodes = evaluateXQuery(
+    const node = evaluateXPathToFirstNode(
       query,
       this.xtree,
+      null,
       this.xQueryVariables,
       xQueryOptions,
     )
-    if (nodes.length === 0) {
+    if (node === null) {
       throw new Error(`no such file or directory '${filePath}'`)
     }
-    return nodes[0] as slimdom.Element
+    return node as slimdom.Element
   }
 
   // Expand breadth-first, updating the tree as we go, so that each
@@ -298,12 +279,13 @@ export class Expander {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
         try {
           debug(`fullyExpandElement ${elem.getAttributeNS(dirtree, 'path')}`)
-          return evaluateXQuery(
+          return evaluateXPathToFirstNode(
             elem.outerHTML,
             elem,
+            null,
             this.xQueryVariables,
             xQueryOptions,
-          )[0] as slimdom.Element
+          ) as slimdom.Element
         } catch (error) {
           throw new Error(`error expanding '${obj}': ${error}`)
         }
