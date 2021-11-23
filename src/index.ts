@@ -86,7 +86,7 @@ export class Expander {
     this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
     loadModule(path.join(__dirname, 'ruth.xq'))
     this.xtree = this.dirTreeToXML('')
-    // FIXME: The next line only works once, so can only use Expander once.
+    // FIXME: registerCustomXPathFunction only works once, so can only use Expander once.
     // See https://github.com/FontoXML/fontoxpath/issues/406
     registerCustomXPathFunction(
       {localName: 'eval', namespaceURI: ruth},
