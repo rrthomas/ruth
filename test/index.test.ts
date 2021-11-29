@@ -114,6 +114,10 @@ describe('ruth', function test() {
     await checkLinks('cookbook-example-website-expected', 'index/index.xhtml')
   })
 
+  it('Test ruth:map()', async () => {
+    await cliTest(['map-src'], 'map-expected')
+  })
+
   it('Invalid XQuery should cause an error', async () => {
     await failingCliTest(
       ['xquery-error', 'dummy'],
