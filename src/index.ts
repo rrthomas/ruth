@@ -85,7 +85,6 @@ export class Expander {
   ) {
     this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
     loadModule(path.join(__dirname, 'ruth.xq'))
-    this.xtree = this.dirTreeToXML('')
     // FIXME: registerCustomXPathFunction only works once, so can only use Expander once.
     // See https://github.com/FontoXML/fontoxpath/issues/406
     registerCustomXPathFunction(
@@ -139,6 +138,7 @@ export class Expander {
         throw new Error(`${relPath} is not a file`)
       },
     )
+    this.xtree = this.dirTreeToXML('')
   }
 
   // Find the first file or directory with path `object` in the input tree,
