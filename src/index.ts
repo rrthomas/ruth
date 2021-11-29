@@ -108,18 +108,19 @@ export class Expander {
         debug(`ruth:map(${query}, ${transformQuery}, ${nodes})`)
         const resultNodes = []
         for (const node of nodes) {
+          const nodeClone = node.cloneNode(true)
           const elems = evaluateXPathToNodes(
-            query, node, null, this.xQueryVariables, xQueryOptions,
+            query, nodeClone, null, this.xQueryVariables, xQueryOptions,
           ) as slimdom.Element[]
           for (const elem of elems) {
             const res = evaluateXPathToFirstNode(
               transformQuery, elem, null, this.xQueryVariables, xQueryOptions,
             ) as slimdom.Element
-            if (elem === node) { // We matched the entire node, so replace it in results.
+            if (elem === nodeClone) { // We matched the entire node, so replace it in results.
               resultNodes.push(res)
             } else { // We matched part of the node, replace the match.
               elem.replaceWith(res)
-              resultNodes.push(node)
+              resultNodes.push(nodeClone)
             }
           }
         }
