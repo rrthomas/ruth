@@ -124,8 +124,6 @@ export class Expander {
           }
           resultNodes.push(nodeClone)
         }
-        debug('ruth:map returning:')
-        debug(resultNodes)
         return resultNodes
       },
     )
