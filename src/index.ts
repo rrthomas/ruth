@@ -85,6 +85,7 @@ export class Expander {
   ) {
     this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
     loadModule(path.join(__dirname, 'ruth.xq'))
+    loadModule(path.join(__dirname, 'functx.xq'))
     // FIXME: registerCustomXPathFunction only works once, so can only use Expander once.
     // See https://github.com/FontoXML/fontoxpath/issues/406
     registerCustomXPathFunction(
@@ -128,7 +129,7 @@ export class Expander {
       },
     )
     registerCustomXPathFunction(
-      {localName: 'absolute-path', namespaceURI: ruth},
+      {localName: 'real-path', namespaceURI: ruth},
       ['xs:string'], 'xs:string',
       (_, relPath: string): string => {
         debug(`ruth:absolute-path(${relPath})`)
