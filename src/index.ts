@@ -108,7 +108,7 @@ export class Expander {
         debug(`ruth:map(${query}, ${transformQuery}, ${nodes})`)
         const resultNodes = []
         for (const node of nodes) {
-          const nodeClone = node.cloneNode(true)
+          let nodeClone = node.cloneNode(true)
           const elems = evaluateXPathToNodes(
             query, nodeClone, null, this.xQueryVariables, xQueryOptions,
           ) as slimdom.Element[]
@@ -117,13 +117,15 @@ export class Expander {
               transformQuery, elem, null, this.xQueryVariables, xQueryOptions,
             ) as slimdom.Element
             if (elem === nodeClone) { // We matched the entire node, so replace it in results.
-              resultNodes.push(res)
+              nodeClone = res
             } else { // We matched part of the node, replace the match.
               elem.replaceWith(res)
-              resultNodes.push(nodeClone)
             }
           }
+          resultNodes.push(nodeClone)
         }
+        debug('ruth:map returning:')
+        debug(resultNodes)
         return resultNodes
       },
     )
@@ -202,10 +204,9 @@ export class Expander {
       } else if (isFile(realObj)) {
         debug('processing file')
         if (isExecutable(realObj)) {
-          debug('creating XQuery function from executable')
           const localName = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
           const exec = (_: any, args: string[], input?: string): string => execa.sync(
-            realObj, args, {input},
+            fs.realpathSync(realObj), args, {input},
           ).stdout
           registerCustomXPathFunction(
             {localName, namespaceURI: ruth}, ['xs:string*'], 'xs:string', exec,
