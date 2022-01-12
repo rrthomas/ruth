@@ -140,7 +140,7 @@ export class Expander {
         throw new Error(`${relPath} is not a file`)
       },
     )
-    this.xtree = this.dirTreeToXML('')
+    this.xtree = this.dirTreeToXml('')
   }
 
   // Find the first file or directory with path `object` in the input tree,
@@ -185,13 +185,13 @@ export class Expander {
 
   private static noCopyRegex = /\.in(?=\.[^.]|$)/
 
-  private dirTreeToXML(root: string) {
+  private dirTreeToXml(root: string) {
     const xtree = new slimdom.Document()
     const objToNode = (obj: string) => {
       const realObj = this.findObject(obj)
       const parsedPath = path.parse(obj)
       let elem: slimdom.Element
-      debug(`dirTreeToXML: considering ${obj}`)
+      debug(`dirTreeToXml: considering ${obj}`)
       if (isDirectory(realObj)) {
         debug('processing directory')
         elem = xtree.createElementNS(dirtree, 'directory')
