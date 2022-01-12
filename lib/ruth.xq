@@ -21,7 +21,7 @@ declare function ruth:eval-items($item as item()*) as item()* {
  :
  : @param   $path a path relative to the input tree
  :)
-declare function ruth:absolute-path($path as xs:string) as xs:string external;
+declare function ruth:real-path($path as xs:string) as xs:string external;
 
 (:~
  : Include a file from the Ruth XML document at the call-site
