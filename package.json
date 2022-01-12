@@ -34,7 +34,7 @@
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "depcheck": "^1.4.2",
-    "dir-compare": "^3.3.0",
+    "dir-compare": "^4.0.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-airbnb-typescript": "^14.0.0",

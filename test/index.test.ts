@@ -26,19 +26,11 @@ function diffsetDiffsOnly(diffSet: Difference[]): Difference[] {
 }
 
 function assertFileObjEqual(obj: string, expected: string) {
-  const stats = fs.statSync(obj)
-  if (stats.isDirectory()) {
-    const compareResult = compareSync(obj, expected, {compareContent: true})
-    assert(
-      compareResult.same,
-      util.inspect(diffsetDiffsOnly(compareResult.diffSet as Difference[])),
-    )
-  } else {
-    assert(
-      fs.readFileSync(obj).equals(fs.readFileSync(expected)),
-      `'${obj}' does not match expected '${expected}'`,
-    )
-  }
+  const compareResult = compareSync(obj, expected, {compareContent: true})
+  assert(
+    compareResult.same,
+    util.inspect(diffsetDiffsOnly(compareResult.diffSet as Difference[])),
+  )
 }
 
 async function cliTest(args: string[], expected: string) {
