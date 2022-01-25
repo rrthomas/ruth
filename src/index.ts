@@ -283,7 +283,7 @@ export class Expander {
   expand(outputDir: string, buildPath = ''): void {
     const elemQueues: slimdom.Element[][] = []
     const addElement = (elem: slimdom.Element): void => {
-      debug(`expandElement ${elem.getAttributeNS(dirtree, 'path')}`)
+      debug(`addElement ${elem.getAttributeNS(dirtree, 'path')}`)
       const obj = elem.getAttributeNS(dirtree, 'path') as string
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
       if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
