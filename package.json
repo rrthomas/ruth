@@ -1,7 +1,7 @@
 {
   "name": "@sc3d/ruth",
   "description": "Simple XML templating system",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "author": "Reuben Thomas",
   "bin": {
     "ruth": "./bin/run"
