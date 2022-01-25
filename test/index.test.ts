@@ -43,12 +43,17 @@ async function cliTest(args: string[], expected: string) {
 }
 
 async function failingCliTest(args: string[], expected: string) {
+  const outputDir = tempy.directory()
+  const outputObj = path.join(outputDir, 'output')
+  args.push(outputObj)
   try {
     await run(args)
   } catch (error: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(error.stderr).to.contain(expected)
     return
+  } finally {
+    fs.rmdirSync(outputDir, {recursive: true})
   }
   throw new Error('test passed unexpectedly')
 }
@@ -112,7 +117,7 @@ describe('ruth', function test() {
 
   it('Invalid XQuery should cause an error', async () => {
     await failingCliTest(
-      ['xquery-error', 'dummy'],
+      ['xquery-error'],
       'missing semicolon at end of function',
     )
   })
@@ -120,7 +125,7 @@ describe('ruth', function test() {
   it('Invalid XQuery should cause an error (DEBUG=yes coverage)', async () => {
     process.env.DEBUG = 'yes'
     await failingCliTest(
-      ['xquery-error', 'dummy'],
+      ['xquery-error'],
       'missing semicolon at end of function',
     )
     delete process.env.DEBUG
@@ -128,28 +133,28 @@ describe('ruth', function test() {
 
   it('Incorrect XQuery should cause an error', async () => {
     await failingCliTest(
-      ['incorrect-xquery', 'dummy'],
+      ['incorrect-xquery'],
       'XPST0017',
     )
   })
 
   it('XQuery that gives no results should cause an error', async () => {
     await failingCliTest(
-      ['xquery-no-results', 'dummy'],
+      ['xquery-no-results'],
       'gives no results',
     )
   })
 
   it('An XQuery module with no module declaration should give an error', async () => {
     await failingCliTest(
-      ['xquery-module-no-declaration', 'dummy'],
+      ['xquery-module-no-declaration'],
       'XQuery module must be declared in a library module',
     )
   })
 
   it('Invalid XML should cause an error', async () => {
     await failingCliTest(
-      ['invalid-xml', 'dummy'],
+      ['invalid-xml'],
       'error parsing',
     )
   })
@@ -161,14 +166,14 @@ describe('ruth', function test() {
 
   it('Missing command-line argument should cause an error', async () => {
     await failingCliTest(
-      ['dummy'],
+      [],
       'the following arguments are required',
     )
   })
 
   it('Invalid command-line argument should cause an error', async () => {
     await failingCliTest(
-      ['--foo', 'a', 'b'],
+      ['--foo', 'a'],
       'unrecognized arguments: --foo',
     )
   })
@@ -176,7 +181,7 @@ describe('ruth', function test() {
   it('Running on a non-existent path should cause an error (DEBUG=yes coverage)', async () => {
     process.env.DEBUG = 'yes'
     await failingCliTest(
-      ['a', 'b'],
+      ['a'],
       'is not a file or directory',
     )
     delete process.env.DEBUG
@@ -187,7 +192,7 @@ describe('ruth', function test() {
     const tempFile = tempy.file()
     server.listen(tempFile)
     await failingCliTest(
-      [`${tempFile}`, 'dummy'],
+      [`${tempFile}`],
       'is not a file or directory',
     )
     server.close()
@@ -195,14 +200,14 @@ describe('ruth', function test() {
 
   it('Non-existent --path should cause an error', async () => {
     await failingCliTest(
-      ['--path', 'nonexistent', 'webpage-src', 'dummy'],
+      ['--path', 'nonexistent', 'webpage-src'],
       'no such file or directory',
     )
   })
 
   it('Empty INPUT-PATH should cause an error', async () => {
     await failingCliTest(
-      ['', 'dummy'],
+      [''],
       'input path must not be empty',
     )
   })

@@ -248,7 +248,7 @@ export class Expander {
     return xtree
   }
 
-  xQueryVariables: Variables = {}
+  private xQueryVariables: Variables = {}
 
   private index(filePath: string): slimdom.Element {
     const components = ['']
@@ -270,20 +270,27 @@ export class Expander {
     return node as slimdom.Element
   }
 
+  private xQueryErrorRaised = false
+
+  private xQueryError(msg: string) {
+    console.warn(msg)
+    this.xQueryErrorRaised = true
+  }
+
   // Expand breadth-first, updating the tree as we go, so that each
   // expression is evaluated fully in the context of the file in which it
   // occurs, and we avoid multiple evaluations of nodes near the root.
   expand(outputDir: string, buildPath = ''): void {
     const elemQueues: slimdom.Element[][] = []
-    const expandElement = (elem: slimdom.Element): void => {
+    const addElement = (elem: slimdom.Element): void => {
       debug(`expandElement ${elem.getAttributeNS(dirtree, 'path')}`)
       const obj = elem.getAttributeNS(dirtree, 'path') as string
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
       if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
         debug('Expanding directory')
         fsExtra.ensureDirSync(outputPath)
-        elem.children.filter((child) => child.tagName !== 'directory').forEach(expandElement)
-        elem.children.filter((child) => child.tagName === 'directory').forEach(expandElement)
+        elem.children.filter((child) => child.tagName !== 'directory').forEach(addElement)
+        elem.children.filter((child) => child.tagName === 'directory').forEach(addElement)
       } else {
         const match = Expander.templateRegex.exec(obj)
         let queue = 0
@@ -297,11 +304,11 @@ export class Expander {
         elemQueues[queue].push(elem)
       }
     }
-    expandElement(this.index(buildPath))
+    addElement(this.index(buildPath))
     const elemQueue = elemQueues.flat()
     for (const elem of elemQueue) {
       const obj = elem.getAttributeNS(dirtree, 'path') as string
-      const fullyExpandElement = (elem: slimdom.Element): slimdom.Element => {
+      const expandElement = (elem: slimdom.Element): slimdom.Element => {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
         try {
           debug(`fullyExpandElement ${elem.getAttributeNS(dirtree, 'path')}`)
@@ -313,7 +320,8 @@ export class Expander {
             xQueryOptions,
           ) as slimdom.Element
         } catch (error) {
-          throw new Error(`error expanding '${obj}': ${error}`)
+          this.xQueryError(`error expanding '${obj}': ${error}`)
+          return elem
         }
       }
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
@@ -323,7 +331,7 @@ export class Expander {
       const doCopy = !Expander.noCopyRegex.exec(obj)
       if (Expander.templateRegex.exec(obj)) {
         debug(`Expanding ${obj}`)
-        const expandedElem = fullyExpandElement(elem)
+        const expandedElem = expandElement(elem)
         elem.replaceWith(expandedElem)
         if (doCopy) {
           debug(`Writing expansion of ${obj} to ${outputPath}`)
@@ -340,6 +348,9 @@ export class Expander {
     debug('Final XML')
     if (this.xtree.documentElement !== null) {
       debug(formatXML(this.xtree.documentElement.outerHTML, {lineSeparator: '\n'}))
+    }
+    if (this.xQueryErrorRaised) {
+      throw new Error('there were errors during XQuery processing')
     }
   }
 }
