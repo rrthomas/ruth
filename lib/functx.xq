@@ -1,3 +1,4 @@
+
 (:~
 
  : --------------------------------
@@ -117,13 +118,11 @@ declare function functx:all-whitespace
  : @see     http://www.xqueryfunctions.com/xq/functx_are-distinct-values.html 
  : @param   $seq the sequence of values 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:are-distinct-values 
- :   ( $seq as xs:anyAtomicType* )  as xs:boolean {
- :        
- :    count(distinct-values($seq)) = count($seq)
- :  } ;
- :)
+declare function functx:are-distinct-values 
+  ( $seq as xs:anyAtomicType* )  as xs:boolean {
+       
+   count(distinct-values($seq)) = count($seq)
+ } ;
 
 (:~
  : The built-in type of an atomic value 
@@ -467,19 +466,17 @@ declare function functx:copy-attributes
  : @param   $month the month 
  : @param   $day the day 
  :) 
-(: fontoxpath cannot compile 'functx:pad-integer-to-length'
- : declare function functx:date 
- :   ( $year as xs:anyAtomicType ,
- :     $month as xs:anyAtomicType ,
- :     $day as xs:anyAtomicType )  as xs:date {
- :        
- :    xs:date(
- :      concat(
- :        functx:pad-integer-to-length(xs:integer($year),4),'-',
- :        functx:pad-integer-to-length(xs:integer($month),2),'-',
- :        functx:pad-integer-to-length(xs:integer($day),2)))
- :  } ;
- :)
+declare function functx:date 
+  ( $year as xs:anyAtomicType ,
+    $month as xs:anyAtomicType ,
+    $day as xs:anyAtomicType )  as xs:date {
+       
+   xs:date(
+     concat(
+       functx:pad-integer-to-length(xs:integer($year),4),'-',
+       functx:pad-integer-to-length(xs:integer($month),2),'-',
+       functx:pad-integer-to-length(xs:integer($day),2)))
+ } ;
 
 (:~
  : Construct a date/time from individual components 
@@ -494,20 +491,18 @@ declare function functx:copy-attributes
  : @param   $minute the minute 
  : @param   $second the second 
  :) 
-(: fontoxpath cannot compile 'functx:date'
- : declare function functx:dateTime 
- :   ( $year as xs:anyAtomicType ,
- :     $month as xs:anyAtomicType ,
- :     $day as xs:anyAtomicType ,
- :     $hour as xs:anyAtomicType ,
- :     $minute as xs:anyAtomicType ,
- :     $second as xs:anyAtomicType )  as xs:dateTime {
- :        
- :    xs:dateTime(
- :      concat(functx:date($year,$month,$day),'T',
- :              functx:time($hour,$minute,$second)))
- :  } ;
- :)
+declare function functx:dateTime 
+  ( $year as xs:anyAtomicType ,
+    $month as xs:anyAtomicType ,
+    $day as xs:anyAtomicType ,
+    $hour as xs:anyAtomicType ,
+    $minute as xs:anyAtomicType ,
+    $second as xs:anyAtomicType )  as xs:dateTime {
+       
+   xs:dateTime(
+     concat(functx:date($year,$month,$day),'T',
+             functx:time($hour,$minute,$second)))
+ } ;
 
 (:~
  : The day of the year (a number between 1 and 366) 
@@ -517,14 +512,12 @@ declare function functx:copy-attributes
  : @see     http://www.xqueryfunctions.com/xq/functx_day-in-year.html 
  : @param   $date the date 
  :) 
-(: fontoxpath cannot compile 'functx:first-day-of-year'
- : declare function functx:day-in-year 
- :   ( $date as xs:anyAtomicType? )  as xs:integer? {
- :        
- :   days-from-duration(
- :       xs:date($date) - functx:first-day-of-year($date)) + 1
- :  } ;
- :)
+declare function functx:day-in-year 
+  ( $date as xs:anyAtomicType? )  as xs:integer? {
+       
+  days-from-duration(
+      xs:date($date) - functx:first-day-of-year($date)) + 1
+ } ;
 
 (:~
  : The day of the week, from a date 
@@ -638,13 +631,11 @@ declare function functx:depth-of-node
  : @see     http://www.xqueryfunctions.com/xq/functx_distinct-attribute-names.html 
  : @param   $nodes the root to start from 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:distinct-attribute-names 
- :   ( $nodes as node()* )  as xs:string* {
- :        
- :    distinct-values($nodes//@*/name(.))
- :  } ;
- :)
+declare function functx:distinct-attribute-names 
+  ( $nodes as node()* )  as xs:string* {
+       
+   distinct-values($nodes//@*/name(.))
+ } ;
 
 (:~
  : The XML nodes with distinct values, taking into account attributes and descendants 
@@ -670,13 +661,11 @@ declare function functx:distinct-deep
  : @see     http://www.xqueryfunctions.com/xq/functx_distinct-element-names.html 
  : @param   $nodes the root(s) to start from 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:distinct-element-names 
- :   ( $nodes as node()* )  as xs:string* {
- :        
- :    distinct-values($nodes/descendant-or-self::*/name(.))
- :  } ;
- :)
+declare function functx:distinct-element-names 
+  ( $nodes as node()* )  as xs:string* {
+       
+   distinct-values($nodes/descendant-or-self::*/name(.))
+ } ;
 
 (:~
  : The distinct paths of all descendant elements in an XML fragment 
@@ -686,13 +675,11 @@ declare function functx:distinct-deep
  : @see     http://www.xqueryfunctions.com/xq/functx_distinct-element-paths.html 
  : @param   $nodes the root(s) to start from 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:distinct-element-paths 
- :   ( $nodes as node()* )  as xs:string* {
- :        
- :    distinct-values(functx:path-to-node($nodes/descendant-or-self::*))
- :  } ;
- :)
+declare function functx:distinct-element-paths 
+  ( $nodes as node()* )  as xs:string* {
+       
+   distinct-values(functx:path-to-node($nodes/descendant-or-self::*))
+ } ;
 
 (:~
  : The distinct XML nodes in a sequence (by node identity) 
@@ -793,15 +780,13 @@ declare function functx:exclusive-or
  : @see     http://www.xqueryfunctions.com/xq/functx_first-day-of-month.html 
  : @param   $date the date 
  :) 
-(: fontoxpath cannot compile 'functx:date'
- : declare function functx:first-day-of-month 
- :   ( $date as xs:anyAtomicType? )  as xs:date? {
- :        
- :    functx:date(year-from-date(xs:date($date)),
- :             month-from-date(xs:date($date)),
- :             1)
- :  } ;
- :)
+declare function functx:first-day-of-month 
+  ( $date as xs:anyAtomicType? )  as xs:date? {
+       
+   functx:date(year-from-date(xs:date($date)),
+            month-from-date(xs:date($date)),
+            1)
+ } ;
 
 (:~
  : The first day of the year of a date 
@@ -811,13 +796,11 @@ declare function functx:exclusive-or
  : @see     http://www.xqueryfunctions.com/xq/functx_first-day-of-year.html 
  : @param   $date the date 
  :) 
-(: fontoxpath cannot compile 'functx:date'
- : declare function functx:first-day-of-year 
- :   ( $date as xs:anyAtomicType? )  as xs:date? {
- :        
- :    functx:date(year-from-date(xs:date($date)), 1, 1)
- :  } ;
- :)
+declare function functx:first-day-of-year 
+  ( $date as xs:anyAtomicType? )  as xs:date? {
+       
+   functx:date(year-from-date(xs:date($date)), 1, 1)
+ } ;
 
 (:~
  : The XML node in a sequence that appears first in document order 
@@ -1352,15 +1335,13 @@ declare function functx:is-value-in-sequence
  : @see     http://www.xqueryfunctions.com/xq/functx_last-day-of-month.html 
  : @param   $date the date 
  :) 
-(: fontoxpath cannot compile 'functx:date'
- : declare function functx:last-day-of-month 
- :   ( $date as xs:anyAtomicType? )  as xs:date? {
- :        
- :    functx:date(year-from-date(xs:date($date)),
- :             month-from-date(xs:date($date)),
- :             functx:days-in-month($date))
- :  } ;
- :)
+declare function functx:last-day-of-month 
+  ( $date as xs:anyAtomicType? )  as xs:date? {
+       
+   functx:date(year-from-date(xs:date($date)),
+            month-from-date(xs:date($date)),
+            functx:days-in-month($date))
+ } ;
 
 (:~
  : The last day of the month of a date 
@@ -1370,13 +1351,11 @@ declare function functx:is-value-in-sequence
  : @see     http://www.xqueryfunctions.com/xq/functx_last-day-of-year.html 
  : @param   $date the date 
  :) 
-(: fontoxpath cannot compile 'functx:date'
- : declare function functx:last-day-of-year 
- :   ( $date as xs:anyAtomicType? )  as xs:date? {
- :        
- :    functx:date(year-from-date(xs:date($date)), 12, 31)
- :  } ;
- :)
+declare function functx:last-day-of-year 
+  ( $date as xs:anyAtomicType? )  as xs:date? {
+       
+   functx:date(year-from-date(xs:date($date)), 12, 31)
+ } ;
 
 (:~
  : The XML node in a sequence that is last in document order 
@@ -1669,14 +1648,12 @@ substring-before($testname,':') =
  : @see     http://www.xqueryfunctions.com/xq/functx_namespaces-in-use.html 
  : @param   $root the root node to start from 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:namespaces-in-use 
- :   ( $root as node()? )  as xs:anyURI* {
- :        
- :    distinct-values(
- :       $root/descendant-or-self::*/(.|@*)/namespace-uri(.))
- :  } ;
- :)
+declare function functx:namespaces-in-use 
+  ( $root as node()? )  as xs:anyURI* {
+       
+   distinct-values(
+      $root/descendant-or-self::*/(.|@*)/namespace-uri(.))
+ } ;
 
 (:~
  : The next day 
@@ -1723,14 +1700,12 @@ declare function functx:node-kind
  : @see     http://www.xqueryfunctions.com/xq/functx_non-distinct-values.html 
  : @param   $seq the sequence of values 
  :) 
-(: fontoxpath does not impement 'distinct-values'
- : declare function functx:non-distinct-values 
- :   ( $seq as xs:anyAtomicType* )  as xs:anyAtomicType* {
- :        
- :    for $val in distinct-values($seq)
- :    return $val[count($seq[. = $val]) > 1]
- :  } ;
- :)
+declare function functx:non-distinct-values 
+  ( $seq as xs:anyAtomicType* )  as xs:anyAtomicType* {
+       
+   for $val in distinct-values($seq)
+   return $val[count($seq[. = $val]) > 1]
+ } ;
 
 (:~
  : The number of regions that match a pattern 
@@ -1758,16 +1733,16 @@ declare function functx:number-of-matches
  : @see     http://www.xqueryfunctions.com/xq/functx_open-ref-document.html 
  : @param   $refNode a node whose value is a relative URI reference 
  :) 
-(: fontoxpath does not implement 'base-uri'
+(: fontoxpath does not yet implement 'base-uri'
  : declare function functx:open-ref-document 
- :   ( $refNode as node() )  as document-node()? {
- :        
- :    if (base-uri($refNode))
- :    then doc(resolve-uri($refNode, base-uri($refNode)))
- :    else if (static-base-uri()) 
- :         then doc(resolve-uri($refNode, static-base-uri()))
- :         else ()
- :  } ;
+ :  ( $refNode as node() )  as document-node()? {
+ :       
+ :   if (base-uri($refNode))
+ :   then doc(resolve-uri($refNode, base-uri($refNode)))
+ :   else if (static-base-uri()) 
+ :        then doc(resolve-uri($refNode, static-base-uri()))
+ :        else ()
+ : } ;
  :)
 
 (:~
@@ -2087,7 +2062,7 @@ declare function functx:replace-first
  } ;
 
 (:~
- : performs multiple replacements, using pairs of replace parameters 
+ : Performs multiple replacements, using pairs of replace parameters 
  :
  : @author  Priscilla Walmsley, Datypic 
  : @version 1.0 
@@ -2210,30 +2185,28 @@ declare function functx:sequence-node-equal-any-order
  : @see     http://www.xqueryfunctions.com/xq/functx_sequence-type.html 
  : @param   $items the items whose sequence type you want to determine 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:sequence-type 
- :   ( $items as item()* )  as xs:string {
- :        
- : concat(
- :   if (empty($items))
- :   then 'empty-sequence()'
- :   else if (every $val in $items
- :            satisfies $val instance of xs:anyAtomicType)
- :   then if (count(distinct-values(functx:atomic-type($items)))
- :            > 1)
- :   then 'xs:anyAtomicType'
- :   else functx:atomic-type($items[1])
- :   else if (some $val in $items
- :            satisfies $val instance of xs:anyAtomicType)
- :   then 'item()'
- :   else if (count(distinct-values(functx:node-kind($items))) > 1)
- :   then 'node()'
- :   else concat(functx:node-kind($items[1]),'()')
- :   ,
- :   if (count($items) > 1)
- :   then '+' else '')
- :    } ;
- :)
+declare function functx:sequence-type 
+  ( $items as item()* )  as xs:string {
+       
+concat(
+  if (empty($items))
+  then 'empty-sequence()'
+  else if (every $val in $items
+           satisfies $val instance of xs:anyAtomicType)
+  then if (count(distinct-values(functx:atomic-type($items)))
+           > 1)
+  then 'xs:anyAtomicType'
+  else functx:atomic-type($items[1])
+  else if (some $val in $items
+           satisfies $val instance of xs:anyAtomicType)
+  then 'item()'
+  else if (count(distinct-values(functx:node-kind($items))) > 1)
+  then 'node()'
+  else concat(functx:node-kind($items[1]),'()')
+  ,
+  if (count($items) > 1)
+  then '+' else '')
+   } ;
 
 (:~
  : The siblings of an XML node 
@@ -2472,19 +2445,17 @@ declare function functx:substring-before-match
  : @param   $minute the minute 
  : @param   $second the second 
  :) 
-(: fontoxpath cannot compile 'functx:pad-integer-to-length'
- : declare function functx:time 
- :   ( $hour as xs:anyAtomicType ,
- :     $minute as xs:anyAtomicType ,
- :     $second as xs:anyAtomicType )  as xs:time {
- :        
- :    xs:time(
- :      concat(
- :        functx:pad-integer-to-length(xs:integer($hour),2),':',
- :        functx:pad-integer-to-length(xs:integer($minute),2),':',
- :        functx:pad-integer-to-length(xs:integer($second),2)))
- :  } ;
- :)
+declare function functx:time 
+  ( $hour as xs:anyAtomicType ,
+    $minute as xs:anyAtomicType ,
+    $second as xs:anyAtomicType )  as xs:time {
+       
+   xs:time(
+     concat(
+       functx:pad-integer-to-length(xs:integer($hour),2),':',
+       functx:pad-integer-to-length(xs:integer($minute),2),':',
+       functx:pad-integer-to-length(xs:integer($second),2)))
+ } ;
 
 (:~
  : Converts an xs:dayTimeDuration into a timezone like "-05:00" or "Z" 
@@ -2643,14 +2614,12 @@ declare function functx:update-attributes
  : @param   $arg1 the first sequence 
  : @param   $arg2 the second sequence 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:value-except 
- :   ( $arg1 as xs:anyAtomicType* ,
- :     $arg2 as xs:anyAtomicType* )  as xs:anyAtomicType* {
- :        
- :   distinct-values($arg1[not(.=$arg2)])
- :  } ;
- :)
+declare function functx:value-except 
+  ( $arg1 as xs:anyAtomicType* ,
+    $arg2 as xs:anyAtomicType* )  as xs:anyAtomicType* {
+       
+  distinct-values($arg1[not(.=$arg2)])
+ } ;
 
 (:~
  : The intersection of two sequences of values 
@@ -2661,14 +2630,12 @@ declare function functx:update-attributes
  : @param   $arg1 the first sequence 
  : @param   $arg2 the second sequence 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:value-intersect 
- :   ( $arg1 as xs:anyAtomicType* ,
- :     $arg2 as xs:anyAtomicType* )  as xs:anyAtomicType* {
- :        
- :   distinct-values($arg1[.=$arg2])
- :  } ;
- :)
+declare function functx:value-intersect 
+  ( $arg1 as xs:anyAtomicType* ,
+    $arg2 as xs:anyAtomicType* )  as xs:anyAtomicType* {
+       
+  distinct-values($arg1[.=$arg2])
+ } ;
 
 (:~
  : The union of two sequences of values 
@@ -2679,14 +2646,12 @@ declare function functx:update-attributes
  : @param   $arg1 the first sequence 
  : @param   $arg2 the second sequence 
  :) 
-(: fontoxpath does not implement 'distinct-values'
- : declare function functx:value-union 
- :   ( $arg1 as xs:anyAtomicType* ,
- :     $arg2 as xs:anyAtomicType* )  as xs:anyAtomicType* {
- :        
- :   distinct-values(($arg1, $arg2))
- :  } ;
- :)
+declare function functx:value-union 
+  ( $arg1 as xs:anyAtomicType* ,
+    $arg2 as xs:anyAtomicType* )  as xs:anyAtomicType* {
+       
+  distinct-values(($arg1, $arg2))
+ } ;
 
 (:~
  : The number of words 
