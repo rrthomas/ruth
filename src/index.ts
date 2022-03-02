@@ -339,9 +339,7 @@ export class Expander {
         }
       } else if (doCopy) {
         const objFullPath = this.findObject(obj)
-        if (!isFile(objFullPath)) {
-          throw new Error(`${obj} is not a file`)
-        }
+        assert(isFile(objFullPath))
         fs.copyFileSync(objFullPath, outputPath)
       }
     }
