@@ -119,6 +119,10 @@ describe('ruth', function test() {
     await cliTest(['real-path-src'], 'real-path-expected')
   })
 
+  it('A .ruth.in file should not be copied', async () => {
+    await cliTest(['expand-no-copy-src'], 'expand-no-copy-expected')
+  })
+
   it('Invalid path to ruth:real-path() should cause an error', async () => {
     await failingCliTest(
       ['real-path-bad-src'],
