@@ -343,10 +343,9 @@ export class Expander {
         fs.copyFileSync(objFullPath, outputPath)
       }
     }
+    assert(this.xtree.documentElement)
     debug('Final XML')
-    if (this.xtree.documentElement !== null) {
-      debug(formatXML(this.xtree.documentElement.outerHTML, {lineSeparator: '\n'}))
-    }
+    debug(formatXML(this.xtree.documentElement.outerHTML, {lineSeparator: '\n'}))
     if (this.xQueryErrorRaised) {
       throw new Error('there were errors during XQuery processing')
     }
