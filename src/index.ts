@@ -137,7 +137,7 @@ export class Expander {
         if (isFile(dirent)) {
           return dirent
         }
-        throw new Error(`${relPath} is not a file`)
+        throw new Error(`'${relPath}' is not a file`)
       },
     )
     this.xtree = this.dirTreeToXml('')

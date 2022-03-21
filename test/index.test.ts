@@ -115,6 +115,17 @@ describe('ruth', function test() {
     await cliTest(['map-src'], 'map-expected')
   })
 
+  it('Test ruth:real-path()', async () => {
+    await cliTest(['real-path-src'], 'real-path-expected')
+  })
+
+  it('Invalid path to ruth:real-path() should cause an error', async () => {
+    await failingCliTest(
+      ['real-path-bad-src'],
+      "'nonexistent.file' is not a file",
+    )
+  })
+
   it('Invalid XQuery should cause an error', async () => {
     await failingCliTest(
       ['xquery-error'],
