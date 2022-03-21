@@ -7,5 +7,6 @@
   </head>
   <body>
     <div id="app">Here is a {ruth:map('root(.)/descendant-or-self::*:a', 'functx:update-attributes(., QName("", "href"), "http://www.example.com/" || ./@href)', <a href="index.html">link</a>)} to this page.</div>
+    <div id="app">Here is a {ruth:map('root(.)/descendant-or-self::*:a', 'functx:update-attributes(., QName("", "href"), "http://www.example.com/" || ./@href)', <div><a href="index.html">link in a div</a></div>)} to this page.</div>
   </body>
 </html>
