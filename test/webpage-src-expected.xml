@@ -1,0 +1,69 @@
+<directory xmlns="https://github.com/rrthomas/ruth/raw/main/dirtree.dtd" xmlns:ns1="https://github.com/rrthomas/ruth/raw/main/dirtree.dtd" ns1:path="" ns1:name="">
+    <directory ns1:path="people" ns1:name="people">
+        <directory ns1:path="people/adam" ns1:name="adam">
+            <file ns1:path="people/adam/body.in.xhtml" ns1:name="body.in.xhtml">
+                This is adam
+            </file>
+            <file ns1:path="people/adam/index.ruth.xhtml" ns1:name="index.ruth.xhtml">
+                {ruth:include('template.in.xhtml')}
+            </file>
+        </directory>
+        <directory ns1:path="people/eve" ns1:name="eve">
+            <file ns1:path="people/eve/body.in.xhtml" ns1:name="body.in.xhtml">
+                This is eve's page.
+            </file>
+            <file ns1:path="people/eve/index.ruth.xhtml" ns1:name="index.ruth.xhtml">
+                {ruth:include('template.in.xhtml')}
+            </file>
+        </directory>
+        <file ns1:path="people/body.in.xhtml" ns1:name="body.in.xhtml">
+            This is people:
+            <ul xmlns="http://www.w3.org/1999/xhtml">
+                <li>
+                    <a href="adam/index.xhtml">
+                        adam
+                    </a>
+                </li>
+                <li>
+                    <a href="eve/index.xhtml">
+                        eve
+                    </a>
+                </li>
+            </ul>
+        </file>
+        <file ns1:path="people/index.ruth.xhtml" ns1:name="index.ruth.xhtml">
+            {ruth:include('template.in.xhtml')}
+        </file>
+    </directory>
+    <file ns1:path="body.in.xhtml" ns1:name="body.in.xhtml">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <p>
+                This is the index.
+            </p>
+            <p>
+                <a href="people/index.xhtml">
+                    People
+                </a>
+            </p>
+        </div>
+    </file>
+    <file ns1:path="foo.in.xhtml" ns1:name="foo.in.xhtml">
+        This file intentionally not left blank.
+    </file>
+    <file ns1:path="index.ruth.xhtml" ns1:name="index.ruth.xhtml">
+        {ruth:include('template.in.xhtml')}
+    </file>
+    <file ns1:path="template.in.xhtml" ns1:name="template.in.xhtml">
+        <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+                <title></title>
+            </head>
+            <body>
+                {ruth:include('body.in.xhtml')}
+                <a href="/index.xhtml">
+                    Go back to the index.
+                </a>
+            </body>
+        </html>
+    </file>
+</directory>

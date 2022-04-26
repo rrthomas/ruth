@@ -1,3 +1,5 @@
+/* eslint-disable max-classes-per-file */
+import os from 'os'
 import fs from 'fs'
 import fsExtra from 'fs-extra' // See https://github.com/jprichardson/node-fs-extra/issues/919
 import path from 'path'
@@ -76,71 +78,23 @@ function loadModule(file: string) {
   debug(`registered prefix ${prefix} for URL ${url}`)
 }
 
-export class Expander {
-  private xtree: slimdom.Document
+export class XmlDir {
+  public xtree: slimdom.Document
 
   constructor(
     private inputs: string[],
     private xmlExtensions: string[] = [],
   ) {
     this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
+    // Load modules here (not in Expander) so that namespaces are available
+    // during parsing of XQuery files in tree.
     loadModule(path.join(__dirname, 'ruth.xq'))
     loadModule(path.join(__dirname, 'functx.xq'))
-    // FIXME: registerCustomXPathFunction only works once, so can only use Expander once.
-    // See https://github.com/FontoXML/fontoxpath/issues/406
-    registerCustomXPathFunction(
-      {localName: 'eval', namespaceURI: ruth},
-      ['xs:string'], 'node()*',
-      (_, query: string): slimdom.Node[] => {
-        debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
-        return evaluateXPathToNodes(
-          query.toString(), // FIXME: query should be of type string!
-          this.xQueryVariables.ruth_element,
-          null,
-          this.xQueryVariables,
-          xQueryOptions,
-        )
-      },
-    )
-    registerCustomXPathFunction(
-      {localName: 'map', namespaceURI: ruth},
-      ['xs:string', 'xs:string', 'node()*'], 'node()*',
-      (_, query: string, transformQuery: string, nodes: slimdom.Node[]) => {
-        debug(`ruth:map(${query}, ${transformQuery}, ${nodes})`)
-        const resultNodes = []
-        for (const node of nodes) {
-          let nodeClone = node.cloneNode(true)
-          const elems = evaluateXPathToNodes(
-            query, nodeClone, null, this.xQueryVariables, xQueryOptions,
-          ) as slimdom.Element[]
-          for (const elem of elems) {
-            const res = evaluateXPathToFirstNode(
-              transformQuery, elem, null, this.xQueryVariables, xQueryOptions,
-            ) as slimdom.Element
-            if (elem === nodeClone) { // We matched the entire node, so replace it in results.
-              nodeClone = res
-            } else { // We matched part of the node, replace the match.
-              elem.replaceWith(res)
-            }
-          }
-          resultNodes.push(nodeClone)
-        }
-        return resultNodes
-      },
-    )
-    registerCustomXPathFunction(
-      {localName: 'real-path', namespaceURI: ruth},
-      ['xs:string'], 'xs:string',
-      (_, relPath: string): string => {
-        debug(`ruth:real-path(${relPath})`)
-        const dirent = this.findObject(path.join(this.xQueryVariables.ruth_path, relPath))
-        if (isFile(dirent)) {
-          return dirent
-        }
-        throw new Error(`'${relPath}' is not a file`)
-      },
-    )
     this.xtree = this.dirTreeToXml('')
+    if (debug.enabled) {
+      debug('Input XML')
+      debug(this.formatXML())
+    }
   }
 
   // Find the first file or directory with path `object` in the input tree,
@@ -151,7 +105,7 @@ export class Expander {
   // tree from left to right.
   // If something neither a file nor directory is found, raise an error.
   // If no result is found, return `undefined`.
-  private findObject(object: string): Dirent {
+  protected findObject(object: string): Dirent {
     const dirs = []
     for (const root of this.inputs) {
       const stats = statSync(root)
@@ -181,9 +135,9 @@ export class Expander {
     return dirs.length > 0 ? dirents : undefined
   }
 
-  private static templateRegex = /\.ruth([0-9]+)?(?=\.[^.]|$)/
+  protected static templateRegex = /\.ruth([0-9]+)?(?=\.[^.]|$)/
 
-  private static noCopyRegex = /\.in(?=\.[^.]|$)/
+  protected static noCopyRegex = /\.in(?=\.[^.]|$)/
 
   private dirTreeToXml(root: string) {
     const xtree = new slimdom.Document()
@@ -243,9 +197,80 @@ export class Expander {
     }
     const rootElem = objToNode(root)
     xtree.appendChild(rootElem)
-    debug('Input XML')
-    debug(formatXML(rootElem.outerHTML, {lineSeparator: '\n'}))
     return xtree
+  }
+
+  // FIXME: xml-formatter does not export its FormatOptions type.
+  // See https://github.com/chrisbottin/xml-formatter/issues/46
+  public formatXML(options?: any) {
+    assert(this.xtree.documentElement !== null)
+    return formatXML(
+      this.xtree.documentElement.outerHTML,
+      {lineSeparator: os.EOL, ...options},
+    )
+  }
+}
+
+export class Expander extends XmlDir {
+  constructor(
+    inputs: string[],
+    xmlExtensions: string[] = [],
+  ) {
+    super(inputs, xmlExtensions)
+    // FIXME: registerCustomXPathFunction only works once, so can only use Expander once.
+    // See https://github.com/FontoXML/fontoxpath/issues/406
+    registerCustomXPathFunction(
+      {localName: 'eval', namespaceURI: ruth},
+      ['xs:string'], 'node()*',
+      (_, query: string): slimdom.Node[] => {
+        debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
+        return evaluateXPathToNodes(
+          query.toString(), // FIXME: query should be of type string!
+          this.xQueryVariables.ruth_element,
+          null,
+          this.xQueryVariables,
+          xQueryOptions,
+        )
+      },
+    )
+    registerCustomXPathFunction(
+      {localName: 'map', namespaceURI: ruth},
+      ['xs:string', 'xs:string', 'node()*'], 'node()*',
+      (_, query: string, transformQuery: string, nodes: slimdom.Node[]) => {
+        debug(`ruth:map(${query}, ${transformQuery}, ${nodes})`)
+        const resultNodes = []
+        for (const node of nodes) {
+          let nodeClone = node.cloneNode(true)
+          const elems = evaluateXPathToNodes(
+            query, nodeClone, null, this.xQueryVariables, xQueryOptions,
+          ) as slimdom.Element[]
+          for (const elem of elems) {
+            const res = evaluateXPathToFirstNode(
+              transformQuery, elem, null, this.xQueryVariables, xQueryOptions,
+            ) as slimdom.Element
+            if (elem === nodeClone) { // We matched the entire node, so replace it in results.
+              nodeClone = res
+            } else { // We matched part of the node, replace the match.
+              elem.replaceWith(res)
+            }
+          }
+          resultNodes.push(nodeClone)
+        }
+        return resultNodes
+      },
+    )
+    registerCustomXPathFunction(
+      {localName: 'real-path', namespaceURI: ruth},
+      ['xs:string'], 'xs:string',
+      (_, relPath: string): string => {
+        debug(`ruth:real-path(${relPath})`)
+        const dirent = this.findObject(path.join(this.xQueryVariables.ruth_path, relPath))
+        if (isFile(dirent)) {
+          return dirent
+        }
+        throw new Error(`'${relPath}' is not a file`)
+      },
+    )
   }
 
   private xQueryVariables: Variables = {}
@@ -343,9 +368,10 @@ export class Expander {
         fs.copyFileSync(objFullPath, outputPath)
       }
     }
-    assert(this.xtree.documentElement)
-    debug('Final XML')
-    debug(formatXML(this.xtree.documentElement.outerHTML, {lineSeparator: '\n'}))
+    if (debug.enabled) {
+      debug('Final XML')
+      debug(this.formatXML())
+    }
     if (this.xQueryErrorRaised) {
       throw new Error('there were errors during XQuery processing')
     }

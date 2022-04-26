@@ -10,7 +10,7 @@ import chaiAsPromised from 'chai-as-promised'
 import {check} from 'linkinator'
 
 // eslint-disable-next-line import/no-named-as-default
-import Expander from '../src/index'
+import Expander, {XmlDir} from '../src/index'
 
 chai.use(chaiAsPromised)
 const {expect, assert} = chai
@@ -31,6 +31,12 @@ function assertFileObjEqual(obj: string, expected: string) {
     compareResult.same,
     util.inspect(diffsetDiffsOnly(compareResult.diffSet as Difference[])),
   )
+}
+
+function assertStringEqualToFile(s: string, expected: string) {
+  const file = tempy.writeSync(s)
+  assertFileObjEqual(file, expected)
+  fs.rmSync(file)
 }
 
 async function cliTest(args: string[], expected: string) {
@@ -74,13 +80,25 @@ describe('ruth', function test() {
     process.chdir('test')
   })
 
+  it('Convert tree to XML', async () => {
+    assertStringEqualToFile(new XmlDir(['webpage-src']).formatXML(), 'webpage-src-expected.xml')
+  })
+
+  // FIXME: Remove this when we have module tests
+  it('Complete code coverage of Expander constructor', () => {
+    // eslint-disable-next-line no-new
+    new Expander(['webpage-src'])
+  })
+
   // CLI tests
-  // FIXME: For now, all tests are CLI tests, because we cannot reset the
-  // state of fontoxpath between tests; see
+  // FIXME: For now, all Expander tests are CLI tests, because we cannot
+  // reset the state of fontoxpath between tests; see
   // https://github.com/FontoXML/fontoxpath/issues/406
   it('Whole-tree test', async () => {
+    process.env.DEBUG = '*'
     await cliTest(['webpage-src'], 'webpage-expected')
     await checkLinks('webpage-expected', 'index.xhtml')
+    delete process.env.DEBUG
   })
 
   it('Part-tree test', async () => {
@@ -137,8 +155,8 @@ describe('ruth', function test() {
     )
   })
 
-  it('Invalid XQuery should cause an error (DEBUG=yes coverage)', async () => {
-    process.env.DEBUG = 'yes'
+  it('Invalid XQuery should cause an error (DEBUG coverage)', async () => {
+    process.env.DEBUG = '*'
     await failingCliTest(
       ['xquery-error'],
       'missing semicolon at end of function',
@@ -225,11 +243,5 @@ describe('ruth', function test() {
       [''],
       'input path must not be empty',
     )
-  })
-
-  // FIXME: Remove this when we have module tests
-  it('Complete code coverage of Expander constructor', () => {
-    // eslint-disable-next-line no-new
-    new Expander(['webpage-src'])
   })
 })
