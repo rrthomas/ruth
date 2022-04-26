@@ -1,0 +1,137 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@sc3d/ruth</title><meta name="description" content="Documentation for @sc3d/ruth"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@sc3d/ruth</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@sc3d/ruth </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#ruth" id="ruth" style="color: inherit; text-decoration: none;">
+  <h1>Ruth</h1>
+</a>
+<p><img src="logo/ruth-small.png" alt="logo"> <em>logo by Silvia Polverini</em></p>
+<p>© 2002–2022 Reuben Thomas <a href="mailto:rrt@sc3d.org">rrt@sc3d.org</a><br><a href="https://github.com/rrthomas/ruth">https://github.com/rrthomas/ruth</a></p>
+<p>Ruth is a simple <a href="https://www.w3.org/TR/xquery/">XQuery</a>-based XML templating system, based on the plain
+text-oriented <a href="https://github.com/rrthomas/nancy">Nancy</a>. Ruth reads a file or directory into an XML document;
+XML files become subdocuments. It then produces a copy of the original file
+or directory, executing embedded XQuery queries against the constructed XML
+document. Custom XQuery functions and external programs can be used.</p>
+<p>Ruth is free software, licensed under the GNU GPL version 3 (or, at your
+option, any later version), and written in TypeScript.</p>
+<p>Ruth uses <a href="https://www.npmjs.com/package/fontoxpath">fontoxpath</a> as its XQuery implementation. fontoxpath implements a
+subset of <a href="https://www.w3.org/TR/xquery-31/">XQuery 3.1</a>.</p>
+<p>See the <a href="Cookbook.md">Cookbook</a> for examples.</p>
+<p>Please send questions, comments, and bug reports to the maintainer, or
+report them on the project’s web page (see above for addresses).</p>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<p>Install Ruth with npm (part of <a href="https://nodejs.org/en/">Node</a>):</p>
+<pre><code><span class="hl-0">$</span><span class="hl-1"> </span><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span><span class="hl-1"> -</span><span class="hl-0">g</span><span class="hl-1"> @</span><span class="hl-0">sc3d</span><span class="hl-1">/</span><span class="hl-0">ruth</span>
+</code></pre>
+
+<a href="#api-documentation" id="api-documentation" style="color: inherit; text-decoration: none;">
+  <h2>API documentation</h2>
+</a>
+<p>Ruth is mostly used via the <code>ruth</code> command, not least because of a
+limitation of fontoxpath, which cannot easily be run more than once in the
+same process. Nonetheless, Ruth provides some APIs which are documented in
+<a href="https://rrthomas.github.io/ruth/">docs/index.html</a>.</p>
+
+<a href="#invocation" id="invocation" style="color: inherit; text-decoration: none;">
+  <h2>Invocation</h2>
+</a>
+<pre><code><span class="hl-0">ruth</span><span class="hl-1"> [-</span><span class="hl-0">h</span><span class="hl-1">] [--</span><span class="hl-0">path</span><span class="hl-1"> </span><span class="hl-2">PATH</span><span class="hl-1">] [--</span><span class="hl-0">ext</span><span class="hl-1"> .</span><span class="hl-2">EXT</span><span class="hl-1">] [--</span><span class="hl-0">version</span><span class="hl-1">]</span><br/><span class="hl-1">           </span><span class="hl-2">INPUT</span><span class="hl-1">-</span><span class="hl-2">PATH</span><span class="hl-1"> </span><span class="hl-2">OUTPUT</span><span class="hl-1">-</span><span class="hl-2">DIRECTORY</span><br/><br/><span class="hl-2">A</span><span class="hl-1"> </span><span class="hl-0">simple</span><span class="hl-1"> </span><span class="hl-0">templating</span><span class="hl-1"> </span><span class="hl-0">system</span><span class="hl-1">.</span><br/><br/><span class="hl-0">positional</span><span class="hl-1"> </span><span class="hl-3">arguments</span><span class="hl-1">:</span><br/><span class="hl-1">  </span><span class="hl-2">INPUT</span><span class="hl-1">-</span><span class="hl-2">PATH</span><span class="hl-1">        </span><span class="hl-0">desired</span><span class="hl-1"> </span><span class="hl-0">directory</span><span class="hl-1"> </span><span class="hl-0">list</span><span class="hl-1"> </span><span class="hl-0">to</span><span class="hl-1"> </span><span class="hl-0">build</span><br/><span class="hl-1">  </span><span class="hl-2">OUTPUT</span><span class="hl-1">-</span><span class="hl-2">DIRECTORY</span><span class="hl-1">  </span><span class="hl-0">output</span><span class="hl-1"> </span><span class="hl-0">directory</span><br/><br/><span class="hl-0">optional</span><span class="hl-1"> </span><span class="hl-3">arguments</span><span class="hl-1">:</span><br/><span class="hl-1">  -</span><span class="hl-0">h</span><span class="hl-1">, --</span><span class="hl-0">help</span><span class="hl-1">        </span><span class="hl-0">show</span><span class="hl-1"> </span><span class="hl-4">this</span><span class="hl-1"> </span><span class="hl-0">help</span><span class="hl-1"> </span><span class="hl-0">message</span><span class="hl-1"> </span><span class="hl-0">and</span><span class="hl-1"> </span><span class="hl-0">exit</span><br/><span class="hl-1">  --</span><span class="hl-0">path</span><span class="hl-1"> </span><span class="hl-2">PATH</span><span class="hl-1">       </span><span class="hl-0">relative</span><span class="hl-1"> </span><span class="hl-0">path</span><span class="hl-1"> </span><span class="hl-0">to</span><span class="hl-1"> </span><span class="hl-0">build</span><span class="hl-1"> [</span><span class="hl-0">default</span><span class="hl-1">: </span><span class="hl-0">input</span><span class="hl-1"> </span><span class="hl-0">directory</span><span class="hl-1">]</span><br/><span class="hl-1">  --</span><span class="hl-0">ext</span><span class="hl-1"> .</span><span class="hl-2">EXT</span><span class="hl-1">        </span><span class="hl-0">treat</span><span class="hl-1"> </span><span class="hl-0">files</span><span class="hl-1"> </span><span class="hl-5">with</span><span class="hl-1"> </span><span class="hl-0">extension</span><span class="hl-1"> .</span><span class="hl-2">EXT</span><span class="hl-1"> </span><span class="hl-5">as</span><span class="hl-1"> </span><span class="hl-6">XML</span><br/><span class="hl-1">  --</span><span class="hl-0">version</span><span class="hl-1">         </span><span class="hl-0">show</span><span class="hl-1"> </span><span class="hl-0">program</span><span class="hl-7">&#39;s version number and exi</span><span class="hl-8">t</span><br/><br/><span class="hl-0">The</span><span class="hl-1"> </span><span class="hl-2">INPUT</span><span class="hl-1">-</span><span class="hl-2">PATH</span><span class="hl-1"> </span><span class="hl-0">is</span><span class="hl-1"> </span><span class="hl-0">a</span><span class="hl-1"> </span><span class="hl-7">&#39;:&#39;</span><span class="hl-1">-</span><span class="hl-0">separated</span><span class="hl-1"> </span><span class="hl-0">list</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-0">directories</span><span class="hl-1">; </span><span class="hl-0">the</span><span class="hl-1"> </span><span class="hl-0">directories</span><br/><span class="hl-0">are</span><span class="hl-1"> </span><span class="hl-0">merged</span><span class="hl-1">, </span><span class="hl-5">with</span><span class="hl-1"> </span><span class="hl-0">the</span><span class="hl-1"> </span><span class="hl-0">contents</span><span class="hl-1"> </span><span class="hl-4">of</span><span class="hl-1"> </span><span class="hl-0">each</span><span class="hl-1"> </span><span class="hl-0">directory</span><span class="hl-1"> </span><span class="hl-0">taking</span><span class="hl-1"> </span><span class="hl-0">precedence</span><span class="hl-1"> </span><span class="hl-0">over</span><span class="hl-1"> </span><span class="hl-0">any</span><br/><span class="hl-0">directories</span><span class="hl-1"> </span><span class="hl-0">to</span><span class="hl-1"> </span><span class="hl-0">its</span><span class="hl-1"> </span><span class="hl-0">right</span><span class="hl-1">.</span>
+</code></pre>
+
+<a href="#operation-" id="operation-" style="color: inherit; text-decoration: none;">
+  <h2>Operation <a name="operation"></a></h2>
+</a>
+<p>Ruth starts by combining the list of directories given as its <em>input path</em>.
+If the same file or directory exists in more than one of the directories on
+the input path, the left-most takes precedence. The result is called the
+“input tree”, and all paths are relative to it.</p>
+<p>Ruth then creates the output directory if it does not already exist.</p>
+<p>Next, Ruth traverses the input tree, or the subtree given by the <code>--path</code>
+argument, if any, in breadth-first order.</p>
+<p>For each file, Ruth looks at its name, and:</p>
+<ul>
+<li>If the name contains the suffix <code>.ruth</code>, optionally followed by decimal
+digits, the file is added to the list of files to process. The decimal
+digits are the phase number, which defaults to zero. The files are
+processed in phase order: any phase 0 files first, then phase 1, and so
+on.</li>
+<li>If the name contains the suffix <code>.in</code>, the file is skipped. (It may
+be used by macros in other files.)</li>
+<li>Otherwise, the file is added to the list of files to process in phase 0.</li>
+</ul>
+<p>The list of files to process is then processed, in order. For each file:</p>
+<ul>
+<li>If the name contains the suffix <code>.ruth</code>, the file’s contents is expanded
+(see below), and if the name does not contain the suffix <code>.in</code> the result
+is then written to a file of the same name, but with the <code>.ruth</code> suffix
+removed, in the corresponding place in the output directory. The working
+XML document is also updated with the result.</li>
+<li>Otherwise, the file is copied verbatim to the corresponding place in the
+output directory.</li>
+</ul>
+<p>The special suffixes need not end the file name; they can be used as infixes
+before the file type suffix.</p>
+
+<a href="#template-expansion" id="template-expansion" style="color: inherit; text-decoration: none;">
+  <h3>Template expansion</h3>
+</a>
+<p>Ruth expands a template file as follows by executing it as an XQuery
+expression.</p>
+<p>The use of XQuery is beyond the scope of this manual; see the
+<a href="https://www.w3.org/TR/xquery/">XQuery specification</a> and <a href="https://www.npmjs.com/package/fontoxpath">fontoxpath documentation</a>
+for more details.</p>
+<p>Ruth provides some built-in global variables:</p>
+<ul>
+<li><code>$ruth:root</code>: the <code>INPUT-PATH</code> argument.</li>
+<li><code>$ruth_path</code>: the relative path from <code>$ruth:root</code> to the file currently
+being expanded.</li>
+<li><code>$ruth_element</code>: the element in Ruth&#39;s working XML document corresponding
+to the file currently being expanded.</li>
+</ul>
+<p>Ruth provides the following built-in custom functions:</p>
+<ul>
+<li><code>ruth:eval($query as xs:string) as node()*</code>: evaluates the XQuery
+expression <code>$query</code>, and returns the first matching node, or, if there is
+none, raises an error.</li>
+<li><code>ruth:map($query as xs:string, $transformQuery as xs:string, $nodes as node()*) as node()*</code>:
+evaluates the XQuery expression <code>$query</code> on a copy of <code>$nodes</code>, then for
+each node in the result set, replaces it by the value of the XQuery
+expression <code>$transformQuery</code> applied to it. Returns the updated copy of
+<code>$nodes</code>.</li>
+<li><code>ruth:real-path($relPath as xs:string) as xs:string</code> returns the file
+system path of the file given by <code>$relPath</code>. If <code>$relPath</code> does not
+correspond to a file, an error is raised. Note in particular that a
+directory does not necessarily correspond to a single file system path.</li>
+</ul>
+<p>Ruth also supplies a version of the
+<a href="http://www.xqueryfunctions.com/">FunctX</a> function library, without the
+functions that fontoxpath does not support.</p>
+<p>Ruth also loads other XQuery functions from <code>lib/ruth.xq</code>. See that file for
+documentation.</p>
+<p>See the <a href="Cookbook.md#website-example">website example</a> in the Cookbook for a
+worked example of using Ruth to template a website.</p>
+
+<a href="#running-other-programs" id="running-other-programs" style="color: inherit; text-decoration: none;">
+  <h3>Running other programs</h3>
+</a>
+<p>An executable file in the input is turned into a pair of XQuery functions in
+the <code>ruth</code> namespace. Any <code>.in</code> suffix is stripped out. So for example,
+<code>foo.in</code> becomes a function <code>ruth:foo()</code>. The functions have the following
+signature:</p>
+<pre><code><span class="hl-3">ruth</span><span class="hl-1">:</span><span class="hl-9">foo</span><span class="hl-1">(</span><span class="hl-0">$args</span><span class="hl-1"> </span><span class="hl-5">as</span><span class="hl-1"> </span><span class="hl-6">xs</span><span class="hl-1">:</span><span class="hl-0">string</span><span class="hl-1">*) </span><span class="hl-5">as</span><span class="hl-1"> </span><span class="hl-6">xs</span><span class="hl-1">:</span><span class="hl-0">string</span><br/><span class="hl-3">ruth</span><span class="hl-1">:</span><span class="hl-9">foo</span><span class="hl-1">(</span><span class="hl-0">$args</span><span class="hl-1"> </span><span class="hl-5">as</span><span class="hl-1"> </span><span class="hl-6">xs</span><span class="hl-1">:</span><span class="hl-0">string</span><span class="hl-1">*, </span><span class="hl-0">$input</span><span class="hl-1"> </span><span class="hl-5">as</span><span class="hl-1"> </span><span class="hl-6">xs</span><span class="hl-1">:</span><span class="hl-0">string</span><span class="hl-1">) </span><span class="hl-5">as</span><span class="hl-1"> </span><span class="hl-6">xs</span><span class="hl-1">:</span><span class="hl-0">string</span>
+</code></pre>
+<p>The sequence <code>$args</code> is passed to the program as its command-line arguments.
+The string <code>$input</code> is fed to the program&#39;s standard input.</p>
+
+<a href="#development" id="development" style="color: inherit; text-decoration: none;">
+  <h2>Development</h2>
+</a>
+<p>Check out the git repository and download dependencies with:</p>
+<pre><code><span class="hl-0">git</span><span class="hl-1"> </span><span class="hl-0">clone</span><span class="hl-1"> </span><span class="hl-3">https</span><span class="hl-1">:</span><span class="hl-10">//github.com/rrthomas/ruth</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span>
+</code></pre>
+<p>In addition, <a href="https://www.tgries.de/agrep/">agrep</a> is required to build the
+documentation.</p>
+<p>To run the tests:</p>
+<pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">test</span>
+</code></pre>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-reference"><a href="modules.html#default" class="tsd-kind-icon">default</a></li><li class="tsd-kind-class"><a href="classes/Expander.html" class="tsd-kind-icon">Expander</a></li><li class="tsd-kind-class"><a href="classes/XmlDir.html" class="tsd-kind-icon">Xml<wbr/>Dir</a></li><li class="tsd-kind-function"><a href="modules.html#stripPathPrefix" class="tsd-kind-icon">strip<wbr/>Path<wbr/>Prefix</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>

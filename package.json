@@ -46,6 +46,7 @@
     "pre-push": "^0.1.1",
     "tempy": "^1.0.1",
     "ts-node": "^10.2.1",
+    "typedoc": "^0.22.15",
     "typescript": "~4.3.5"
   },
   "engines": {
@@ -54,6 +55,7 @@
   "files": [
     "Cookbook.md",
     "/bin/run",
+    "/docs",
     "/lib"
   ],
   "homepage": "https://github.com/rrthomas/ruth",
@@ -61,11 +63,12 @@
   "main": "lib/index.js",
   "repository": "rrthomas/ruth",
   "scripts": {
+    "docs": "typedoc --gitRevision main src/index.ts",
     "lint": "eslint . --ext .ts && depcheck",
     "prebuild": "node --print \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "prepare": "npm run clean && npm run build && npm run docs",
+    "prepare": "npm run clean && npm run build && npm run docs && npm run update-readme",
     "test": "npm run build && mocha --forbid-only \"test/**/*.test.ts\"",
     "coverage": "NODE_ENV=coverage nyc --extension .ts npm test",
     "loc": "cloc src/*.ts",
@@ -73,12 +76,13 @@
     "prepublishOnly": "npm run diff-check && git push --all",
     "postpublish": "git push --tags && hub release create $(git describe) -m 'Release $(git describe)'",
     "example": "open-cli file://$(pwd)/test/cookbook-example-website-expected/index/index.html",
-    "docs": "nancy README.nancy.md README.md && nancy Cookbook.nancy.md Cookbook.md"
+    "update-readme": "nancy README.nancy.md README.md && nancy Cookbook.nancy.md Cookbook.md"
   },
   "pre-push": [
     "lint",
     "test",
     "docs",
+    "update-readme",
     "diff-check"
   ],
   "types": "lib/*.d.ts"

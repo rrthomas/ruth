@@ -35,6 +35,13 @@ Install Ruth with npm (part of [Node](https://nodejs.org/en/)):
 $ npm install -g @sc3d/ruth
 ```
 
+## API documentation
+
+Ruth is mostly used via the `ruth` command, not least because of a
+limitation of fontoxpath, which cannot easily be run more than once in the
+same process. Nonetheless, Ruth provides some APIs which are documented in
+[docs/index.html](https://rrthomas.github.io/ruth/).
+
 ## Invocation
 
 ```
