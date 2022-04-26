@@ -67,8 +67,6 @@ const xQueryOptions: Options = {
   xmlSerializer: new slimdom.XMLSerializer() as XMLSerializer,
 }
 
-type Variables = {[id: string]: any}
-
 function loadModule(file: string) {
   const module = fs.readFileSync(file, 'utf-8')
   registerXQueryModule(module)
@@ -280,7 +278,7 @@ export class Expander extends XmlDir {
     )
   }
 
-  private xQueryVariables: Variables = {}
+  private xQueryVariables: {[id: string]: any} = {}
 
   private index(filePath: string): slimdom.Element {
     const components = ['']
