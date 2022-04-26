@@ -38,10 +38,17 @@ function statSync(file: string): fs.Stats {
   return (fs as any).statSync(file, {throwIfNoEntry: false})
 }
 
-type FullDirent = fs.Dirent & {path: string}
-type File = string
-type Directory = FullDirent[]
-type Dirent = File | Directory | undefined
+/**
+ * An `fs.Dirent` with an extra member `path`, which is the full path of the
+ * object.
+ */
+export type FullDirent = fs.Dirent & {path: string}
+export type File = string
+export type Directory = FullDirent[]
+/**
+ * A File (just its name) or Directory (a list of [[FullDirent]]).
+ */
+export type Dirent = File | Directory
 function isFile(object: Dirent): object is File {
   return typeof object === 'string'
 }
@@ -105,7 +112,7 @@ export class XmlDir {
   // tree from left to right.
   // If something neither a file nor directory is found, raise an error.
   // If no result is found, return `undefined`.
-  protected findObject(object: string): Dirent {
+  protected findObject(object: string): Dirent | undefined {
     const dirs = []
     for (const root of this.inputs) {
       const stats = statSync(root)
@@ -146,7 +153,9 @@ export class XmlDir {
       const parsedPath = path.parse(obj)
       let elem: slimdom.Element
       debug(`dirTreeToXml: considering ${obj}`)
-      if (isDirectory(realObj)) {
+      if (realObj === undefined) {
+        throw new Error(`'${obj}' is not a file or directory`)
+      } else if (isDirectory(realObj)) {
         debug('processing directory')
         elem = xtree.createElementNS(dirtree, 'directory')
         const dir = realObj.filter((dirent) => dirent.name[0] !== '.')
@@ -154,7 +163,7 @@ export class XmlDir {
         const files = dir.filter((dirent) => dirent.isFile() || dirent.isSymbolicLink()).sort()
         dirs.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
         files.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
-      } else if (isFile(realObj)) {
+      } else {
         debug('processing file')
         if (isExecutable(realObj)) {
           const localName = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
@@ -188,8 +197,6 @@ export class XmlDir {
           }
           elem = xtree.createElementNS(dirtree, 'file')
         }
-      } else {
-        throw new Error(`'${obj}' is not a file or directory`)
       }
       elem.setAttributeNS(dirtree, 'path', obj)
       elem.setAttributeNS(dirtree, 'name', parsedPath.base)
@@ -265,7 +272,7 @@ export class Expander extends XmlDir {
       (_, relPath: string): string => {
         debug(`ruth:real-path(${relPath})`)
         const dirent = this.findObject(path.join(this.xQueryVariables.ruth_path, relPath))
-        if (isFile(dirent)) {
+        if (dirent !== undefined && isFile(dirent)) {
           return dirent
         }
         throw new Error(`'${relPath}' is not a file`)
@@ -364,7 +371,7 @@ export class Expander extends XmlDir {
         }
       } else if (doCopy) {
         const objFullPath = this.findObject(obj)
-        assert(isFile(objFullPath))
+        assert(objFullPath !== undefined && isFile(objFullPath))
         fs.copyFileSync(objFullPath, outputPath)
       }
     }
