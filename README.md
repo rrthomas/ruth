@@ -2,7 +2,7 @@
 
 ![logo](logo/ruth-small.png) _logo by Silvia Polverini_
 
-© 2002–2021 Reuben Thomas <rrt@sc3d.org>  
+© 2002–2022 Reuben Thomas <rrt@sc3d.org>  
 <https://github.com/rrthomas/ruth>
 
 Ruth is a simple [XQuery]-based XML templating system, based on the plain
