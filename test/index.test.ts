@@ -39,7 +39,7 @@ async function cliTest(args: string[], expected: string) {
   args.push(outputObj)
   await run(args)
   assertFileObjEqual(outputObj, expected)
-  fs.rmdirSync(outputDir, {recursive: true})
+  fs.rmSync(outputDir, {recursive: true})
 }
 
 async function failingCliTest(args: string[], expected: string) {
@@ -53,7 +53,7 @@ async function failingCliTest(args: string[], expected: string) {
     expect(error.stderr).to.contain(expected)
     return
   } finally {
-    fs.rmdirSync(outputDir, {recursive: true})
+    fs.rmSync(outputDir, {recursive: true})
   }
   throw new Error('test passed unexpectedly')
 }
