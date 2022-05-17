@@ -85,5 +85,5 @@
     "update-readme",
     "diff-check"
   ],
-  "types": "lib/*.d.ts"
+  "types": "lib/index.d.ts"
 }
