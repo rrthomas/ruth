@@ -200,6 +200,10 @@ export class XmlDir {
 
   protected static noCopyRegex = /\.in(?=\.[^.]|$)/
 
+  private isXmlFile(parsedPath: path.ParsedPath) {
+    return this.xmlExtensions.includes(parsedPath.ext)
+  }
+
   private dirTreeToXml(root: string) {
     const xtree = new slimdom.Document()
     const objToNode = (obj: string) => {
@@ -231,7 +235,7 @@ export class XmlDir {
             {localName, namespaceURI: ruth}, ['xs:string*', 'xs:string'], 'xs:string', exec,
           )
           elem = xtree.createElementNS(dirtree, 'file')
-        } else if (this.xmlExtensions.includes(parsedPath.ext)) {
+        } else if (this.isXmlFile(parsedPath)) {
           debug('reading as XML')
           const text = fs.readFileSync(realObj, 'utf-8')
           const wrappedText = `<dirtree:file>${text}</dirtree:file>`
