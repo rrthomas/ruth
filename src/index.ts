@@ -1,5 +1,4 @@
 /* eslint-disable max-classes-per-file */
-import os from 'os'
 import fs from 'fs'
 import fsExtra from 'fs-extra' // See https://github.com/jprichardson/node-fs-extra/issues/919
 import path from 'path'
@@ -268,7 +267,7 @@ export class XmlDir {
     assert(this.xtree.documentElement !== null)
     return formatXML(
       this.xtree.documentElement.outerHTML,
-      {lineSeparator: os.EOL, ...options},
+      {lineSeparator: '\n', ...options},
     )
   }
 }
