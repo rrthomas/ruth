@@ -63,6 +63,7 @@
   "main": "lib/index.js",
   "repository": "rrthomas/ruth",
   "scripts": {
+    "commit-docs": "npm run diff-check || git commit --amend --no-edit docs",
     "docs": "typedoc --gitRevision main src/index.ts",
     "lint": "eslint . --ext .ts && depcheck",
     "prebuild": "node --print \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.ts",
@@ -82,6 +83,7 @@
     "lint",
     "test",
     "docs",
+    "commit-docs",
     "update-readme",
     "diff-check"
   ],
