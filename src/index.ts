@@ -82,6 +82,10 @@ function loadModule(file: string) {
   debug(`registered prefix ${prefix} for URL ${url}`)
 }
 
+// Load XQuery modules.
+loadModule(path.join(__dirname, 'ruth.xq'))
+loadModule(path.join(__dirname, 'functx.xq'))
+
 export class XmlDir {
   public xtree: slimdom.Document
 
@@ -90,10 +94,6 @@ export class XmlDir {
     private xmlExtensions: string[] = [],
   ) {
     this.xmlExtensions = this.xmlExtensions.concat('.xml', '.xhtml')
-    // Load modules here (not in Expander) so that namespaces are available
-    // during parsing of XQuery files in tree.
-    loadModule(path.join(__dirname, 'ruth.xq'))
-    loadModule(path.join(__dirname, 'functx.xq'))
     // FIXME: registerCustomXPathFunction only works once, so can only use
     // Expander once (doesn't matter for XmlDir, where the functions are not
     // run). See https://github.com/FontoXML/fontoxpath/issues/406
