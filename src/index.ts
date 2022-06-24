@@ -1,6 +1,5 @@
 /* eslint-disable max-classes-per-file */
-import fs from 'fs'
-import fsExtra from 'fs-extra' // See https://github.com/jprichardson/node-fs-extra/issues/919
+import fs from 'fs-extra'
 import path from 'path'
 import Debug from 'debug'
 import assert from 'assert'
@@ -337,7 +336,7 @@ export class Expander extends XmlDir {
       const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
       if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
         debug('Expanding directory')
-        fsExtra.ensureDirSync(outputPath)
+        fs.ensureDirSync(outputPath)
         elem.children.filter((child) => child.tagName !== 'directory').forEach(addElement)
         elem.children.filter((child) => child.tagName === 'directory').forEach(addElement)
       } else {
