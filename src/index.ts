@@ -265,6 +265,28 @@ export class XmlDir {
     return xtree
   }
 
+  // Update XML files on disk.
+  public update() {
+    for (const node of evaluateXPathToNodes(
+      '//dirtree:file',
+      this.xtree,
+      null,
+      this.xQueryVariables,
+      xQueryOptions,
+    )) {
+      const elem = node as Element
+      const filePath = elem.getAttributeNS(dirtree, 'path')!
+      const parsedPath = path.parse(filePath)
+      if (this.isXmlFile(parsedPath)) {
+        const realPath = this.findObject(filePath)
+        if (realPath === undefined || !isFile(realPath)) {
+          throw new Error(`trying to update file '${filePath}', but it is missing or not a file`)
+        }
+        fs.writeFileSync(realPath, elem.innerHTML)
+      }
+    }
+  }
+
   // FIXME: xml-formatter does not export its FormatOptions type.
   // See https://github.com/chrisbottin/xml-formatter/issues/46
   public formatXML(options?: any) {

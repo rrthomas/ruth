@@ -1,9 +1,10 @@
 import util from 'util'
-import fs from 'fs'
+import fs from 'fs-extra'
 import path from 'path'
 import net from 'net'
 import execa from 'execa'
 import tempy from 'tempy'
+import {evaluateXPath, evaluateXPathToFirstNode, Options} from 'fontoxpath'
 import {compareSync, Difference} from 'dir-compare'
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
@@ -16,6 +17,16 @@ chai.use(chaiAsPromised)
 const {expect, assert} = chai
 
 const command = process.env.NODE_ENV === 'coverage' ? '../bin/test-run' : '../bin/run'
+
+export const ruth = 'https://github.com/rrthomas/ruth/raw/main/ruth.dtd'
+export const dirtree = 'https://github.com/rrthomas/ruth/raw/main/dirtree.dtd'
+const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
+
+const xQueryOptions: Options = {
+  namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
+  language: evaluateXPath.XQUERY_3_1_LANGUAGE,
+  debug: process.env.DEBUG !== undefined,
+}
 
 async function run(args: string[]) {
   return execa(command, args)
@@ -82,6 +93,22 @@ describe('ruth', function test() {
 
   it('Convert tree to XML', async () => {
     assertStringEqualToFile(new XmlDir(['webpage-src']).formatXML(), 'webpage-src-expected.xml')
+  })
+
+  it('Test update method', async () => {
+    const updateDir = tempy.directory()
+    fs.copySync('webpage-src', updateDir)
+    const xmldir = new XmlDir([updateDir])
+    const fileElement = evaluateXPathToFirstNode(
+      '//dirtree:file[@dirtree:path="people/eve/body.in.xhtml"]',
+      xmldir.xtree,
+      null,
+      null,
+      xQueryOptions,
+    ) as Element
+    fileElement.textContent = "This is Eve's page."
+    xmldir.update()
+    assertStringEqualToFile(new XmlDir([updateDir]).formatXML(), 'webpage-src-updated-expected.xml')
   })
 
   // FIXME: Remove this when we have module tests
