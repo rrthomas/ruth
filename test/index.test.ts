@@ -178,6 +178,10 @@ describe('ruth', function test() {
     await cliTest(['plain-text-src'], 'plain-text-expected')
   })
 
+  it('Test XML escaping', async () => {
+    await cliTest(['escaped-xml-src'], 'escaped-xml-expected')
+  })
+
   it('Test ruth:map()', async () => {
     await cliTest(['map-src'], 'map-expected')
   })
