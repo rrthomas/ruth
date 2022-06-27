@@ -14,13 +14,6 @@ import {
 
 const debug = Debug('ruth')
 
-export function stripPathPrefix(s: string, prefix: string): string {
-  if (s.startsWith(prefix + path.sep)) {
-    return path.join(s.slice(prefix.length + path.sep.length))
-  }
-  return s === prefix ? '' : s
-}
-
 function isExecutable(file: string): boolean {
   try {
     fs.accessSync(file, fs.constants.X_OK)
@@ -329,14 +322,17 @@ export class Expander extends XmlDir {
   // expression is evaluated fully in the context of the file in which it
   // occurs, and we avoid multiple evaluations of nodes near the root.
   expand(outputDir: string, buildPath = ''): void {
+    const getOutputPath = (file: string) => {
+      assert(file.startsWith(buildPath))
+      return path.join(outputDir, file.slice(buildPath.length))
+    }
     const elemQueues: slimdom.Element[][] = []
     const addElement = (elem: slimdom.Element): void => {
       debug(`addElement ${elem.getAttributeNS(dirtree, 'path')}`)
       const obj = elem.getAttributeNS(dirtree, 'path') as string
-      const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
       if (elem.namespaceURI === dirtree && elem.localName === 'directory') {
         debug('Expanding directory')
-        fs.ensureDirSync(outputPath)
+        fs.ensureDirSync(getOutputPath(obj))
         elem.children.filter((child) => child.tagName !== 'directory').forEach(addElement)
         elem.children.filter((child) => child.tagName === 'directory').forEach(addElement)
       } else {
@@ -372,8 +368,7 @@ export class Expander extends XmlDir {
           return elem
         }
       }
-      const outputPath = path.join(outputDir, stripPathPrefix(obj, buildPath))
-        .replace(Expander.templateRegex, '')
+      const outputPath = getOutputPath(obj).replace(Expander.templateRegex, '')
       this.xQueryVariables.ruth_path = path.dirname(obj)
       this.xQueryVariables.ruth_element = elem
       const doCopy = !Expander.noCopyRegex.exec(obj)
