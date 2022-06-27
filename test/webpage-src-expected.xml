@@ -53,6 +53,7 @@
     <file ns1:path="index.ruth.xhtml" ns1:name="index.ruth.xhtml">
         {ruth:include('template.in.xhtml')}
     </file>
+    <file ns1:path="robots.txt" ns1:name="robots.txt"/>
     <file ns1:path="template.in.xhtml" ns1:name="template.in.xhtml">
         <html xmlns="http://www.w3.org/1999/xhtml">
             <head>

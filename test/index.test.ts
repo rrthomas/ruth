@@ -82,6 +82,20 @@ async function checkLinks(root: string, start: string) {
   assert(results.passed, 'Broken links in output')
 }
 
+function setupUpdate(updateDir: string): XmlDir {
+  fs.copySync('webpage-src', updateDir)
+  const xmldir = new XmlDir([updateDir])
+  const fileElement = evaluateXPathToFirstNode(
+    '//dirtree:file[@dirtree:path="people/eve/body.in.xhtml"]',
+    xmldir.xtree,
+    null,
+    null,
+    xQueryOptions,
+  ) as Element
+  fileElement.textContent = "This is Eve's page."
+  return xmldir
+}
+
 describe('ruth', function test() {
   // In coverage mode, allow for recompilation.
   this.timeout(10000)
@@ -96,18 +110,23 @@ describe('ruth', function test() {
 
   it('Test update method', async () => {
     const updateDir = tempy.directory()
-    fs.copySync('webpage-src', updateDir)
-    const xmldir = new XmlDir([updateDir])
-    const fileElement = evaluateXPathToFirstNode(
-      '//dirtree:file[@dirtree:path="people/eve/body.in.xhtml"]',
-      xmldir.xtree,
-      null,
-      null,
-      xQueryOptions,
-    ) as Element
-    fileElement.textContent = "This is Eve's page."
-    xmldir.update()
+    setupUpdate(updateDir).update()
     assertStringEqualToFile(new XmlDir([updateDir]).formatXML(), 'webpage-src-updated-expected.xml')
+    fs.removeSync(updateDir)
+  })
+
+  it('Test update error handling when file system is changed', async () => {
+    const updateDir = tempy.directory()
+    try {
+      const xmldir = setupUpdate(updateDir)
+      fs.removeSync(path.join(updateDir, 'people/eve/body.in.xhtml'))
+      xmldir.update()
+    } catch (error: any) {
+      expect(error.message).to.contain('it is missing or not a file')
+      fs.removeSync(updateDir)
+      return
+    }
+    throw new Error('test passed unexpectedly')
   })
 
   // FIXME: Remove this when we have module tests
