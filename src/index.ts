@@ -240,12 +240,16 @@ export class XmlDir {
           assert(doc.documentElement !== null)
           elem = doc.documentElement
         } else {
-          debug('not reading as XML')
+          elem = xtree.createElementNS(dirtree, 'file')
           if (/.xq[lmy]?/.test(parsedPath.ext)) {
             debug('reading as XQuery module')
             loadModule(realObj)
+          } else if (XmlDir.templateRegex.test(parsedPath.base)) {
+            debug('reading as plain text template')
+            elem.textContent = fs.readFileSync(realObj).toString()
+          } else {
+            debug('not reading file')
           }
-          elem = xtree.createElementNS(dirtree, 'file')
         }
       }
       elem.setAttributeNS(dirtree, 'path', obj)

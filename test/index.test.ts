@@ -156,6 +156,10 @@ describe('ruth', function test() {
     await checkLinks('cookbook-example-website-expected', 'index/index.xhtml')
   })
 
+  it('Test expansion of plain text', async () => {
+    await cliTest(['plain-text-src'], 'plain-text-expected')
+  })
+
   it('Test ruth:map()', async () => {
     await cliTest(['map-src'], 'map-expected')
   })
