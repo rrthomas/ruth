@@ -6,7 +6,7 @@ import execa from 'execa'
 import tempy from 'tempy'
 import {evaluateXPath, evaluateXPathToFirstNode, Options} from 'fontoxpath'
 import {compareSync, Difference} from 'dir-compare'
-import chai from 'chai'
+import chai, {expect, assert} from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import {check} from 'linkinator'
 
@@ -14,7 +14,6 @@ import {check} from 'linkinator'
 import Expander, {XmlDir} from '../src/index'
 
 chai.use(chaiAsPromised)
-const {expect, assert} = chai
 
 const command = process.env.NODE_ENV === 'coverage' ? '../bin/test-run' : '../bin/run'
 
