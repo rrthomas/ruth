@@ -43,6 +43,7 @@
     "mocha": "^9.1.3",
     "nyc": "^15.1.0",
     "open-cli": "^7.0.0",
+    "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1",
     "tempy": "^1.0.1",
     "ts-node": "^10.2.1",
@@ -63,7 +64,7 @@
   "main": "lib/index.js",
   "repository": "rrthomas/ruth",
   "scripts": {
-    "commit-docs": "npm run diff-check || git commit --amend --no-edit docs",
+    "commit-docs": "npm run diff-check || git add docs",
     "docs": "typedoc --gitRevision main src/index.ts",
     "lint": "eslint . --ext .ts && depcheck",
     "prebuild": "node --print \"'export default \\'' + require('./package.json').version + '\\';'\" > src/version.ts",
@@ -79,11 +80,13 @@
     "example": "open-cli file://$(pwd)/test/cookbook-example-website-expected/index/index.html",
     "update-readme": "nancy README.nancy.md README.md && nancy Cookbook.nancy.md Cookbook.md"
   },
+  "pre-commit": [
+    "docs",
+    "commit-docs"
+  ],
   "pre-push": [
     "lint",
     "test",
-    "docs",
-    "commit-docs",
     "update-readme",
     "diff-check"
   ],
