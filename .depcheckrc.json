@@ -1,6 +1,6 @@
 {
   "ignores": [
-    "@tsconfig/node14",
+    "@tsconfig/node16",
     "eslint-config-airbnb-base",
     "eslint-config-airbnb-typescript",
     "eslint-plugin-import",
