@@ -169,7 +169,7 @@ elements “nearest” to the file; in our case, those in the same directory.
 For `place_1/time_1`, the result is:
 
 ```
-$paste{sh,-c,build-aux/format-xml.ts < test/data-templating-expected/place_1/time_1/index.xhtml}
+$paste{sh,-c,build-aux/format-xml.js < test/data-templating-expected/place_1/time_1/index.xhtml}
 ```
 
 ## Using XQuery updates

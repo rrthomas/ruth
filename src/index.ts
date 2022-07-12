@@ -1,16 +1,19 @@
 /* eslint-disable max-classes-per-file */
 import fs from 'fs-extra'
 import path from 'path'
+import url from 'url'
 import Debug from 'debug'
 import assert from 'assert'
 import execa from 'execa'
 import slimdom from 'slimdom'
 import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
-import {
-  evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode, Options,
-  registerCustomXPathFunction, registerXQueryModule, XMLSerializer,
-} from 'fontoxpath'
+import fontoxpath, {Options, XMLSerializer} from 'fontoxpath'
+
+const {
+  evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode,
+  registerCustomXPathFunction, registerXQueryModule,
+} = fontoxpath
 
 const debug = Debug('ruth')
 
@@ -69,8 +72,8 @@ function loadModule(file: string) {
 }
 
 // Load XQuery modules.
-loadModule(path.join(__dirname, 'ruth.xq'))
-loadModule(path.join(__dirname, 'functx.xq'))
+loadModule(url.fileURLToPath(new URL('ruth.xq', import.meta.url)))
+loadModule(url.fileURLToPath(new URL('functx.xq', import.meta.url)))
 
 export class XmlDir {
   public xtree: slimdom.Document

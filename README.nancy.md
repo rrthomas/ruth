@@ -45,7 +45,7 @@ same process. Nonetheless, Ruth provides some APIs which are documented in
 ## Invocation
 
 ```
-$paste{/bin/sh,-c,./bin/run --help | sed -e 's/usage: run/ruth/'}
+$paste{/bin/sh,-c,./bin/run.js --help | sed -e 's/usage: run.js/ruth/' -e 's/^   //g'}
 ```
 
 ## Operation <a name="operation"></a>
