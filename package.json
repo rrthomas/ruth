@@ -4,7 +4,7 @@
   "version": "1.4.2",
   "author": "Reuben Thomas",
   "bin": {
-    "ruth": "./bin/run"
+    "ruth": "./bin/run.js"
   },
   "bugs": "https://github.com/rrthomas/ruth/issues",
   "dependencies": {
@@ -31,6 +31,7 @@
     "@types/node": "^16.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.3",
     "@typescript-eslint/parser": "^4.29.3",
+    "c8": "^7.11.0",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "depcheck": "^1.4.2",
@@ -41,7 +42,6 @@
     "eslint-plugin-import": "^2.24.2",
     "linkinator": "^2.4.14",
     "mocha": "^9.1.3",
-    "nyc": "^15.1.0",
     "open-cli": "^7.0.0",
     "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1",
@@ -55,13 +55,14 @@
   },
   "files": [
     "Cookbook.md",
-    "/bin/run",
+    "/bin/run.js",
     "/docs",
     "/lib"
   ],
   "homepage": "https://github.com/rrthomas/ruth",
   "license": "GPL-3.0-or-later",
   "main": "lib/index.js",
+  "type": "module",
   "repository": "rrthomas/ruth",
   "scripts": {
     "commit-docs": "npm run diff-check || git add docs",
@@ -72,7 +73,7 @@
     "clean": "tsc --build --clean",
     "prepare": "npm run clean && npm run build && npm run docs && npm run update-readme",
     "test": "npm run build && mocha --forbid-only \"test/**/*.test.ts\"",
-    "coverage": "NODE_ENV=coverage nyc --extension .ts npm test",
+    "coverage": "NODE_ENV=coverage c8 --extension .ts npm test",
     "loc": "cloc src/*.ts",
     "diff-check": "git diff --exit-code",
     "prepublishOnly": "npm run diff-check && git push --all",

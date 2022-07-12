@@ -4,18 +4,20 @@ import path from 'path'
 import net from 'net'
 import execa from 'execa'
 import tempy from 'tempy'
-import {evaluateXPath, evaluateXPathToFirstNode, Options} from 'fontoxpath'
 import {compareSync, Difference} from 'dir-compare'
 import chai, {expect, assert} from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import {check} from 'linkinator'
+import fontoxpath, {Options} from 'fontoxpath'
 
 // eslint-disable-next-line import/no-named-as-default
 import Expander, {XmlDir} from '../src/index'
 
+const {evaluateXPath, evaluateXPathToFirstNode} = fontoxpath
+
 chai.use(chaiAsPromised)
 
-const command = process.env.NODE_ENV === 'coverage' ? '../bin/test-run' : '../bin/run'
+const command = process.env.NODE_ENV === 'coverage' ? '../bin/test-run.sh' : '../bin/run.js'
 
 export const ruth = 'https://github.com/rrthomas/ruth/raw/main/ruth.dtd'
 export const dirtree = 'https://github.com/rrthomas/ruth/raw/main/dirtree.dtd'
