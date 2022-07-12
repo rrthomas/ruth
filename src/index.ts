@@ -23,12 +23,6 @@ function isExecutable(file: string): boolean {
   }
 }
 
-// FIXME: `throwIfNoEntry` is missing in TypeScript types for Node 14:
-// https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/55786
-function statSync(file: string): fs.Stats {
-  return (fs as any).statSync(file, {throwIfNoEntry: false})
-}
-
 /**
  * An `fs.Dirent` with an extra member `path`, which is the full path of the
  * object.
@@ -161,10 +155,10 @@ export class XmlDir {
   protected findObject(object: string): Dirent | undefined {
     const dirs = []
     for (const root of this.inputs) {
-      const stats = statSync(root)
-      if (stats !== undefined && (statSync(root).isDirectory() || object === '')) {
+      const stats = fs.statSync(root, {throwIfNoEntry: false})
+      if (stats !== undefined && (stats.isDirectory() || object === '')) {
         const objectPath = path.join(root, object)
-        const stats = statSync(objectPath)
+        const stats = fs.statSync(objectPath, {throwIfNoEntry: false})
         if (stats !== undefined) {
           if (stats.isFile()) {
             return objectPath
