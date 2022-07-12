@@ -20,7 +20,7 @@
     "xml-formatter": "^2.4.0"
   },
   "devDependencies": {
-    "@sc3d/nancy": "^7.0.0",
+    "@sc3d/nancy": "^7.0.8",
     "@tsconfig/node16": "^1.0.3",
     "@types/argparse": "^2.0.10",
     "@types/chai": "^4.2.21",
