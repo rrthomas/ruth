@@ -92,7 +92,7 @@ export class XmlDir {
       (_, query: string): slimdom.Node[] => {
         debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
         return evaluateXPathToNodes(
-          query.toString(), // FIXME: query should be of type string!
+          query,
           this.xQueryVariables.ruth_element,
           null,
           this.xQueryVariables,
