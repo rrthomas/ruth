@@ -1,4 +1,5 @@
 module namespace ruth = "https://github.com/rrthomas/ruth/raw/main/ruth.dtd";
+declare namespace fontoxpath = "http://fontoxml.com/fontoxpath";
 declare namespace dirtree = "https://github.com/rrthomas/ruth/raw/main/dirtree.dtd";
 
 (:~
@@ -13,7 +14,8 @@ declare function ruth:map($query as xs:string, $fn as function(*), $nodes as nod
 declare function ruth:eval-items($item as item()*) as item()* {
   typeswitch($item)
   case text() return $item
-  default return ruth:eval(serialize($item[1]))/node()
+  (:~ default return ruth:eval(serialize($item[1]))/node() ~:)
+  default return fontoxpath:evaluate(serialize($item[1]), map{'.': $ruth_element})/node()
 };
 
 (:~
@@ -29,7 +31,7 @@ declare function ruth:real-path($path as xs:string) as xs:string external;
  : @param   $file the basename of the file to include
  :)
 declare function ruth:include($file as xs:string) as node()* {
-  let $res := ruth:eval('ancestor::dirtree:directory/dirtree:file[@dirtree:name="' || $file || '"]')
+  let $res := fontoxpath:evaluate('ancestor::dirtree:directory/dirtree:file[@dirtree:name="' || $file || '"]', map{'.': $ruth_element})
   return ruth:eval-items($res)
 };
 
@@ -42,7 +44,7 @@ declare function ruth:include($file as xs:string) as node()* {
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:query($datum as xs:string) as node()* {
-  let $res := ruth:eval('ancestor::*/*/' || $datum)
+  let $res := fontoxpath:evaluate('ancestor::*/*/' || $datum, map{'.': $ruth_element})
   return if (empty($res))
          then error(xs:QName('ruth:QueryNoResults'), "ruth:query: '" || $datum || "' gives no results")
          else ruth:eval-items($res)
@@ -56,7 +58,7 @@ declare function ruth:query($datum as xs:string) as node()* {
  : @param   $datum the name of the node whose contents should be included
  :)
 declare function ruth:data($datum as xs:string) as node()* {
-  let $res := ruth:eval('parent::*/ancestor::*/*/' || $datum)
+  let $res := fontoxpath:evaluate('parent::*/ancestor::*/*/' || $datum, map{'.': $ruth_element})
   return if (empty($res))
          then error(xs:QName('ruth:DataNoResults'), "ruth:data: '" || $datum || "' gives no results")
          else ruth:eval-items($res)
