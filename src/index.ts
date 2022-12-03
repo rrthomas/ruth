@@ -4,8 +4,8 @@ import path from 'path'
 import url from 'url'
 import Debug from 'debug'
 import assert from 'assert'
-import execa from 'execa'
-import slimdom from 'slimdom'
+import {execaSync} from 'execa'
+import slimdom from 'slimdom' // FIXME: https://github.com/wvbe/slimdom-sax-parser/issues/25
 import {sync as parseXML} from 'slimdom-sax-parser'
 import formatXML from 'xml-formatter'
 import fontoxpath, {Options, XMLSerializer} from 'fontoxpath'
@@ -34,7 +34,7 @@ export type FullDirent = fs.Dirent & {path: string}
 export type File = string
 export type Directory = FullDirent[]
 /**
- * A File (just its name) or Directory (a list of [[FullDirent]]).
+ * A File (just its name) or Directory (a list of {@link FullDirent}).
  */
 export type Dirent = File | Directory
 function isFile(object: Dirent): object is File {
@@ -88,7 +88,8 @@ export class XmlDir {
     // run). See https://github.com/FontoXML/fontoxpath/issues/406
     registerCustomXPathFunction(
       {localName: 'eval', namespaceURI: ruth},
-      ['xs:string'], 'node()*',
+      ['xs:string'],
+      'node()*',
       (_, query: string): slimdom.Node[] => {
         debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
         return evaluateXPathToNodes(
@@ -102,7 +103,8 @@ export class XmlDir {
     )
     registerCustomXPathFunction(
       {localName: 'map', namespaceURI: ruth},
-      ['xs:string', 'xs:string', 'node()*'], 'node()*',
+      ['xs:string', 'xs:string', 'node()*'],
+      'node()*',
       (_, query: string, transformQuery: string, nodes: slimdom.Node[]) => {
         debug(`ruth:map(${query}, ${transformQuery}, ${nodes})`)
         const resultNodes = []
@@ -128,7 +130,8 @@ export class XmlDir {
     )
     registerCustomXPathFunction(
       {localName: 'real-path', namespaceURI: ruth},
-      ['xs:string'], 'xs:string',
+      ['xs:string'],
+      'xs:string',
       (_, relPath: string): string => {
         debug(`ruth:real-path(${relPath})`)
         const dirent = this.findObject(path.join(this.xQueryVariables.ruth_path, relPath))
@@ -214,7 +217,7 @@ export class XmlDir {
         debug('processing file')
         if (isExecutable(realObj)) {
           const localName = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
-          const exec = (_: any, args: string[], input?: string): string => execa.sync(
+          const exec = (_: any, args: string[], input?: string): string => execaSync(
             fs.realpathSync(realObj), args, {input},
           ).stdout
           registerCustomXPathFunction(

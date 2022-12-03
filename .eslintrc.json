@@ -9,6 +9,7 @@
     "airbnb-typescript/base"
   ],
   "rules": {
+    "function-paren-newline": ["error", "consistent"],
     "no-cond-assign": ["error", "except-parens"],
     "no-console": "off",
     "no-warning-comments": "off",

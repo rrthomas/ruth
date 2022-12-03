@@ -2,8 +2,8 @@ import util from 'util'
 import fs from 'fs-extra'
 import path from 'path'
 import net from 'net'
-import execa from 'execa'
-import tempy from 'tempy'
+import {execa} from 'execa'
+import {temporaryFile, temporaryDirectory, temporaryWriteSync} from 'tempy'
 import {compareSync, Difference} from 'dir-compare'
 import chai, {expect, assert} from 'chai'
 import chaiAsPromised from 'chai-as-promised'
@@ -46,13 +46,13 @@ function assertFileObjEqual(obj: string, expected: string) {
 }
 
 function assertStringEqualToFile(s: string, expected: string) {
-  const file = tempy.writeSync(s)
+  const file = temporaryWriteSync(s)
   assertFileObjEqual(file, expected)
   fs.rmSync(file)
 }
 
 async function cliTest(args: string[], expected: string) {
-  const outputDir = tempy.directory()
+  const outputDir = temporaryDirectory()
   const outputObj = path.join(outputDir, 'output')
   args.push(outputObj)
   await run(args)
@@ -61,7 +61,7 @@ async function cliTest(args: string[], expected: string) {
 }
 
 async function failingCliTest(args: string[], expected: string) {
-  const outputDir = tempy.directory()
+  const outputDir = temporaryDirectory()
   const outputObj = path.join(outputDir, 'output')
   args.push(outputObj)
   try {
@@ -111,14 +111,14 @@ describe('ruth', function test() {
   })
 
   it('Test update method', async () => {
-    const updateDir = tempy.directory()
+    const updateDir = temporaryDirectory()
     setupUpdate(updateDir).update()
     assertStringEqualToFile(new XmlDir([updateDir]).formatXML(), 'webpage-src-updated-expected.xml')
     fs.removeSync(updateDir)
   })
 
   it('Test update error handling when file system is changed', async () => {
-    const updateDir = tempy.directory()
+    const updateDir = temporaryDirectory()
     try {
       const xmldir = setupUpdate(updateDir)
       fs.removeSync(path.join(updateDir, 'people/eve/body.in.xhtml'))
@@ -277,7 +277,7 @@ describe('ruth', function test() {
 
   it('Running on something not a directory or file should cause an error', async () => {
     const server = net.createServer()
-    const tempFile = tempy.file()
+    const tempFile = temporaryFile()
     server.listen(tempFile)
     await failingCliTest(
       [`${tempFile}`],
