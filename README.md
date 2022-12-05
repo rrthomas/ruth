@@ -167,9 +167,6 @@ git clone https://github.com/rrthomas/ruth
 npm install
 ```
 
-In addition, [agrep](https://www.tgries.de/agrep/) is required to build the
-documentation.
-
 To run the tests:
 
 ```
