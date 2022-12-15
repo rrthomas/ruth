@@ -7,7 +7,7 @@ import assert from 'assert'
 import {execaSync} from 'execa'
 import slimdom from 'slimdom' // FIXME: https://github.com/wvbe/slimdom-sax-parser/issues/25
 import {sync as parseXML} from 'slimdom-sax-parser'
-import formatXML from 'xml-formatter'
+import formatXML, {XMLFormatterOptions} from 'xml-formatter'
 import fontoxpath, {Options, XMLSerializer} from 'fontoxpath'
 
 const {
@@ -283,9 +283,7 @@ export class XmlDir {
     }
   }
 
-  // FIXME: xml-formatter does not export its FormatOptions type.
-  // See https://github.com/chrisbottin/xml-formatter/issues/46
-  public formatXML(options?: any) {
+  public formatXML(options?: XMLFormatterOptions) {
     assert(this.xtree.documentElement !== null)
     return formatXML(
       this.xtree.documentElement.outerHTML,
