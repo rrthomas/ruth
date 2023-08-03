@@ -29,7 +29,7 @@ report them on the project’s web page (see above for addresses).
 
 ## Installation
 
-Install Ruth with npm (part of [Node](https://nodejs.org/en/)):
+Install Ruth with npm (part of [Node](https://nodejs.org)):
 
 ```
 $ npm install -g @sc3d/ruth
