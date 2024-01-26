@@ -206,7 +206,7 @@ describe('ruth', function test() {
   it('Invalid XQuery should cause an error', async () => {
     await failingCliTest(
       ['xquery-error'],
-      'missing semicolon at end of function',
+      'Failed to parse script. Expected ;',
     )
   })
 
@@ -214,7 +214,7 @@ describe('ruth', function test() {
     process.env.DEBUG = '*'
     await failingCliTest(
       ['xquery-error'],
-      'missing semicolon at end of function',
+      '#<Mh>', // See https://github.com/FontoXML/fontoxpath/issues/628
     )
     delete process.env.DEBUG
   })
