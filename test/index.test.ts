@@ -180,6 +180,10 @@ describe('ruth', function test() {
     await cliTest(['plain-text-src'], 'plain-text-expected')
   })
 
+  it('Test expansion with --ext', async () => {
+    await cliTest(['webpage-html-src', '--ext=.html'], 'webpage-html-expected')
+  })
+
   it('Test XML escaping', async () => {
     await cliTest(['escaped-xml-src'], 'escaped-xml-expected')
   })
