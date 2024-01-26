@@ -45,20 +45,21 @@ same process. Nonetheless, Ruth provides some APIs which are documented in
 ## Invocation
 
 ```
-ruth [-h] [--path PATH] [--ext .EXT] [--version]
+ruth [-h] [--path PATH] [--ext .EXT [.EXT ...]] [--version]
            INPUT-PATH OUTPUT-DIRECTORY
 
 A simple templating system.
 
 positional arguments:
-  INPUT-PATH        desired directory list to build
-  OUTPUT-DIRECTORY  output directory
+  INPUT-PATH            desired directory list to build
+  OUTPUT-DIRECTORY      output directory
 
 optional arguments:
-  -h, --help        show this help message and exit
-  --path PATH       relative path to build [default: input directory]
-  --ext .EXT        treat files with extension .EXT as XML
-  --version         show program's version number and exit
+  -h, --help            show this help message and exit
+  --path PATH           relative path to build [default: input directory]
+  --ext .EXT [.EXT ...]
+                     treat files with extension .EXT as XML
+  --version             show program's version number and exit
 
 The INPUT-PATH is a ':'-separated list of directories; the directories
 are merged, with the contents of each directory taking precedence over any

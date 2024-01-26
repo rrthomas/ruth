@@ -19,7 +19,7 @@ const parser = new ArgumentParser({
 parser.add_argument('input', {metavar: 'INPUT-PATH', help: 'desired directory list to build'})
 parser.add_argument('output', {metavar: 'OUTPUT-DIRECTORY', help: 'output directory'})
 parser.add_argument('--path', {help: 'relative path to build [default: input directory]'})
-parser.add_argument('--ext', {metavar: '.EXT', help: 'treat files with extension .EXT as XML'})
+parser.add_argument('--ext', {metavar: '.EXT', help: 'treat files with extension .EXT as XML', nargs: '+'})
 parser.add_argument('--version', {
   action: 'version',
   version: `%(prog)s ${programVersion}
