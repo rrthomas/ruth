@@ -2,7 +2,7 @@
 
 ![logo](logo/ruth-small.png) _logo by Silvia Polverini_
 
-© 2002–2022 Reuben Thomas <rrt@sc3d.org>  
+© 2002–2024 Reuben Thomas <rrt@sc3d.org>  
 <https://github.com/rrthomas/ruth>
 
 Ruth is a simple [XQuery]-based XML templating system, based on the plain
@@ -79,23 +79,23 @@ argument, if any, in breadth-first order.
 
 For each file, Ruth looks at its name, and:
 
-+ If the name contains the suffix `.ruth`, optionally followed by decimal
+- If the name contains the suffix `.ruth`, optionally followed by decimal
   digits, the file is added to the list of files to process. The decimal
   digits are the phase number, which defaults to zero. The files are
   processed in phase order: any phase 0 files first, then phase 1, and so
   on.
-+ If the name contains the suffix `.in`, the file is skipped. (It may
+- If the name contains the suffix `.in`, the file is skipped. (It may
   be used by macros in other files.)
-+ Otherwise, the file is added to the list of files to process in phase 0.
+- Otherwise, the file is added to the list of files to process in phase 0.
 
 The list of files to process is then processed, in order. For each file:
 
-+ If the name contains the suffix `.ruth`, the file’s contents is expanded
+- If the name contains the suffix `.ruth`, the file’s contents is expanded
   (see below), and if the name does not contain the suffix `.in` the result
   is then written to a file of the same name, but with the `.ruth` suffix
   removed, in the corresponding place in the output directory. The working
   XML document is also updated with the result.
-+ Otherwise, the file is copied verbatim to the corresponding place in the
+- Otherwise, the file is copied verbatim to the corresponding place in the
   output directory.
 
 The special suffixes need not end the file name; they can be used as infixes
@@ -112,23 +112,23 @@ for more details.
 
 Ruth provides some built-in global variables:
 
-+ `$ruth:root`: the `INPUT-PATH` argument.
-+ `$ruth_path`: the relative path from `$ruth:root` to the file currently
+- `$ruth:root`: the `INPUT-PATH` argument.
+- `$ruth_path`: the relative path from `$ruth:root` to the file currently
   being expanded.
-+ `$ruth_element`: the element in Ruth's working XML document corresponding
+- `$ruth_element`: the element in Ruth's working XML document corresponding
   to the file currently being expanded.
 
 Ruth provides the following built-in custom functions:
 
-+ `ruth:eval($query as xs:string) as node()*`: evaluates the XQuery
+- `ruth:eval($query as xs:string) as node()*`: evaluates the XQuery
   expression `$query`, and returns the first matching node, or, if there is
   none, raises an error.
-+ `ruth:map($query as xs:string, $transformQuery as xs:string, $nodes as node()*) as node()*`:
+- `ruth:map($query as xs:string, $transformQuery as xs:string, $nodes as node()*) as node()*`:
   evaluates the XQuery expression `$query` on a copy of `$nodes`, then for
   each node in the result set, replaces it by the value of the XQuery
   expression `$transformQuery` applied to it. Returns the updated copy of
   `$nodes`.
-+ `ruth:real-path($relPath as xs:string) as xs:string` returns the file
+- `ruth:real-path($relPath as xs:string) as xs:string` returns the file
   system path of the file given by `$relPath`. If `$relPath` does not
   correspond to a file, an error is raised. Note in particular that a
   directory does not necessarily correspond to a single file system path.
