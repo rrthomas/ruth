@@ -357,7 +357,7 @@ export class Expander extends XmlDir {
       const expandElement = (elem: slimdom.Element): slimdom.Element => {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
         try {
-          debug(`fullyExpandElement ${elem.getAttributeNS(dirtree, 'path')}`)
+          debug(`expandElement ${elem.getAttributeNS(dirtree, 'path')}`)
           return evaluateXPathToFirstNode(
             elem.outerHTML,
             elem,
