@@ -106,11 +106,6 @@ Ruth provides the following built-in custom functions:
 - `ruth:eval(\$query as xs:string) as node()*`: evaluates the XQuery
   expression `\$query`, and returns the first matching node, or, if there is
   none, raises an error.
-- `ruth:map(\$query as xs:string, \$transformQuery as xs:string, \$nodes as node()*) as node()*`:
-  evaluates the XQuery expression `\$query` on a copy of `\$nodes`, then for
-  each node in the result set, replaces it by the value of the XQuery
-  expression `\$transformQuery` applied to it. Returns the updated copy of
-  `\$nodes`.
 - `ruth:real-path(\$relPath as xs:string) as xs:string` returns the file
   system path of the file given by `\$relPath`. If `\$relPath` does not
   correspond to a file, an error is raised. Note in particular that a

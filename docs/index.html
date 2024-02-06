@@ -107,11 +107,6 @@ to the file currently being expanded.</li>
 <li><code>ruth:eval($query as xs:string) as node()*</code>: evaluates the XQuery
 expression <code>$query</code>, and returns the first matching node, or, if there is
 none, raises an error.</li>
-<li><code>ruth:map($query as xs:string, $transformQuery as xs:string, $nodes as node()*) as node()*</code>:
-evaluates the XQuery expression <code>$query</code> on a copy of <code>$nodes</code>, then for
-each node in the result set, replaces it by the value of the XQuery
-expression <code>$transformQuery</code> applied to it. Returns the updated copy of
-<code>$nodes</code>.</li>
 <li><code>ruth:real-path($relPath as xs:string) as xs:string</code> returns the file
 system path of the file given by <code>$relPath</code>. If <code>$relPath</code> does not
 correspond to a file, an error is raised. Note in particular that a
