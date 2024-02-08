@@ -50,11 +50,6 @@ try {
   if (process.env.DEBUG) {
     throw error
   }
-  let msg = (error as any).toString()
-  // Work around https://github.com/FontoXML/fontoxpath/issues/628
-  if (msg === '[object Object]') {
-    msg = (error as any).h
-  }
-  console.error(`${path.basename(process.argv[1])}: ${msg}`)
+  console.error(`${path.basename(process.argv[1])}: ${error}`)
   process.exitCode = 1
 }

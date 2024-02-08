@@ -214,7 +214,7 @@ describe('ruth', function test() {
     process.env.DEBUG = '*'
     await failingCliTest(
       ['xquery-error'],
-      '#<Mh>', // See https://github.com/FontoXML/fontoxpath/issues/628
+      'Failed to parse script. Expected ;',
     )
     delete process.env.DEBUG
   })
