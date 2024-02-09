@@ -8,8 +8,9 @@
 Ruth is a simple [XQuery]-based XML templating system, based on the plain
 text-oriented [Nancy]. Ruth reads a file or directory into an XML document;
 XML files become subdocuments. It then produces a copy of the original file
-or directory, executing embedded XQuery queries against the constructed XML
-document. Custom XQuery functions and external programs can be used.
+or directory, executing embedded XQuery queries and updates against the
+constructed XML document. Custom XQuery functions and external programs can
+be used.
 
 [XQuery]: https://www.w3.org/TR/xquery/
 [Nancy]: https://github.com/rrthomas/nancy
@@ -18,7 +19,8 @@ Ruth is free software, licensed under the GNU GPL version 3 (or, at your
 option, any later version), and written in TypeScript.
 
 Ruth uses [fontoxpath] as its XQuery implementation. fontoxpath implements a
-subset of [XQuery 3.1](https://www.w3.org/TR/xquery-31/).
+subset of [XQuery 3.1](https://www.w3.org/TR/xquery-31/) and
+[XQuery Update Facility 3.0](https://www.w3.org/TR/xquery-update-30/).
 
 [fontoxpath]: https://www.npmjs.com/package/fontoxpath
 
@@ -92,6 +94,12 @@ expression.
 The use of XQuery is beyond the scope of this manual; see the
 [XQuery specification][XQuery] and [fontoxpath documentation][fontoxpath]
 for more details.
+
+XQuery updates are applied to the document, not to the result of expansion!
+Hence, if the results should be copied to the output (this is the usual
+case), then the file containing the update expression should be processed in
+an earlier phase than files it updates. The [Cookbook][Cookbook.md] gives an
+example.
 
 Ruth provides some built-in global variables:
 

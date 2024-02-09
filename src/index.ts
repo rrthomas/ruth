@@ -11,7 +11,8 @@ import formatXML, {XMLFormatterOptions} from 'xml-formatter'
 import fontoxpath, {Options, XMLSerializer} from 'fontoxpath'
 
 const {
-  evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode,
+  evaluateXPathToNodes,
+  evaluateUpdatingExpressionSync, executePendingUpdateList,
   registerCustomXPathFunction, registerXQueryModule,
 } = fontoxpath
 
@@ -50,9 +51,32 @@ const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
 
 const xQueryOptions: Options = {
   namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
-  language: evaluateXPath.XQUERY_3_1_LANGUAGE,
   debug: process.env.DEBUG !== undefined,
   xmlSerializer: new slimdom.XMLSerializer() as XMLSerializer,
+}
+
+type Variables = {[id: string]: any}
+
+function evaluateXQuery(
+  query: string,
+  contextNode: slimdom.Node,
+  variables: Variables,
+  options: Options,
+): slimdom.Node[] {
+  const res = evaluateUpdatingExpressionSync(query, contextNode, null, variables, options)
+  debug(`xdmValue: ${(res.xdmValue as slimdom.Element).outerHTML}`)
+  debug(`pendingUpdateList: ${res.pendingUpdateList.length}`)
+  executePendingUpdateList(res.pendingUpdateList)
+  debug(`updated context: ${(contextNode as slimdom.Element).outerHTML}`)
+  if (Array.isArray(res.xdmValue)) {
+    debug('returning array')
+    return res.xdmValue
+  }
+  if (typeof res.xdmValue === 'object') {
+    debug('making and returning array')
+    return [res.xdmValue]
+  }
+  throw new Error(`'${query}' did not evaluate to nodes`)
 }
 
 function loadModule(file: string) {
@@ -92,10 +116,9 @@ export class XmlDir {
       'node()*',
       (_, query: string): slimdom.Node[] => {
         debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
-        return evaluateXPathToNodes(
+        return evaluateXQuery(
           query,
           this.xQueryVariables.ruth_element,
-          null,
           this.xQueryVariables,
           xQueryOptions,
         )
@@ -273,17 +296,16 @@ export class Expander extends XmlDir {
     }
     const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
     const query = `/${xPathComponents.join('/')}`
-    const node = evaluateXPathToFirstNode(
+    const nodes = evaluateXQuery(
       query,
       this.xtree,
-      null,
       this.xQueryVariables,
       xQueryOptions,
     )
-    if (node === null) {
+    if (nodes.length === 0) {
       throw new Error(`no such file or directory '${filePath}'`)
     }
-    return node as slimdom.Element
+    return nodes[0] as slimdom.Element
   }
 
   private xQueryErrorRaised = false
@@ -331,13 +353,12 @@ export class Expander extends XmlDir {
         debug(`Evaluating ${elem.getAttributeNS(dirtree, 'path')}`)
         try {
           debug(`expandElement ${elem.getAttributeNS(dirtree, 'path')}`)
-          return evaluateXPathToFirstNode(
+          return evaluateXQuery(
             elem.outerHTML,
             elem,
-            null,
             this.xQueryVariables,
             xQueryOptions,
-          ) as slimdom.Element
+          )[0] as slimdom.Element
         } catch (error) {
           this.xQueryError(`error expanding '${obj}': ${error}`)
           return elem
