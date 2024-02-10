@@ -5,8 +5,7 @@ import net from 'net'
 import {execa} from 'execa'
 import {temporaryFile, temporaryDirectory, temporaryWriteSync} from 'tempy'
 import {compareSync, Difference} from 'dir-compare'
-import chai, {expect, assert} from 'chai'
-import chaiAsPromised from 'chai-as-promised'
+import {expect, assert} from 'chai'
 import {check} from 'linkinator'
 import fontoxpath, {Options} from 'fontoxpath'
 
@@ -14,8 +13,6 @@ import fontoxpath, {Options} from 'fontoxpath'
 import Expander, {XmlDir} from '../src/index'
 
 const {evaluateXPath, evaluateXPathToFirstNode} = fontoxpath
-
-chai.use(chaiAsPromised)
 
 const command = process.env.NODE_ENV === 'coverage' ? '../bin/test-run.sh' : '../bin/run.js'
 
