@@ -11,7 +11,7 @@ import formatXML, {XMLFormatterOptions} from 'xml-formatter'
 import fontoxpath, {Options, XMLSerializer} from 'fontoxpath'
 
 const {
-  evaluateXPathToNodes,
+  evaluateXPath, evaluateXPathToNodes, evaluateXPathToFirstNode,
   evaluateUpdatingExpressionSync, executePendingUpdateList,
   registerCustomXPathFunction, registerXQueryModule,
 } = fontoxpath
@@ -51,6 +51,7 @@ const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
 
 const xQueryOptions: Options = {
   namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
+  language: evaluateXPath.XQUERY_3_1_LANGUAGE,
   debug: process.env.DEBUG !== undefined,
   xmlSerializer: new slimdom.XMLSerializer() as XMLSerializer,
 }
@@ -122,6 +123,33 @@ export class XmlDir {
           this.xQueryVariables,
           xQueryOptions,
         )
+      },
+    )
+    registerCustomXPathFunction(
+      {localName: 'map', namespaceURI: ruth},
+      ['xs:string', 'xs:string', 'node()*'],
+      'node()*',
+      (_, query: string, transformQuery: string, nodes: slimdom.Node[]) => {
+        debug(`ruth:map(${query}, ${transformQuery}, ${nodes})`)
+        const resultNodes = []
+        for (const node of nodes) {
+          let nodeClone = node.cloneNode(true)
+          const elems = evaluateXPathToNodes(
+            query, nodeClone, null, this.xQueryVariables, xQueryOptions,
+          ) as slimdom.Element[]
+          for (const elem of elems) {
+            const res = evaluateXPathToFirstNode(
+              transformQuery, elem, null, this.xQueryVariables, xQueryOptions,
+            ) as slimdom.Element
+            if (elem === nodeClone) { // We matched the entire node, so replace it in results.
+              nodeClone = res
+            } else { // We matched part of the node, replace the match.
+              elem.replaceWith(res)
+            }
+          }
+          resultNodes.push(nodeClone)
+        }
+        return resultNodes
       },
     )
     registerCustomXPathFunction(

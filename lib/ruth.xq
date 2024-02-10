@@ -8,6 +8,7 @@ declare variable $ruth_path as xs:string external;
 declare variable $ruth_element external;
 
 declare function ruth:eval($query as xs:string) as node()* external;
+declare function ruth:map($query as xs:string, $fn as function(*), $nodes as node()*) as node()* external;
 
 declare function ruth:eval-items($item as item()*) as item()* {
   typeswitch($item)
