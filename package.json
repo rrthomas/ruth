@@ -21,14 +21,14 @@
   "devDependencies": {
     "@sc3d/nancy": "^7.3.1",
     "@tsconfig/node20": "^20.1.2",
-    "@types/argparse": "^2.0.15",
-    "@types/chai": "^4.3.12",
+    "@types/argparse": "^2.0.16",
+    "@types/chai": "^4.3.14",
     "@types/debug": "^4.1.12",
     "@types/fs-extra": "^11.0.4",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.11.25",
-    "@typescript-eslint/eslint-plugin": "^7.1.1",
-    "@typescript-eslint/parser": "^7.1.1",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
     "c8": "^9.1.0",
     "chai": "^5.1.0",
     "depcheck": "^1.4.7",
@@ -44,8 +44,8 @@
     "pre-push": "^0.1.4",
     "tempy": "^3.1.0",
     "ts-node": "^10.9.2",
-    "typedoc": "^0.25.11",
-    "typescript": "~5.3.3"
+    "typedoc": "^0.25.12",
+    "typescript": "^5.4.3"
   },
   "engines": {
     "node": ">=18"
