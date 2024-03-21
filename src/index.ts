@@ -5,8 +5,7 @@ import url from 'url'
 import Debug from 'debug'
 import assert from 'assert'
 import {execaSync} from 'execa'
-import slimdom from 'slimdom' // FIXME: https://github.com/wvbe/slimdom-sax-parser/issues/25
-import {sync as parseXML} from 'slimdom-sax-parser'
+import * as slimdom from 'slimdom'
 import formatXML, {XMLFormatterOptions} from 'xml-formatter'
 import fontoxpath, {Options, XMLSerializer} from 'fontoxpath'
 
@@ -48,6 +47,10 @@ function isDirectory(object: Dirent): object is Directory {
 const ruth = 'https://github.com/rrthomas/ruth/raw/main/ruth.dtd'
 const dirtree = 'https://github.com/rrthomas/ruth/raw/main/dirtree.dtd'
 const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
+
+function resolveNamespacePrefix(prefix: string): string | undefined {
+  return URI_BY_PREFIX[prefix]
+}
 
 const xQueryOptions: Options = {
   namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
@@ -239,6 +242,7 @@ export class XmlDir {
         files.forEach((dirent) => elem.appendChild(objToNode(path.join(obj, dirent.name))))
       } else {
         debug('processing file')
+        elem = xtree.createElementNS(dirtree, 'file')
         if (isExecutable(realObj)) {
           const localName = (/^[^.]*/.exec(parsedPath.name) as string[])[0]
           const exec = (_: any, args: string[], input?: string): string => execaSync(
@@ -250,19 +254,16 @@ export class XmlDir {
           registerCustomXPathFunction(
             {localName, namespaceURI: ruth}, ['xs:string*', 'xs:string'], 'xs:string', exec,
           )
-          elem = xtree.createElementNS(dirtree, 'file')
         } else if (this.isXmlFile(parsedPath)) {
           debug('reading as XML')
           const text = fs.readFileSync(realObj, 'utf-8')
-          const wrappedText = `<dirtree:file>${text}</dirtree:file>`
-          let doc
+          let doc: slimdom.DocumentFragment
           try {
-            doc = parseXML(wrappedText, {additionalNamespaces: URI_BY_PREFIX})
+            doc = slimdom.parseXmlFragment(text, {resolveNamespacePrefix})
           } catch (error) {
             throw new Error(`error parsing '${obj}': ${error}`)
           }
-          assert(doc.documentElement !== null)
-          elem = doc.documentElement
+          elem.append(...doc.childNodes)
         } else {
           elem = xtree.createElementNS(dirtree, 'file')
           if (/.xq[lmy]?/.test(parsedPath.ext)) {

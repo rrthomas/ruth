@@ -14,8 +14,7 @@
     "fontoxpath": "^3.30.3",
     "fs-extra": "^11.2.0",
     "get-stdin-with-tty": "^6.0.0",
-    "slimdom": "^2.3.2",
-    "slimdom-sax-parser": "~1.4.1",
+    "slimdom": "^4.3.4",
     "tslib": "^2.6.2",
     "xml-formatter": "^3.6.2"
   },
