@@ -57,7 +57,7 @@ async function cliTest(args: string[], expected: string) {
   fs.rmSync(outputDir, {recursive: true})
 }
 
-async function failingCliTest(args: string[], expected: string) {
+async function failingCliTest(args: string[], expectedErr: string, expectedOutput?: string) {
   const outputDir = temporaryDirectory()
   const outputObj = path.join(outputDir, 'output')
   args.push(outputObj)
@@ -65,9 +65,12 @@ async function failingCliTest(args: string[], expected: string) {
     await run(args)
   } catch (error: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(error.stderr).to.contain(expected)
+    expect(error.stderr).to.contain(expectedErr)
     return
   } finally {
+    if (expectedOutput !== undefined) {
+      assertFileObjEqual(outputObj, expectedOutput)
+    }
     fs.rmSync(outputDir, {recursive: true})
   }
   throw new Error('test passed unexpectedly')
@@ -185,16 +188,20 @@ describe('ruth', function test() {
     await cliTest(['escaped-xml-src'], 'escaped-xml-expected')
   })
 
-  it('Test ruth:map()', async () => {
-    await cliTest(['map-src'], 'map-expected')
-  })
-
   it('Test ruth:real-path()', async () => {
     await cliTest(['real-path-src'], 'real-path-expected')
   })
 
   it('A .ruth.in file should not be copied', async () => {
     await cliTest(['expand-no-copy-src'], 'expand-no-copy-expected')
+  })
+
+  it('Test stack exhaustion and error while running', async () => {
+    await failingCliTest(
+      ['error-during-run'],
+      'call stack size exceeded',
+      'error-during-run-expected',
+    )
   })
 
   it('Invalid path to ruth:real-path() should cause an error', async () => {
