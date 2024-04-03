@@ -9,8 +9,7 @@ import {expect, assert} from 'chai'
 import {check} from 'linkinator'
 import fontoxpath, {Options} from 'fontoxpath'
 
-// eslint-disable-next-line import/no-named-as-default
-import Expander, {XmlDir} from '../src/index'
+import {Expander, XmlDir} from '../src/index'
 
 const {evaluateXPath, evaluateXPathToFirstNode} = fontoxpath
 

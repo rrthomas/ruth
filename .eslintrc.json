@@ -10,6 +10,7 @@
   ],
   "rules": {
     "function-paren-newline": ["error", "consistent"],
+    "max-classes-per-file": "off",
     "no-cond-assign": ["error", "except-parens"],
     "no-console": "off",
     "no-warning-comments": "off",

@@ -1,7 +1,6 @@
 import path from 'path'
 import {ArgumentParser, RawDescriptionHelpFormatter} from 'argparse'
 import programVersion from './version.js'
-// eslint-disable-next-line import/no-named-as-default
 import Expander from './index.js'
 
 if (process.env.DEBUG) {
