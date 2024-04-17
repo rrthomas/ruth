@@ -112,7 +112,6 @@ for more details.
 
 Ruth provides some built-in global variables:
 
-- `$ruth:root`: the `INPUT-PATH` argument.
 - `$ruth_path`: the relative path from `$ruth:root` to the file currently
   being expanded.
 - `$ruth_element`: the element in Ruth's working XML document corresponding
