@@ -5,14 +5,13 @@
 © 2002–2024 Reuben Thomas <rrt@sc3d.org>  
 <https://github.com/rrthomas/ruth>
 
-Ruth is a simple [XQuery]-based XML templating system, based on the plain
-text-oriented [Nancy]. Ruth reads a file or directory into an XML document;
-XML files become subdocuments. It then produces a copy of the original file
-or directory, executing embedded XQuery queries against the constructed XML
-document. Custom XQuery functions and external programs can be used.
+Ruth is a simple [XQuery]-based XML templating system. Ruth reads a file or
+directory into an XML document; XML files become subdocuments. It then
+produces a copy of the original file or directory, executing embedded XQuery
+queries against the constructed XML document. Custom XQuery functions and
+external programs can be used.
 
 [XQuery]: https://www.w3.org/TR/xquery/
-[Nancy]: https://github.com/rrthomas/nancy
 
 Ruth is free software, licensed under the GNU GPL version 3 (or, at your
 option, any later version), and written in TypeScript.
@@ -95,9 +94,9 @@ for more details.
 
 Ruth provides some built-in global variables:
 
-- `\$ruth_path`: the relative path from `\$ruth:root` to the file currently
+- `\$ruth_path`: the relative path from the input path to the file currently
   being expanded.
-- `\$ruth_element`: the element in Ruth's working XML document corresponding
+- `\$ruth_element`: the element in Ruth’s working XML document corresponding
   to the file currently being expanded.
 
 Ruth provides the following built-in custom functions:
@@ -138,7 +137,7 @@ ruth:foo(\$args as xs:string*, \$input as xs:string) as xs:string
 ```
 
 The sequence `\$args` is passed to the program as its command-line arguments.
-The string `\$input` is fed to the program's standard input.
+The string `\$input` is fed to the program’s standard input.
 
 ## Development
 
