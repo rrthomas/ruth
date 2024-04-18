@@ -71,7 +71,7 @@
     "prepare": "npm run clean && npm run build && npm run docs && npm run update-readme",
     "test": "npm run build && mocha --forbid-only \"test/**/*.test.ts\"",
     "coverage": "NODE_ENV=coverage c8 --extension .ts npm test",
-    "loc": "cloc src/*.ts",
+    "loc": "cloc src/*.ts src/ruth.xq",
     "diff-check": "git diff --exit-code",
     "prepublishOnly": "npm run diff-check && git push --all",
     "postpublish": "git push --tags --no-verify && gh release create $(git describe) -t \"Release $(git describe)\"",
