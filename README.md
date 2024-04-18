@@ -109,13 +109,6 @@ The use of XQuery is beyond the scope of this manual; see the
 [XQuery specification][XQuery] and [fontoxpath documentation][fontoxpath]
 for more details.
 
-Ruth provides some built-in global variables:
-
-- `$ruth_path`: the relative path from the input path to the file currently
-  being expanded.
-- `$ruth_element`: the element in Ruth’s working XML document corresponding
-  to the file currently being expanded.
-
 Ruth provides the following built-in custom functions:
 
 - `ruth:eval($query as xs:string) as node()*`: evaluates the XQuery
@@ -127,9 +120,10 @@ Ruth provides the following built-in custom functions:
   expression `$transformQuery` applied to it. Returns the updated copy of
   `$nodes`.
 - `ruth:real-path($relPath as xs:string) as xs:string` returns the file
-  system path of the file given by `$relPath`. If `$relPath` does not
-  correspond to a file, an error is raised. Note in particular that a
-  directory does not necessarily correspond to a single file system path.
+  system path of the file given by `$relPath`, a path relative to the
+  current file. If `$relPath` does not correspond to a file, an error is
+  raised. This function cannot be used for directories, because a directory
+  in the input path may represent more than one file system path.
 
 Ruth also supplies a version of the
 [FunctX](http://www.xqueryfunctions.com/) function library, without the

@@ -93,14 +93,8 @@ export class XmlDir {
       ['xs:string'],
       'node()*',
       (_, query: string): slimdom.Node[] => {
-        debug(`ruth:eval(${query}); context ${this.xQueryVariables.ruth_element.getAttributeNS(dirtree, 'path')}`)
-        return evaluateXPathToNodes(
-          query,
-          this.xQueryVariables.ruth_element,
-          null,
-          this.xQueryVariables,
-          xQueryOptions,
-        )
+        debug(`ruth:eval(${query}); context ${this.context!.getAttributeNS(dirtree, 'path')}`)
+        return evaluateXPathToNodes(query, this.context, null, undefined, xQueryOptions)
       },
     )
     registerCustomXPathFunction(
@@ -113,11 +107,11 @@ export class XmlDir {
         for (const node of nodes) {
           let nodeClone = node.cloneNode(true)
           const elems = evaluateXPathToNodes(
-            query, nodeClone, null, this.xQueryVariables, xQueryOptions,
+            query, nodeClone, null, undefined, xQueryOptions,
           ) as slimdom.Element[]
           for (const elem of elems) {
             const res = evaluateXPathToFirstNode(
-              transformQuery, elem, null, this.xQueryVariables, xQueryOptions,
+              transformQuery, elem, null, undefined, xQueryOptions,
             ) as slimdom.Element
             if (elem === nodeClone) { // We matched the entire node, so replace it in results.
               nodeClone = res
@@ -136,7 +130,10 @@ export class XmlDir {
       'xs:string',
       (_, relPath: string): string => {
         debug(`ruth:real-path(${relPath})`)
-        const dirent = this.findObject(path.join(this.xQueryVariables.ruth_path, relPath))
+        const dirent = this.findObject(path.join(
+          path.dirname(this.context!.getAttributeNS(dirtree, 'path')!),
+          relPath,
+        ))
         if (dirent !== undefined && isFile(dirent)) {
           return dirent
         }
@@ -150,7 +147,7 @@ export class XmlDir {
     }
   }
 
-  protected xQueryVariables: {[id: string]: any} = {}
+  protected context?: slimdom.Element
 
   // Find the first file or directory with path `object` in the input tree,
   // scanning the roots from left to right.
@@ -264,11 +261,7 @@ export class XmlDir {
   // Update XML files on disk.
   public update() {
     for (const node of evaluateXPathToNodes(
-      '//dirtree:file',
-      this.xtree,
-      null,
-      this.xQueryVariables,
-      xQueryOptions,
+      '//dirtree:file', this.xtree, null, undefined, xQueryOptions,
     )) {
       const elem = node as Element
       const filePath = elem.getAttributeNS(dirtree, 'path')!
@@ -300,13 +293,7 @@ export class Expander extends XmlDir {
     }
     const xPathComponents = components.map((c) => `*[@dirtree:name="${c}"]`)
     const query = `/${xPathComponents.join('/')}`
-    const node = evaluateXPathToFirstNode(
-      query,
-      this.xtree,
-      null,
-      this.xQueryVariables,
-      xQueryOptions,
-    )
+    const node = evaluateXPathToFirstNode(query, this.xtree, null, undefined, xQueryOptions)
     if (node === null) {
       throw new Error(`no such file or directory '${filePath}'`)
     }
@@ -359,11 +346,7 @@ export class Expander extends XmlDir {
         try {
           debug(`expandElement ${elem.getAttributeNS(dirtree, 'path')}`)
           return evaluateXPathToFirstNode(
-            elem.outerHTML,
-            elem,
-            null,
-            this.xQueryVariables,
-            xQueryOptions,
+            elem.outerHTML, elem, null, undefined, xQueryOptions,
           ) as slimdom.Element
         } catch (error) {
           this.xQueryError(`error expanding '${obj}': ${error}`)
@@ -371,8 +354,7 @@ export class Expander extends XmlDir {
         }
       }
       const outputPath = getOutputPath(obj).replace(Expander.templateRegex, '')
-      this.xQueryVariables.ruth_path = path.dirname(obj)
-      this.xQueryVariables.ruth_element = elem
+      this.context = elem
       const doCopy = !Expander.noCopyRegex.exec(obj)
       if (Expander.templateRegex.exec(obj)) {
         debug(`Expanding ${obj}`)

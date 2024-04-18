@@ -1,12 +1,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <link rel="stylesheet" type="text/css" href="{ruth:relative-path('style.css')}"/>
+    <link rel="stylesheet" type="text/css" href="{ruth:relative-path(., 'style.css')}"/>
     <title>{ruth:include("title.in.xhtml")}</title>
   </head>
   <body>
     <div class="wrapper">
       <div class="logo">{ruth:include("logo.in.xhtml")}</div>
-      <div class="breadcrumb"><div class="breadcrumb-content">{cookbook:breadcrumb(.)}</div></div>
+      <div class="breadcrumb"><div class="breadcrumb-content">{cookbook:breadcrumb(., .)}</div></div>
     </div>
     <div class="wrapper">
       <div class="menu">{ruth:include("menu.in.xhtml")}</div>
