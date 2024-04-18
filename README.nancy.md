@@ -54,6 +54,15 @@ If the same file or directory exists in more than one of the directories on
 the input path, the left-most takes precedence. The result is called the
 “input tree”, and all paths are relative to it.
 
+The input tree is read into an XML document in the ‘dirtree’ language, a
+simple XML language for representing directory trees. Each element is either
+a `directory` or a `file`. A `directory` contains further `directory` and
+`file` elements, while a `file` contains arbitrary XML, or character data
+(if the file in question is not XML). Each `directory` and `file` node has
+two attributes: `name`, which is the file or directory name, and `path`,
+which is the full file system path of the original file or directory,
+including its name. See `dirtree.dtd` for more information.
+
 Ruth then creates the output directory if it does not already exist.
 
 Next, Ruth traverses the input tree, or the subtree given by the `--path`

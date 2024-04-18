@@ -1,8 +1,26 @@
+<!--
+dirtree DTD: a language that represents a tree of directories and files.
+ -->
+
+<!--
+The root of a dirtree is a directory, which is a tree of <directory> and
+<file> elements.
+
+A directory has two attributes: the full source 'path', and its leaf 'name'.
+The path includes the name.
+ -->
 <!ELEMENT directory (directory|file)*>
-<!ELEMENT file (#CDATA)>
 <!ATTLIST directory
           name CDATA #REQUIRED
           path CDATA #REQUIRED>
+
+<!--
+A <file> element may contain character data or arbitrary XML.
+
+A file has two attributes: the full source 'path', and its leaf 'name'.
+The path includes the name.
+-->
+<!ELEMENT file (#CDATA)>
 <!ATTLIST file
           name CDATA #REQUIRED
           path CDATA #REQUIRED>
