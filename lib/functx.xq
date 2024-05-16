@@ -1424,7 +1424,7 @@ declare function functx:line-count
 declare function functx:lines 
   ( $arg as xs:string? )  as xs:string* {
        
-   tokenize($arg, '\r\n?|\n\r?')
+   tokenize($arg, '(\r\n?|\n\r?)')
  } ;
 
 (:~
