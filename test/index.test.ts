@@ -7,23 +7,13 @@ import {temporaryFile, temporaryDirectory, temporaryWriteSync} from 'tempy'
 import {compareSync, Difference} from 'dir-compare'
 import {expect, assert} from 'chai'
 import {check} from 'linkinator'
-import fontoxpath, {Options} from 'fontoxpath'
 
 import {Expander, XmlDir} from '../src/index'
-
-const {evaluateXPath, evaluateXPathToFirstNode} = fontoxpath
 
 const command = process.env.NODE_ENV === 'coverage' ? '../bin/test-run.sh' : '../bin/run.js'
 
 export const ruth = 'https://github.com/rrthomas/ruth/raw/main/ruth.dtd'
 export const dirtree = 'https://github.com/rrthomas/ruth/raw/main/dirtree.dtd'
-const URI_BY_PREFIX: {[key: string]: string} = {ruth, dirtree}
-
-const xQueryOptions: Options = {
-  namespaceResolver: (prefix: string) => URI_BY_PREFIX[prefix],
-  language: evaluateXPath.XQUERY_3_1_LANGUAGE,
-  debug: process.env.DEBUG !== undefined,
-}
 
 async function run(args: string[]) {
   return execa(command, args)
@@ -83,20 +73,6 @@ async function checkLinks(root: string, start: string) {
   assert(results.passed, 'Broken links in output')
 }
 
-function setupUpdate(updateDir: string): XmlDir {
-  fs.copySync('webpage-src', updateDir)
-  const xmldir = new XmlDir([updateDir])
-  const fileElement = evaluateXPathToFirstNode(
-    '//dirtree:file[@dirtree:path="people/eve/body.in.xhtml"]',
-    xmldir.xtree,
-    null,
-    null,
-    xQueryOptions,
-  ) as Element
-  fileElement.textContent = "This is Eve's page."
-  return xmldir
-}
-
 describe('ruth', function test() {
   // In coverage mode, allow for recompilation.
   this.timeout(10000)
@@ -107,27 +83,6 @@ describe('ruth', function test() {
 
   it('Convert tree to XML', async () => {
     assertStringEqualToFile(new XmlDir(['webpage-src']).formatXML(), 'webpage-src-expected.xml')
-  })
-
-  it('Test update method', async () => {
-    const updateDir = temporaryDirectory()
-    setupUpdate(updateDir).update()
-    assertStringEqualToFile(new XmlDir([updateDir]).formatXML(), 'webpage-src-updated-expected.xml')
-    fs.removeSync(updateDir)
-  })
-
-  it('Test update error handling when file system is changed', async () => {
-    const updateDir = temporaryDirectory()
-    try {
-      const xmldir = setupUpdate(updateDir)
-      fs.removeSync(path.join(updateDir, 'people/eve/body.in.xhtml'))
-      xmldir.update()
-    } catch (error: any) {
-      expect(error.message).to.contain('it is missing or not a file')
-      fs.removeSync(updateDir)
-      return
-    }
-    throw new Error('test passed unexpectedly')
   })
 
   // FIXME: Remove this when we have module tests
