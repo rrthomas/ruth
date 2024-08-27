@@ -4,7 +4,7 @@
   "version": "2.4.0",
   "author": "Reuben Thomas",
   "bin": {
-    "ruth": "./bin/run.js"
+    "ruth": "bin/run.js"
   },
   "bugs": "https://github.com/rrthomas/ruth/issues",
   "dependencies": {
@@ -59,7 +59,10 @@
   "license": "GPL-3.0-or-later",
   "main": "lib/index.js",
   "type": "module",
-  "repository": "rrthomas/ruth",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rrthomas/ruth.git"
+  },
   "scripts": {
     "commit-docs": "npm run diff-check || git add docs",
     "docs": "typedoc --readme none --gitRevision main src/index.ts",
